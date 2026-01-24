@@ -1,45 +1,43 @@
-<nav class="fixed top-0 left-0 right-0 z-50 bg-scriptorium-dark/95 backdrop-blur-sm">
-    <div class="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 h-[62px] flex items-center justify-between">
-      
-      <a href="/" class="font-dancing text-white text-2xl sm:text-3xl font-bold tracking-wide hover:opacity-80 transition-opacity">
-        Scriptorium
-      </a>
-  
-      <div class="hidden md:flex items-center gap-6 lg:gap-12">
-        <a href="/about" class="font-outfit text-white text-lg lg:text-xl hover:text-scriptorium-green transition-colors">
-          About
+<nav class="fixed top-0 left-0 w-full z-50 py-3 px-4 sm:px-8 lg:px-16 bg-[linear-gradient(90deg,#073B4C_4%,#118AB2_10%,#073B4C_90%)] border-b border-white/5 transition-all">
+
+
+<!-- <nav class="fixed top-0 left-0 w-full z-50 py-3 px-4 sm:px-8 lg:px-16 bg-[linear-gradient(90deg,#073B4C_0%, #073B4C_160px, #118AB2_177px, #118AB2_215px, #073B4C_260px, #073B4C_100%)] border-b border-white/5 transition-all"> -->
+
+<!-- 
+<nav class="fixed top-0 left-0 w-full z-50 py-3 px-4 sm:px-8 lg:px-16
+bg-[radial-gradient(at_177px_-210px,#118AB2_0%,rgba(17,138,178,0.8)_25%,rgba(7,59,76,0)_60%)]
+border-b border-white/5 transition-all">     -->
+
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        
+        <a href="/" class="font-dancing text-2xl md:text-3xl text-white font-bold tracking-wider hover:opacity-80 transition-opacity">
+            Scriptorium
         </a>
-        <a href="/features" class="font-outfit text-white text-lg lg:text-xl hover:text-scriptorium-green transition-colors">
-          Features
-        </a>
-        <a href="/contact" class="font-outfit text-white text-lg lg:text-xl hover:text-scriptorium-green transition-colors">
-          Contact
-        </a>
-        <a href="/login" class="font-outfit text-white text-lg lg:text-xl hover:text-scriptorium-green transition-colors">
-          Login
-        </a>
-      </div>
-  
-      <button id="mobile-menu-btn" class="md:hidden text-white p-2" aria-label="Menu">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
+        
+        <div class="hidden md:flex space-x-8 lg:space-x-12">
+            <a href="/about" class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">About</a>
+            <a href="/features" class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">Features</a>
+            <a href="/contact" class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">Contact</a>
+            <a href="/login" class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">Login</a>
+        </div>
+
+        <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
     </div>
-  
-    <div id="mobile-menu" class="hidden md:hidden bg-scriptorium-dark border-t border-white/10 px-4 py-4 space-y-4">
-        <a href="/about" class="block font-outfit text-white text-lg hover:text-scriptorium-green">About</a>
-        <a href="/features" class="block font-outfit text-white text-lg hover:text-scriptorium-green">Features</a>
-        <a href="/contact" class="block font-outfit text-white text-lg hover:text-scriptorium-green">Contact</a>
-        <a href="/login" class="block font-outfit text-white text-lg hover:text-scriptorium-green">Login</a>
+
+    <div id="mobile-menu" class="hidden md:hidden bg-[linear-gradient(90deg,#073B4C_0%,#118AB2_25%,#073B4C_80%)] absolute top-full left-0 w-full border-t border-white/10 p-4 space-y-4 shadow-xl">
+        <a href="/about" class="block text-white font-outfit text-lg">About</a>
+        <a href="/features" class="block text-white font-outfit text-lg">Features</a>
+        <a href="/contact" class="block text-white font-outfit text-lg">Contact</a>
+        <a href="/login" class="block text-white font-outfit text-lg">Login</a>
     </div>
-  </nav>
-  
-  <script>
-    // Simple script to toggle mobile menu
+</nav>
+
+<script>
     const btn = document.getElementById('mobile-menu-btn');
     const menu = document.getElementById('mobile-menu');
-    btn.addEventListener('click', () => {
-        menu.classList.toggle('hidden');
-    });
-  </script>
+    btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+</script>

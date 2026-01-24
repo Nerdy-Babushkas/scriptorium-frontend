@@ -1,29 +1,31 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', (req, res) => { //done
     res.render('pages/landing');
 });
 
-router.get('/login', (req, res) => {
+router.get('/login', (req, res) => { //not done
     res.render('pages/login');
 });
 
 router.get('/signup', (req, res) => {
-    res.render('pages/signup'); // You'll create this next
+    res.render('pages/signup'); 
 });
 
-// Placeholders for the other pages in your App.tsx
-router.get('/about', (req, res) => {
-    res.render('pages/placeholder', { pageName: 'About Us' });
+router.get('/about', (req, res) => { //done
+    res.render('pages/landing');
 });
 
 router.get('/features', (req, res) => {
-    res.render('pages/placeholder', { pageName: 'Features' });
+    res.redirect('/#features');
 });
 
-router.get('/contact', (req, res) => {
+router.get('/contact', (req, res) => { //not done
     res.render('pages/placeholder', { pageName: 'Contact' });
 });
 
+router.use((req, res) => {
+    res.status(404).render('pages/404');
+});
 module.exports = router;

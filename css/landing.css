@@ -1,0 +1,112 @@
+@font-face {
+  font-family: "MyFont";
+  src: url("fonts/GreatVibes-Regular.ttf");
+}
+
+* {
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 4vh;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+
+  font-style: normal;
+
+  background-image: url("https://images7.alphacoders.com/912/912059.jpg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+ul {
+  display: flex;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 10px;
+}
+
+.bigblock {
+  padding-left: 16vh;
+}
+
+.mainblock {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: flex-start;
+}
+
+header {
+  padding: 20px;
+  font-family: "MyFont";
+  color: white;
+  font-size: 30px;
+}
+
+p {
+  font-size: 22px;
+  color: white;
+}
+
+h3 {
+  /* margin: 0;
+    padding-left: 20vh;
+    justify-content: flex-start;*/
+  color: white;
+  font-size: 60px;
+  font-family: "MyFont";
+}
+
+.button-group {
+  display: flex;
+  gap: 20px;
+  margin-top: -100px;
+}
+
+.button {
+  outline: none;
+  border: none;
+  background-color: cadetblue;
+  color: white;
+  padding: 16px 32px;
+  display: inline-block;
+  margin: 4px 2px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.button:hover {
+  background-color: rgb(8, 137, 118);
+}
+
+.button1 {
+  border-radius: 12px;
+}
+
+.button2 {
+  border-radius: 12px;
+}

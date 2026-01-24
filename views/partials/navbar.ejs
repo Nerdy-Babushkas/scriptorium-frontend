@@ -1,0 +1,45 @@
+<nav class="fixed top-0 left-0 right-0 z-50 bg-scriptorium-dark/95 backdrop-blur-sm">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 h-[62px] flex items-center justify-between">
+      
+      <a href="/" class="font-dancing text-white text-2xl sm:text-3xl font-bold tracking-wide hover:opacity-80 transition-opacity">
+        Scriptorium
+      </a>
+  
+      <div class="hidden md:flex items-center gap-6 lg:gap-12">
+        <a href="/about" class="font-outfit text-white text-lg lg:text-xl hover:text-scriptorium-green transition-colors">
+          About
+        </a>
+        <a href="/features" class="font-outfit text-white text-lg lg:text-xl hover:text-scriptorium-green transition-colors">
+          Features
+        </a>
+        <a href="/contact" class="font-outfit text-white text-lg lg:text-xl hover:text-scriptorium-green transition-colors">
+          Contact
+        </a>
+        <a href="/login" class="font-outfit text-white text-lg lg:text-xl hover:text-scriptorium-green transition-colors">
+          Login
+        </a>
+      </div>
+  
+      <button id="mobile-menu-btn" class="md:hidden text-white p-2" aria-label="Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  
+    <div id="mobile-menu" class="hidden md:hidden bg-scriptorium-dark border-t border-white/10 px-4 py-4 space-y-4">
+        <a href="/about" class="block font-outfit text-white text-lg hover:text-scriptorium-green">About</a>
+        <a href="/features" class="block font-outfit text-white text-lg hover:text-scriptorium-green">Features</a>
+        <a href="/contact" class="block font-outfit text-white text-lg hover:text-scriptorium-green">Contact</a>
+        <a href="/login" class="block font-outfit text-white text-lg hover:text-scriptorium-green">Login</a>
+    </div>
+  </nav>
+  
+  <script>
+    // Simple script to toggle mobile menu
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    btn.addEventListener('click', () => {
+        menu.classList.toggle('hidden');
+    });
+  </script>

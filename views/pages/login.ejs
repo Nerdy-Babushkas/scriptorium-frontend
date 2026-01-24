@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Scriptorium</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/js/tailwind.config.js"></script>
+</head>
+<body class="bg-background text-foreground font-outfit h-screen flex items-center justify-center">
+
+    <div class="w-full max-w-md bg-card p-8 rounded-lg shadow-lg border border-border">
+        <h1 class="text-3xl font-bold text-center text-scriptorium-blue mb-6">Welcome Back</h1>
+        
+        <form class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Email</label>
+                <input type="email" class="w-full p-2 rounded border border-input bg-background focus:ring-2 focus:ring-ring outline-none" placeholder="you@example.com">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Password</label>
+                <input type="password" class="w-full p-2 rounded border border-input bg-background focus:ring-2 focus:ring-ring outline-none" placeholder="••••••••">
+            </div>
+            
+            <button type="submit" class="w-full py-2 px-4 bg-primary text-primary-foreground rounded hover:opacity-90 transition">
+                Sign In
+            </button>
+        </form>
+
+        <p class="text-center text-sm text-muted-foreground mt-4">
+            Don't have an account? <a href="/signup" class="text-scriptorium-teal hover:underline">Sign up</a>
+        </p>
+    </div>
+
+</body>
+</html>

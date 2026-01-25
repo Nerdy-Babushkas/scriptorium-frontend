@@ -26,7 +26,39 @@ router.get('/contact', (req, res) => {
 });
 
 router.get('/room', (req, res) => { 
-    res.render('pages/placeholder', { pageName: 'Room' });
+    res.render('pages/room');
+});
+
+router.get('/account', (req, res) => { 
+    res.render('pages/placeholder', { pageName: 'Account' });
+});
+
+router.get('/rewards', (req, res) => { 
+    res.render('pages/placeholder', { pageName: 'Rewards' });
+});
+
+router.get('/customise', (req, res) => { 
+    res.render('pages/placeholder', { pageName: 'Customise' });
+});
+
+router.get('/progress', (req, res) => { 
+    res.render('pages/placeholder', { pageName: 'Progress' });
+});
+
+router.get('/library', (req, res) => { 
+    res.render('pages/placeholder', { pageName: 'Library' });
+});
+
+router.get('/music', (req, res) => { 
+    res.render('pages/placeholder', { pageName: 'Music Room' });
+});
+
+router.get('/theatre', (req, res) => { 
+    res.render('pages/placeholder', { pageName: 'Theatre' });
+});
+
+router.get('/ai-recommendations', (req, res) => { 
+    res.render('pages/placeholder', { pageName: 'AI Recommendations' });
 });
 
 router.use((req, res) => {

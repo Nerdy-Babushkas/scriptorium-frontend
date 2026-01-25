@@ -201,15 +201,21 @@
         });
       });
 
-      loginForm.addEventListener("submit", (e) => {
+// UPDATE: Made the function 'async' to handle the backend request
+      loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
+        
+        // Reset messages
         message.classList.add("hidden");
         message.classList.remove("text-green-400");
         message.classList.add("text-red-400");
 
-        const email = emailInput.value.trim().toLowerCase();
+        // const email = emailInput.value.trim().toLowerCase();
+        const email = emailInput.value.trim();
         const password = passwordInput.value;
 
+        // --- 1. VALIDATION ---
+        
         // Email check
         if (!emailRegex.test(email)) {
           showError("Please enter a valid email address.");
@@ -230,9 +236,48 @@
           return;
         }
 
-        // Placeholder for actual login logic
-        showSuccess("Login successful! Redirecting...");
-        console.log("Login attempt for:", email);
+        // --- 2. NEW BACKEND CONNECTION LOGIC ---
+
+        // UI Loading State (disabled button so they don't click twice)
+        const submitBtn = loginForm.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerText;
+        submitBtn.innerText = "LOGGING IN...";
+        submitBtn.disabled = true;
+
+        try {
+            // Call backend API
+            const response = await fetch('https://scriptorium-backend-six.vercel.app/api/user/login', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // SUCCESS: Store token and redirect
+                localStorage.setItem('token', data.token); // Save JWT for later
+                
+                showSuccess("Login successful! Redirecting...");
+                
+                // Wait 4 second so user sees the success message, then go to room
+                setTimeout(() => {
+                    window.location.href = '/room'; 
+                }, 4000);
+
+            } else {
+                // FAILURE: Show the error message from the backend
+                showError(data.message || "Login failed. Please check your credentials.");
+            }
+
+        } catch (error) {
+            console.error("Login Error:", error);
+            showError("Unable to connect to the server.");
+        } finally {
+            // Reset button state
+            submitBtn.innerText = originalBtnText;
+            submitBtn.disabled = false;
+        }
       });
 
       function showError(text) {

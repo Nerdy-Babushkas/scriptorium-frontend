@@ -25,9 +25,9 @@ router.get('/contact', (req, res) => {
     res.render('pages/contact');
 });
 
-// router.get('/contact', (req, res) => { 
-//     res.render('pages/placeholder', { pageName: 'Contact' });
-// });
+router.get('/room', (req, res) => { 
+    res.render('pages/placeholder', { pageName: 'Room' });
+});
 
 router.use((req, res) => {
     res.status(404).render('pages/404');

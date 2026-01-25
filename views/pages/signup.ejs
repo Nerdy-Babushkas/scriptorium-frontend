@@ -180,8 +180,7 @@
         </div>
       </div>
     </div>
-
-    <script>
+<script>
       const form = document.getElementById("signupForm");
       const emailInput = document.getElementById("email");
       const passwordInput = document.getElementById("password");
@@ -189,17 +188,17 @@
       const message = document.getElementById("formMessage");
       const submitBtn = document.getElementById("submitBtn");
 
+      // Hide error messages when user types
       [emailInput, passwordInput, confirmInput].forEach((input) => {
-        input.addEventListener("input", () => {
-          message.classList.add("hidden");
-        });
+        input.addEventListener("input", () => message.classList.add("hidden"));
       });
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
+        
+        // Reset message
         message.classList.add("hidden");
         message.classList.remove("text-green-400");
         message.classList.add("text-red-400");
@@ -208,80 +207,66 @@
         const password = passwordInput.value;
         const confirm = confirmInput.value;
 
-        // Email check
-        if (!emailRegex.test(email)) {
-          showError("Please enter a valid email address.");
-          return;
-        }
+        // --- 1. GENERATE USERNAME AUTOMATICALLY ---
+        // "john.doe@gmail.com" -> "john.doe"
+        const generatedUserName = email.split('@')[0]; 
 
-        // Password checks
-        // Length check
-        if (password.length < 8) {
-          showError("Password must be at least 8 characters long.");
-          return;
-        }
+        // --- VALIDATION ---
+        if (!emailRegex.test(email)) { showError("Please enter a valid email address."); return; }
+        if (password.length < 8) { showError("Password must be at least 8 characters long."); return; }
+        if (password !== confirm) { showError("Passwords do not match."); return; }
 
-        // Letter check
-        if (!/[A-Za-z]/.test(password)) {
-          showError("Password must include at least one letter.");
-          return;
-        }
-
-        // Number check
-        if (!/\d/.test(password)) {
-          showError("Password must include at least one number.");
-          return;
-        }
-
-        // Optional: allow special characters (recommended)
-        if (
-          !/^[A-Za-z\d!@#$%^&*()_+=\-{}[\]:;"'<>,.?/\\|`~]+$/.test(password)
-        ) {
-          showError("Password contains unsupported characters.");
-          return;
-        }
-
-        // Match check
-        if (password !== confirm) {
-          showError("Passwords do not match.");
-          return;
-        }
-
-        // Lock UI
+        // --- BACKEND CALL ---
+        const originalText = submitBtn.textContent;
         submitBtn.disabled = true;
-        submitBtn.textContent = "Signing up...";
+        submitBtn.textContent = "Creating Account...";
 
         try {
-          // Placeholder for API
-          await fakeSignupRequest({ email, password });
+          // IMPORTANT: Replace with your actual Vercel URL
+          const response = await fetch('https://scriptorium-backend-six.vercel.app/api/user/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userName: generatedUserName, // Sending the extracted name
+              email: email,
+              password: password,
+              password2: confirm 
+            })
+          });
 
-          showSuccess("Account created! You can now log in.");
+          const data = await response.json();
 
-          form.reset();
+          if (response.ok) {
+            showSuccess("Account created! Redirecting to login...");
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 1500);
+          } else {
+            // If John.Doe@gmail and John.Doe@yahoo try to sign up, 
+            // the second one might fail because the username is taken.
+            // This handles that error:
+            showError(data.message || "Signup failed.");
+          }
+
         } catch (err) {
-          showError("Something went wrong. Please try again.");
+          console.error(err);
+          showError("Could not connect to the server.");
         } finally {
           submitBtn.disabled = false;
-          submitBtn.textContent = "Sign up";
+          submitBtn.textContent = originalText;
         }
       });
 
       function showError(text) {
         message.textContent = text;
-        message.className =
-          "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-red-500/10 border-red-400 text-red-300";
+        message.className = "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-red-500/10 border-red-400 text-red-300";
+        message.classList.remove("hidden");
       }
 
       function showSuccess(text) {
         message.textContent = text;
-        message.className =
-          "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-green-500/10 border-green-400 text-green-300";
-      }
-
-      function fakeSignupRequest(data) {
-        return new Promise((resolve) => {
-          setTimeout(resolve, 800);
-        });
+        message.className = "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-green-500/10 border-green-400 text-green-300";
+        message.classList.remove("hidden");
       }
     </script>
   </body>

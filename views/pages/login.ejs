@@ -1,112 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - Scriptorium</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;600;700&family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="/js/tailwind.config.js"></script>
-</head>
-<body class="bg-scriptorium-dark min-h-screen relative overflow-x-hidden font-outfit text-white">
-
+  </head>
+  <body
+    class="bg-scriptorium-dark min-h-screen relative overflow-x-hidden font-outfit text-white"
+  >
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]" 
-             style="left: 177px; top: -210px;"></div>
-        <div class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]" 
-             style="left: 175px; top: 639px;"></div>
-        <div class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]" 
-             style="right: -193px; top: 294px;"></div>
-        <div class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]" 
-             style="right: -213px; top: 1375px;"></div>
-        <div class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]" 
-             style="left: -190px; top: 1728px;"></div>
+      <div
+        class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]"
+        style="left: 177px; top: -210px"
+      ></div>
+      <div
+        class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]"
+        style="left: 175px; top: 639px"
+      ></div>
+      <div
+        class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]"
+        style="right: -193px; top: 294px"
+      ></div>
+      <div
+        class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]"
+        style="right: -213px; top: 1375px"
+      ></div>
+      <div
+        class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]"
+        style="left: -190px; top: 1728px"
+      ></div>
     </div>
 
     <%- include('../partials/navbar') %>
 
     <div class="relative z-10 pt-20 pb-12">
-        <div class="container mx-auto px-6 lg:px-20">
-            <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-                
-                <div class="flex items-center justify-center order-2 lg:order-1">
-                    <img src="https://api.builder.io/api/v1/image/assets/TEMP/5f7135437cc1a5b8f6a91703e8ede3bd5a760ff9?width=1130" 
-                         alt="Woman working at desk with books" 
-                         class="w-full max-w-[565px] h-auto drop-shadow-2xl">
-                </div>
+      <div class="container mx-auto px-6 lg:px-20">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <div class="flex items-center justify-center order-2 lg:order-1">
+            <img
+              src="https://api.builder.io/api/v1/image/assets/TEMP/5f7135437cc1a5b8f6a91703e8ede3bd5a760ff9?width=1130"
+              alt="Woman working at desk with books"
+              class="w-full max-w-[565px] h-auto drop-shadow-2xl"
+            />
+          </div>
 
-                <div class="max-w-[513px] mx-auto lg:mx-0 w-full order-1 lg:order-2">
-                    <h1 class="font-dancing text-[48px] md:text-[64px] font-bold leading-[110%] capitalize mb-2">
-                        Welcome Back!
-                    </h1>
-                    
-                    <div class="mb-8">
-                        <a href="/signup" class="font-roboto text-white text-[24px] md:text-[30px] font-bold underline hover:text-scriptorium-green transition-colors">
-                            Create an account
-                        </a>
-                        <span class="font-roboto text-white text-[24px] md:text-[30px] font-normal"> or log in</span>
-                    </div>
+          <div class="max-w-[513px] mx-auto lg:mx-0 w-full order-1 lg:order-2">
+            <h1
+              class="font-dancing text-[48px] md:text-[64px] font-bold leading-[110%] capitalize mb-2"
+            >
+              Welcome Back!
+            </h1>
 
-                    <form id="loginForm" class="space-y-4">
-                        <div class="space-y-1">
-                            <label for="email" class="font-roboto text-white text-[18px] font-bold leading-[27.5px]">Email</label>
-                            <input type="email" id="email" required
-                                   class="w-full h-[56px] px-6 rounded-[50px] border border-[#118AB2] bg-transparent text-white placeholder-white/60 focus:outline-none focus:border-[#06D6A0] transition-colors">
-                        </div>
-
-                        <div class="space-y-1">
-                            <label for="password" class="font-roboto text-white text-[18px] font-bold leading-[27.5px]">Password</label>
-                            <input type="password" id="password" required
-                                   class="w-full h-[56px] px-6 rounded-[50px] border border-[#118AB2] bg-transparent text-white placeholder-white/60 focus:outline-none focus:border-[#06D6A0] transition-colors">
-                            
-                            <div class="flex justify-end pt-2">
-                                <a href="/forgot-password" class="font-roboto text-white text-[18px] font-bold leading-[27.5px] underline hover:text-scriptorium-green">
-                                    Forgot password?
-                                </a>
-                            </div>
-                        </div>
-
-                        <button type="submit" 
-                                class="w-full h-[56px] rounded-[50px] bg-[#009A72] text-white font-outfit text-[20px] font-semibold leading-[27.5px] tracking-[2px] uppercase hover:bg-[#008060] transition-colors shadow-lg mt-4">
-                            Login
-                        </button>
-                    </form>
-
-                    <div class="mt-8 space-y-4">
-                        <button type="button" class="w-full h-[56px] rounded-[50px] border border-[#118AB2] bg-black/50 text-white font-outfit text-[20px] font-semibold leading-[27.5px] tracking-[2px] uppercase hover:bg-black/70 transition-colors flex items-center justify-center gap-4">
-                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8">
-                                <path d="M36.3425 16.7358H35V16.6666H20V23.3333H29.4192C28.045 27.2141 24.3525 29.9999 20 29.9999C14.4775 29.9999 10 25.5224 10 19.9999C10 14.4774 14.4775 9.99992 20 9.99992C22.5492 9.99992 24.8683 10.9616 26.6342 12.5324L31.3483 7.81825C28.3717 5.04409 24.39 3.33325 20 3.33325C10.7958 3.33325 3.33334 10.7958 3.33334 19.9999C3.33334 29.2041 10.7958 36.6666 20 36.6666C29.2042 36.6666 36.6667 29.2041 36.6667 19.9999C36.6667 18.8824 36.5517 17.7916 36.3425 16.7358Z" fill="#FFC107"/>
-                                <path d="M5.255 12.2424L10.7308 16.2583C12.2125 12.5899 15.8008 9.99992 20 9.99992C22.5492 9.99992 24.8683 10.9616 26.6342 12.5324L31.3483 7.81825C28.3717 5.04409 24.39 3.33325 20 3.33325C13.5983 3.33325 8.04666 6.94742 5.255 12.2424Z" fill="#FF3D00"/>
-                                <path d="M20 36.6668C24.305 36.6668 28.2167 35.0192 31.1742 32.3401L26.0158 27.9751C24.2866 29.291 22.173 30.0024 20 30.0001C15.665 30.0001 11.9842 27.2359 10.5975 23.3784L5.1625 27.5659C7.92083 32.9634 13.5225 36.6668 20 36.6668Z" fill="#4CAF50"/>
-                                <path d="M36.3425 16.7359H35V16.6667H20V23.3334H29.4192C28.7618 25.1804 27.5778 26.7944 26.0133 27.9759L26.0158 27.9742L31.1742 32.3392C30.8092 32.6709 36.6667 28.3334 36.6667 20.0001C36.6667 18.8826 36.5517 17.7917 36.3425 16.7359Z" fill="#1976D2"/>
-                            </svg>
-                            Log in with Google
-                        </button>
-
-                        <button type="button" class="w-full h-[56px] rounded-[50px] border border-[#118AB2] bg-black/50 text-white font-outfit text-[20px] font-semibold leading-[27.5px] tracking-[2px] uppercase hover:bg-black/70 transition-colors flex items-center justify-center gap-4">
-                            <svg width="39" height="39" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8">
-                                <path d="M39 19.5C39 8.73052 30.2695 0 19.5 0C8.73052 0 0 8.73052 0 19.5C0 29.2329 7.13091 37.3003 16.4531 38.7631V25.1367H11.502V19.5H16.4531V15.2039C16.4531 10.3167 19.3644 7.61719 23.8186 7.61719C25.9521 7.61719 28.1836 7.99805 28.1836 7.99805V12.7969H25.7248C23.3023 12.7969 22.5469 14.3001 22.5469 15.8422V19.5H27.9551L27.0905 25.1367H22.5469V38.7631C31.8691 37.3003 39 29.2331 39 19.5Z" fill="#1877F2"/>
-                                <path d="M27.0905 25.1367L27.9551 19.5H22.5469V15.8422C22.5469 14.2999 23.3023 12.7969 25.7248 12.7969H28.1836V7.99805C28.1836 7.99805 25.9521 7.61719 23.8185 7.61719C19.3644 7.61719 16.4531 10.3167 16.4531 15.2039V19.5H11.502V25.1367H16.4531V38.7631C17.4611 38.921 18.4798 39.0002 19.5 39C20.5202 39.0002 21.5389 38.921 22.5469 38.7631V25.1367H27.0905Z" fill="white"/>
-                            </svg>
-                            Log in with Facebook
-                        </button>
-                    </div>
-                </div>
+            <div class="mb-8">
+              <a
+                href="/signup"
+                class="font-roboto text-white text-[24px] md:text-[30px] font-bold underline hover:text-scriptorium-green transition-colors"
+              >
+                Create an account
+              </a>
+              <span
+                class="font-roboto text-white text-[24px] md:text-[30px] font-normal"
+              >
+                or log in</span
+              >
             </div>
+
+            <form id="loginForm" class="space-y-4">
+              <div class="space-y-1">
+                <label
+                  for="email"
+                  class="font-roboto text-white text-[18px] font-bold leading-[27.5px]"
+                  >Email</label
+                >
+                <input
+                  type="email"
+                  id="email"
+                  required
+                  class="w-full h-[56px] px-6 rounded-[50px] border border-[#118AB2] bg-transparent text-white placeholder-white/60 focus:outline-none focus:border-[#06D6A0] transition-colors"
+                />
+              </div>
+
+              <div class="space-y-1">
+                <label
+                  for="password"
+                  class="font-roboto text-white text-[18px] font-bold leading-[27.5px]"
+                  >Password</label
+                >
+                <input
+                  type="password"
+                  id="password"
+                  required
+                  class="w-full h-[56px] px-6 rounded-[50px] border border-[#118AB2] bg-transparent text-white placeholder-white/60 focus:outline-none focus:border-[#06D6A0] transition-colors"
+                />
+
+                <div class="flex justify-end pt-2">
+                  <a
+                    href="/forgot-password"
+                    class="font-roboto text-white text-[18px] font-bold leading-[27.5px] underline hover:text-scriptorium-green"
+                  >
+                    Forgot password?
+                  </a>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                class="w-full h-[56px] rounded-[50px] bg-[#009A72] text-white font-outfit text-[20px] font-semibold leading-[27.5px] tracking-[2px] uppercase hover:bg-[#008060] transition-colors shadow-lg mt-4"
+              >
+                Login
+              </button>
+            </form>
+
+            <div class="mt-8 space-y-4">
+              <button
+                type="button"
+                class="w-full h-[56px] rounded-[50px] border border-[#118AB2] bg-black/50 text-white font-outfit text-[20px] font-semibold leading-[27.5px] tracking-[2px] uppercase hover:bg-black/70 transition-colors flex items-center justify-center gap-4"
+              >
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-8 h-8"
+                >
+                  <path
+                    d="M36.3425 16.7358H35V16.6666H20V23.3333H29.4192C28.045 27.2141 24.3525 29.9999 20 29.9999C14.4775 29.9999 10 25.5224 10 19.9999C10 14.4774 14.4775 9.99992 20 9.99992C22.5492 9.99992 24.8683 10.9616 26.6342 12.5324L31.3483 7.81825C28.3717 5.04409 24.39 3.33325 20 3.33325C10.7958 3.33325 3.33334 10.7958 3.33334 19.9999C3.33334 29.2041 10.7958 36.6666 20 36.6666C29.2042 36.6666 36.6667 29.2041 36.6667 19.9999C36.6667 18.8824 36.5517 17.7916 36.3425 16.7358Z"
+                    fill="#FFC107"
+                  />
+                  <path
+                    d="M5.255 12.2424L10.7308 16.2583C12.2125 12.5899 15.8008 9.99992 20 9.99992C22.5492 9.99992 24.8683 10.9616 26.6342 12.5324L31.3483 7.81825C28.3717 5.04409 24.39 3.33325 20 3.33325C13.5983 3.33325 8.04666 6.94742 5.255 12.2424Z"
+                    fill="#FF3D00"
+                  />
+                  <path
+                    d="M20 36.6668C24.305 36.6668 28.2167 35.0192 31.1742 32.3401L26.0158 27.9751C24.2866 29.291 22.173 30.0024 20 30.0001C15.665 30.0001 11.9842 27.2359 10.5975 23.3784L5.1625 27.5659C7.92083 32.9634 13.5225 36.6668 20 36.6668Z"
+                    fill="#4CAF50"
+                  />
+                  <path
+                    d="M36.3425 16.7359H35V16.6667H20V23.3334H29.4192C28.7618 25.1804 27.5778 26.7944 26.0133 27.9759L26.0158 27.9742L31.1742 32.3392C30.8092 32.6709 36.6667 28.3334 36.6667 20.0001C36.6667 18.8826 36.5517 17.7917 36.3425 16.7359Z"
+                    fill="#1976D2"
+                  />
+                </svg>
+                Log in with Google
+              </button>
+
+              <button
+                type="button"
+                class="w-full h-[56px] rounded-[50px] border border-[#118AB2] bg-black/50 text-white font-outfit text-[20px] font-semibold leading-[27.5px] tracking-[2px] uppercase hover:bg-black/70 transition-colors flex items-center justify-center gap-4"
+              >
+                <svg
+                  width="39"
+                  height="39"
+                  viewBox="0 0 39 39"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-8 h-8"
+                >
+                  <path
+                    d="M39 19.5C39 8.73052 30.2695 0 19.5 0C8.73052 0 0 8.73052 0 19.5C0 29.2329 7.13091 37.3003 16.4531 38.7631V25.1367H11.502V19.5H16.4531V15.2039C16.4531 10.3167 19.3644 7.61719 23.8186 7.61719C25.9521 7.61719 28.1836 7.99805 28.1836 7.99805V12.7969H25.7248C23.3023 12.7969 22.5469 14.3001 22.5469 15.8422V19.5H27.9551L27.0905 25.1367H22.5469V38.7631C31.8691 37.3003 39 29.2331 39 19.5Z"
+                    fill="#1877F2"
+                  />
+                  <path
+                    d="M27.0905 25.1367L27.9551 19.5H22.5469V15.8422C22.5469 14.2999 23.3023 12.7969 25.7248 12.7969H28.1836V7.99805C28.1836 7.99805 25.9521 7.61719 23.8185 7.61719C19.3644 7.61719 16.4531 10.3167 16.4531 15.2039V19.5H11.502V25.1367H16.4531V38.7631C17.4611 38.921 18.4798 39.0002 19.5 39C20.5202 39.0002 21.5389 38.921 22.5469 38.7631V25.1367H27.0905Z"
+                    fill="white"
+                  />
+                </svg>
+                Log in with Facebook
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            console.log("Login attempt for:", email);
-            alert("Login logic coming soon! (AWS Cognito)");
+      const loginForm = document.getElementById("loginForm");
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+
+      // Message box
+      const message = document.createElement("div");
+      message.id = "loginMessage";
+      message.className =
+        "hidden mt-3 px-5 py-4 rounded-2xl border text-lg font-medium transition-all";
+      loginForm.prepend(message);
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      [emailInput, passwordInput].forEach((input) => {
+        input.addEventListener("input", () => {
+          message.classList.add("hidden");
         });
+      });
+
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        message.classList.add("hidden");
+        message.classList.remove("text-green-400");
+        message.classList.add("text-red-400");
+
+        const email = emailInput.value.trim().toLowerCase();
+        const password = passwordInput.value;
+
+        // Email check
+        if (!emailRegex.test(email)) {
+          showError("Please enter a valid email address.");
+          return;
+        }
+
+        // Password granular check
+        if (password.length < 8) {
+          showError("Password must be at least 8 characters long.");
+          return;
+        }
+        if (!/[A-Za-z]/.test(password)) {
+          showError("Password must include at least one letter.");
+          return;
+        }
+        if (!/\d/.test(password)) {
+          showError("Password must include at least one number.");
+          return;
+        }
+
+        // Placeholder for actual login logic
+        showSuccess("Login successful! Redirecting...");
+        console.log("Login attempt for:", email);
+      });
+
+      function showError(text) {
+        message.textContent = text;
+        message.className =
+          "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-red-500/10 border-red-400 text-red-300";
+        message.classList.remove("hidden");
+      }
+
+      function showSuccess(text) {
+        message.textContent = text;
+        message.className =
+          "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-green-500/10 border-green-400 text-green-300";
+        message.classList.remove("hidden");
+      }
     </script>
-</body>
+  </body>
 </html>

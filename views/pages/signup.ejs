@@ -1,116 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign Up - Scriptorium</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;600;700&family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="/js/tailwind.config.js"></script>
-</head>
-<body class="bg-scriptorium-dark min-h-screen relative overflow-x-hidden font-outfit text-white">
-
+  </head>
+  <body
+    class="bg-scriptorium-dark min-h-screen relative overflow-x-hidden font-outfit text-white"
+  >
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]" 
-             style="left: 177px; top: -210px;"></div>
-        <div class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]" 
-             style="left: 175px; top: 639px;"></div>
-        <div class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]" 
-             style="right: -193px; top: 294px;"></div>
-        <div class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]" 
-             style="right: -213px; top: 1375px;"></div>
-        <div class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]" 
-             style="left: -190px; top: 1728px;"></div>
+      <div
+        class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]"
+        style="left: 177px; top: -210px"
+      ></div>
+      <div
+        class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]"
+        style="left: 175px; top: 639px"
+      ></div>
+      <div
+        class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]"
+        style="right: -193px; top: 294px"
+      ></div>
+      <div
+        class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]"
+        style="right: -213px; top: 1375px"
+      ></div>
+      <div
+        class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]"
+        style="left: -190px; top: 1728px"
+      ></div>
     </div>
 
     <%- include('../partials/navbar') %>
 
     <div class="relative z-10 pt-20 pb-4">
-        <div class="container mx-auto px-6 lg:px-20">
-            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-                
-                <div class="max-w-xl">
-                    <h1 class="font-dancing text-[64px] font-bold text-white capitalize leading-[110%] mb-2">
-                        Welcome!
-                    </h1>
-                    
-                    <p class="font-roboto text-2xl sm:text-[30px] text-white mb-4">
-                        Create an account or 
-                        <a href="/login" class="font-bold underline decoration-white hover:text-scriptorium-green transition-colors">
-                            log in
-                        </a>
-                    </p>
+      <div class="container mx-auto px-6 lg:px-20">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div class="max-w-xl">
+            <h1
+              class="font-dancing text-[64px] font-bold text-white capitalize leading-[110%] mb-2"
+            >
+              Welcome!
+            </h1>
 
-                    <form id="signupForm" class="space-y-2">
-                        <div>
-                            <label class="font-roboto text-lg font-bold text-white block mb-1">Email</label>
-                            <input type="email" id="email" required
-                                   class="w-full h-14 px-6 bg-transparent border border-[#118AB2] rounded-[50px] text-white placeholder-white/50 focus:outline-none focus:border-[#06D6A0] transition-colors shadow-sm">
-                        </div>
+            <p class="font-roboto text-2xl sm:text-[30px] text-white mb-4">
+              Create an account or
+              <a
+                href="/login"
+                class="font-bold underline decoration-white hover:text-scriptorium-green transition-colors"
+              >
+                log in
+              </a>
+            </p>
 
-                        <div>
-                            <label class="font-roboto text-lg font-bold text-white block mb-1">Password</label>
-                            <input type="password" id="password" required
-                                   class="w-full h-14 px-6 bg-transparent border border-[#118AB2] rounded-[50px] text-white placeholder-white/50 focus:outline-none focus:border-[#06D6A0] transition-colors shadow-sm">
-                        </div>
+            <form id="signupForm" class="space-y-2">
+              <div>
+                <label
+                  class="font-roboto text-lg font-bold text-white block mb-1"
+                  >Email</label
+                >
+                <input
+                  type="email"
+                  id="email"
+                  required
+                  class="w-full h-14 px-6 bg-transparent border border-[#118AB2] rounded-[50px] text-white placeholder-white/50 focus:outline-none focus:border-[#06D6A0] transition-colors shadow-sm"
+                />
+              </div>
 
-                        <div>
-                            <label class="font-roboto text-lg font-bold text-white block mb-1">Confirm Password</label>
-                            <input type="password" id="confirmPassword" required
-                                   class="w-full h-14 px-6 bg-transparent border border-[#118AB2] rounded-[50px] text-white placeholder-white/50 focus:outline-none focus:border-[#06D6A0] transition-colors shadow-sm">
-                        </div>
+              <div>
+                <label
+                  class="font-roboto text-lg font-bold text-white block mb-1"
+                  >Password</label
+                >
+                <input
+                  type="password"
+                  id="password"
+                  required
+                  class="w-full h-14 px-6 bg-transparent border border-[#118AB2] rounded-[50px] text-white placeholder-white/50 focus:outline-none focus:border-[#06D6A0] transition-colors shadow-sm"
+                />
+              </div>
 
-                        <button type="submit" 
-                                class="w-full h-14 bg-[#06D6A0] hover:bg-[#00b885] transition-colors rounded-[50px] font-outfit text-xl font-semibold text-white uppercase tracking-[2px] mt-4 shadow-lg transform hover:scale-[1.02]">
-                            Sign up
-                        </button>
+              <div>
+                <label
+                  class="font-roboto text-lg font-bold text-white block mb-1"
+                  >Confirm Password</label
+                >
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  required
+                  class="w-full h-14 px-6 bg-transparent border border-[#118AB2] rounded-[50px] text-white placeholder-white/50 focus:outline-none focus:border-[#06D6A0] transition-colors shadow-sm"
+                />
+              </div>
 
-                        <button type="button" class="w-full h-14 bg-black/50 hover:bg-black/60 transition-colors border border-[#118AB2] rounded-[50px] font-outfit text-xl font-semibold text-white uppercase tracking-[2px] flex items-center justify-center gap-4 relative mt-2">
-                            <svg width="24" height="24" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M36.3425 16.7358H35V16.6666H20V23.3333H29.4191C28.045 27.2141 24.3525 29.9999 20 29.9999C14.4775 29.9999 9.99998 25.5224 9.99998 19.9999C9.99998 14.4774 14.4775 9.99992 20 9.99992C22.5491 9.99992 24.8683 10.9616 26.6341 12.5324L31.3483 7.81825C28.3716 5.04409 24.39 3.33325 20 3.33325C10.7958 3.33325 3.33331 10.7958 3.33331 19.9999C3.33331 29.2041 10.7958 36.6666 20 36.6666C29.2041 36.6666 36.6666 29.2041 36.6666 19.9999C36.6666 18.8824 36.5516 17.7916 36.3425 16.7358Z" fill="#FFC107"/>
-                                <path d="M5.255 12.2424L10.7308 16.2583C12.2125 12.5899 15.8008 9.99992 20 9.99992C22.5492 9.99992 24.8683 10.9616 26.6342 12.5324L31.3483 7.81825C28.3717 5.04409 24.39 3.33325 20 3.33325C13.5983 3.33325 8.04667 6.94742 5.255 12.2424Z" fill="#FF3D00"/>
-                                <path d="M20 36.6668C24.305 36.6668 28.2166 35.0192 31.1741 32.3401L26.0158 27.9751C24.2866 29.291 22.173 30.0024 20 30.0001C15.665 30.0001 11.9841 27.2359 10.5975 23.3784L5.16248 27.5659C7.92081 32.9634 13.5225 36.6668 20 36.6668Z" fill="#4CAF50"/>
-                                <path d="M36.3425 16.7359H35V16.6667H20V23.3334H29.4192C28.7618 25.1804 27.5778 26.7944 26.0133 27.9759L26.0158 27.9742L31.1742 32.3392C30.8092 32.6709 36.6667 28.3334 36.6667 20.0001C36.6667 18.8826 36.5517 17.7917 36.3425 16.7359Z" fill="#1976D2"/>
-                            </svg>
-                            Sign up with Google
-                        </button>
+              <div
+                id="formMessage"
+                class="hidden mt-3 px-5 py-4 rounded-2xl border text-lg font-medium transition-all"
+              ></div>
 
-                        <button type="button" class="w-full h-14 bg-black/50 hover:bg-black/60 transition-colors border border-[#118AB2] rounded-[50px] font-outfit text-xl font-semibold text-white uppercase tracking-[2px] flex items-center justify-center gap-4 relative mt-2">
-                            <svg width="24" height="24" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M39 19.5C39 8.73052 30.2695 0 19.5 0C8.73052 0 0 8.73052 0 19.5C0 29.2329 7.13091 37.3003 16.4531 38.7631V25.1367H11.502V19.5H16.4531V15.2039C16.4531 10.3167 19.3644 7.61719 23.8186 7.61719C25.9521 7.61719 28.1836 7.99805 28.1836 7.99805V12.7969H25.7248C23.3023 12.7969 22.5469 14.3001 22.5469 15.8422V19.5H27.9551L27.0905 25.1367H22.5469V38.7631C31.8691 37.3003 39 29.2331 39 19.5Z" fill="#1877F2"/>
-                                <path d="M27.0905 25.1367L27.9551 19.5H22.5469V15.8422C22.5469 14.2999 23.3023 12.7969 25.7248 12.7969H28.1836V7.99805C28.1836 7.99805 25.9521 7.61719 23.8185 7.61719C19.3644 7.61719 16.4531 10.3167 16.4531 15.2039V19.5H11.502V25.1367H16.4531V38.7631C17.4611 38.921 18.4798 39.0002 19.5 39C20.5202 39.0002 21.5389 38.921 22.5469 38.7631V25.1367H27.0905Z" fill="white"/>
-                            </svg>
-                            Sign up with Facebook
-                        </button>
-                    </form>
-                </div>
+              <button
+                type="submit"
+                id="submitBtn"
+                class="w-full h-14 bg-[#06D6A0] hover:bg-[#00b885] transition-colors rounded-[50px] font-outfit text-xl font-semibold text-white uppercase tracking-[2px] mt-4 shadow-lg transform hover:scale-[1.02]"
+              >
+                Sign up
+              </button>
 
-                <div class="hidden lg:flex items-center justify-center">
-                    <img src="/assets/netflix.png" 
-                         alt="Hands holding a tablet with Netflix" 
-                         class="w-full max-w-[615px] h-auto drop-shadow-2xl">
-                </div>
-            </div>
+              <button
+                type="button"
+                class="w-full h-14 bg-black/50 hover:bg-black/60 transition-colors border border-[#118AB2] rounded-[50px] font-outfit text-xl font-semibold text-white uppercase tracking-[2px] flex items-center justify-center gap-4 relative mt-2"
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M36.3425 16.7358H35V16.6666H20V23.3333H29.4191C28.045 27.2141 24.3525 29.9999 20 29.9999C14.4775 29.9999 9.99998 25.5224 9.99998 19.9999C9.99998 14.4774 14.4775 9.99992 20 9.99992C22.5491 9.99992 24.8683 10.9616 26.6341 12.5324L31.3483 7.81825C28.3716 5.04409 24.39 3.33325 20 3.33325C10.7958 3.33325 3.33331 10.7958 3.33331 19.9999C3.33331 29.2041 10.7958 36.6666 20 36.6666C29.2041 36.6666 36.6666 29.2041 36.6666 19.9999C36.6666 18.8824 36.5516 17.7916 36.3425 16.7358Z"
+                    fill="#FFC107"
+                  />
+                  <path
+                    d="M5.255 12.2424L10.7308 16.2583C12.2125 12.5899 15.8008 9.99992 20 9.99992C22.5492 9.99992 24.8683 10.9616 26.6342 12.5324L31.3483 7.81825C28.3717 5.04409 24.39 3.33325 20 3.33325C13.5983 3.33325 8.04667 6.94742 5.255 12.2424Z"
+                    fill="#FF3D00"
+                  />
+                  <path
+                    d="M20 36.6668C24.305 36.6668 28.2166 35.0192 31.1741 32.3401L26.0158 27.9751C24.2866 29.291 22.173 30.0024 20 30.0001C15.665 30.0001 11.9841 27.2359 10.5975 23.3784L5.16248 27.5659C7.92081 32.9634 13.5225 36.6668 20 36.6668Z"
+                    fill="#4CAF50"
+                  />
+                  <path
+                    d="M36.3425 16.7359H35V16.6667H20V23.3334H29.4192C28.7618 25.1804 27.5778 26.7944 26.0133 27.9759L26.0158 27.9742L31.1742 32.3392C30.8092 32.6709 36.6667 28.3334 36.6667 20.0001C36.6667 18.8826 36.5517 17.7917 36.3425 16.7359Z"
+                    fill="#1976D2"
+                  />
+                </svg>
+                Sign up with Google
+              </button>
+
+              <button
+                type="button"
+                class="w-full h-14 bg-black/50 hover:bg-black/60 transition-colors border border-[#118AB2] rounded-[50px] font-outfit text-xl font-semibold text-white uppercase tracking-[2px] flex items-center justify-center gap-4 relative mt-2"
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 39 39"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M39 19.5C39 8.73052 30.2695 0 19.5 0C8.73052 0 0 8.73052 0 19.5C0 29.2329 7.13091 37.3003 16.4531 38.7631V25.1367H11.502V19.5H16.4531V15.2039C16.4531 10.3167 19.3644 7.61719 23.8186 7.61719C25.9521 7.61719 28.1836 7.99805 28.1836 7.99805V12.7969H25.7248C23.3023 12.7969 22.5469 14.3001 22.5469 15.8422V19.5H27.9551L27.0905 25.1367H22.5469V38.7631C31.8691 37.3003 39 29.2331 39 19.5Z"
+                    fill="#1877F2"
+                  />
+                  <path
+                    d="M27.0905 25.1367L27.9551 19.5H22.5469V15.8422C22.5469 14.2999 23.3023 12.7969 25.7248 12.7969H28.1836V7.99805C28.1836 7.99805 25.9521 7.61719 23.8185 7.61719C19.3644 7.61719 16.4531 10.3167 16.4531 15.2039V19.5H11.502V25.1367H16.4531V38.7631C17.4611 38.921 18.4798 39.0002 19.5 39C20.5202 39.0002 21.5389 38.921 22.5469 38.7631V25.1367H27.0905Z"
+                    fill="white"
+                  />
+                </svg>
+                Sign up with Facebook
+              </button>
+            </form>
+          </div>
+
+          <div class="hidden lg:flex items-center justify-center">
+            <img
+              src="/assets/netflix.png"
+              alt="Hands holding a tablet with Netflix"
+              class="w-full max-w-[615px] h-auto drop-shadow-2xl"
+            />
+          </div>
         </div>
+      </div>
     </div>
 
     <script>
-        document.getElementById('signupForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            const confirm = document.getElementById('confirmPassword').value;
+      const form = document.getElementById("signupForm");
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const confirmInput = document.getElementById("confirmPassword");
+      const message = document.getElementById("formMessage");
+      const submitBtn = document.getElementById("submitBtn");
 
-            if(pass !== confirm) {
-                alert("Passwords do not match!");
-                return;
-            }
-
-            console.log("Sign up attempt for:", email);
-            alert("Sign up logic coming soon!");
+      [emailInput, passwordInput, confirmInput].forEach((input) => {
+        input.addEventListener("input", () => {
+          message.classList.add("hidden");
         });
+      });
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        message.classList.add("hidden");
+        message.classList.remove("text-green-400");
+        message.classList.add("text-red-400");
+
+        const email = emailInput.value.trim().toLowerCase();
+        const password = passwordInput.value;
+        const confirm = confirmInput.value;
+
+        // Email check
+        if (!emailRegex.test(email)) {
+          showError("Please enter a valid email address.");
+          return;
+        }
+
+        // Password checks
+        // Length check
+        if (password.length < 8) {
+          showError("Password must be at least 8 characters long.");
+          return;
+        }
+
+        // Letter check
+        if (!/[A-Za-z]/.test(password)) {
+          showError("Password must include at least one letter.");
+          return;
+        }
+
+        // Number check
+        if (!/\d/.test(password)) {
+          showError("Password must include at least one number.");
+          return;
+        }
+
+        // Optional: allow special characters (recommended)
+        if (
+          !/^[A-Za-z\d!@#$%^&*()_+=\-{}[\]:;"'<>,.?/\\|`~]+$/.test(password)
+        ) {
+          showError("Password contains unsupported characters.");
+          return;
+        }
+
+        // Match check
+        if (password !== confirm) {
+          showError("Passwords do not match.");
+          return;
+        }
+
+        // Lock UI
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Signing up...";
+
+        try {
+          // Placeholder for API
+          await fakeSignupRequest({ email, password });
+
+          showSuccess("Account created! You can now log in.");
+
+          form.reset();
+        } catch (err) {
+          showError("Something went wrong. Please try again.");
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Sign up";
+        }
+      });
+
+      function showError(text) {
+        message.textContent = text;
+        message.className =
+          "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-red-500/10 border-red-400 text-red-300";
+      }
+
+      function showSuccess(text) {
+        message.textContent = text;
+        message.className =
+          "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-green-500/10 border-green-400 text-green-300";
+      }
+
+      function fakeSignupRequest(data) {
+        return new Promise((resolve) => {
+          setTimeout(resolve, 800);
+        });
+      }
     </script>
-</body>
+  </body>
 </html>

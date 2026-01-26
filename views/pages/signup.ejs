@@ -212,9 +212,49 @@
         const generatedUserName = email.split('@')[0]; 
 
         // --- VALIDATION ---
-        if (!emailRegex.test(email)) { showError("Please enter a valid email address."); return; }
-        if (password.length < 8) { showError("Password must be at least 8 characters long."); return; }
-        if (password !== confirm) { showError("Passwords do not match."); return; }
+        
+        // 1. Email Check
+        if (!emailRegex.test(email)) { 
+            showError("Please enter a valid email address."); 
+            return; 
+        }
+
+        // 2. Password Length
+        if (password.length < 8) { 
+            showError("Password must be at least 8 characters long."); 
+            return; 
+        }
+
+        // 3. Password Complexity Checks
+        // Check for at least one Uppercase Letter
+        if (!/[A-Z]/.test(password)) {
+            showError("Password must contain at least one uppercase letter.");
+            return;
+        }
+
+        // Check for at least one Lowercase Letter
+        if (!/[a-z]/.test(password)) {
+            showError("Password must contain at least one lowercase letter.");
+            return;
+        }
+
+        // Check for at least one Digit (0-9)
+        if (!/\d/.test(password)) {
+            showError("Password must contain at least one number.");
+            return;
+        }
+
+        // Special character
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+            showError("Password must include at least one special character (!@#$...).");
+            return;
+        }
+
+        // 4. Confirm Password Match
+        if (password !== confirm) { 
+            showError("Passwords do not match."); 
+            return; 
+        }
 
         // --- BACKEND CALL ---
         const originalText = submitBtn.textContent;

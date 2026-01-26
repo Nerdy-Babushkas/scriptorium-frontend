@@ -227,8 +227,12 @@
           showError("Password must be at least 8 characters long.");
           return;
         }
-        if (!/[A-Za-z]/.test(password)) {
-          showError("Password must include at least one letter.");
+        if (!/[A-Z]/.test(password)) {
+          showError("Password must include at least one uppercase letter.");
+          return;
+        }
+        if (!/[a-z]/.test(password)) {
+          showError("Password must include at least one lowercase letter.");
           return;
         }
         if (!/\d/.test(password)) {
@@ -236,7 +240,40 @@
           return;
         }
 
-        // --- 2. NEW BACKEND CONNECTION LOGIC ---
+        // --- VALIDATION ---
+        
+        // Email Check
+        if (!emailRegex.test(email)) {
+          showError("Please enter a valid email address.");
+          return;
+        }
+
+        // Password Length
+        if (password.length < 8) {
+          showError("Password must be at least 8 characters long.");
+          return;
+        }
+
+        // Password Complexity Checks
+        if (!/[A-Z]/.test(password)) {
+          showError("Password must include at least one uppercase letter.");
+          return;
+        }
+        if (!/[a-z]/.test(password)) {
+          showError("Password must include at least one lowercase letter.");
+          return;
+        }
+        if (!/\d/.test(password)) {
+          showError("Password must include at least one number.");
+          return;
+        }
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+          showError("Password must include at least one special character (!@#$...).");
+          return;
+        }
+
+
+        // --- 2. BACKEND CONNECTION LOGIC ---
 
         // UI Loading State (disabled button so they don't click twice)
         const submitBtn = loginForm.querySelector('button[type="submit"]');

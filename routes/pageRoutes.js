@@ -26,11 +26,12 @@ const requireAuth = (req, res, next) => {
 
 router.get("/", (req, res) => {
   //done
+
   res.render("pages/landing");
 });
 
 router.get("/login", (req, res) => {
-  //not done
+  if (req.cookies.token) return res.redirect("/room");
   res.render("pages/login");
 });
 

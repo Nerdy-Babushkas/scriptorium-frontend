@@ -89,6 +89,20 @@ router.get("/ai-recommendations", requireAuth, (req, res) => {
   res.render("pages/placeholder", { pageName: "AI Recommendations" });
 });
 
+router.get("/currently-reading", requireAuth, (req, res) => {
+  res.render("pages/placeholder", { pageName: "Currently Reading" });
+});
+
+router.get("/add-books", requireAuth, (req, res) => {
+  res.render("pages/placeholder", { pageName: "Add Books" });
+});
+
+router.get("/add-reflection", requireAuth, (req, res) => {
+  res.render("pages/placeholder", { pageName: "Add Reflection" });
+});
+
+
+
 router.use((req, res) => {
   res.status(404).render("pages/404");
 });

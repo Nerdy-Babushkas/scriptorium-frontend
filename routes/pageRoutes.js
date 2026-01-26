@@ -73,7 +73,7 @@ router.get("/progress", requireAuth, (req, res) => {
 });
 
 router.get("/library", requireAuth, (req, res) => {
-  res.render("pages/placeholder", { pageName: "Library" });
+  res.render("pages/library");
 });
 
 router.get("/music", requireAuth, (req, res) => {

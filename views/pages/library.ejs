@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library - Scriptorium</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'scriptorium-brown': '#3E2723',
+                        'scriptorium-gold': '#FFDA6D',
+                        'scriptorium-gold-light': '#FFE08A', 
+                        'scriptorium-gray-search': '#A8A8A8',
+                    },
+                    fontFamily: {
+                        'dancing': ['"Dancing Script"', 'cursive'],
+                        'outfit': ['"Outfit"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#2C1810] min-h-screen relative overflow-x-hidden font-outfit text-white">
+
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute left-[10%] top-0 w-[500px] h-[500px] bg-scriptorium-gold rounded-full opacity-20 blur-[120px]"></div>
+        <div class="absolute right-0 top-[40%] w-[600px] h-[600px] bg-scriptorium-gold-light rounded-full opacity-15 blur-[130px]"></div>
+    </div>
+
+    <nav class="relative z-20 px-6 lg:px-12 py-4 flex items-center justify-between gap-8 bg-[#2C1810]/90 backdrop-blur-sm border-b border-white/5">
+        
+        <a href="/" class="font-dancing font-bold text-3xl text-white tracking-wide hover:opacity-80 transition-opacity whitespace-nowrap">
+            Scriptorium
+        </a>
+
+        <div class="hidden md:flex flex-grow max-w-2xl">
+            <div class="w-full bg-[#A8A8A8] rounded-xl flex items-center px-4 py-2 shadow-inner transition-all focus-within:ring-2 focus-within:ring-scriptorium-gold/50">
+                <svg class="w-5 h-5 text-[#1E1E1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input type="text" placeholder="Search..." class="w-full bg-transparent border-none outline-none font-outfit font-medium text-lg text-[#1E1E1E] placeholder-[#1E1E1E]/70 ml-3">
+            </div>
+        </div>
+
+        <div class="flex items-center gap-6 lg:gap-8 whitespace-nowrap">
+            
+            <div class="hidden lg:flex items-center gap-6">
+                <a href="/progress" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Progress</a>
+                <a href="/rewards" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Rewards</a>
+                <a href="/customise" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Customise</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button class="p-2 text-white hover:bg-white/10 rounded-lg transition-colors">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+
+                <a href="/account" class="hover:opacity-80 transition-opacity">
+                    <div class="w-10 h-10 rounded-full bg-white/20 overflow-hidden border border-white/30">
+                        <img src="https://api.builder.io/api/v1/image/assets/TEMP/8bcae568cf028f604b41ea77716260a12cae9955?width=92" alt="Profile" class="w-full h-full object-cover">
+                    </div>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="relative z-0 mt-6 px-4 md:px-8 max-w-[1400px] mx-auto pb-12">
+        
+        <div class="md:hidden mb-6">
+            <div class="w-full bg-[#A8A8A8] rounded-xl flex items-center px-4 py-2 shadow-inner">
+                <svg class="w-5 h-5 text-[#1E1E1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input type="text" placeholder="Search..." class="w-full bg-transparent border-none outline-none font-outfit font-medium text-lg text-[#1E1E1E] placeholder-[#1E1E1E]/70 ml-3">
+            </div>
+        </div>
+
+        <div class="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+            
+            <img src="https://api.builder.io/api/v1/image/assets/TEMP/61326bf38000a4b817863b2afdd0dc4b663cf838?width=2932" 
+                 alt="Bookshelf" 
+                 class="w-full h-auto object-cover block min-h-[500px]">
+
+            <a href="/room" class="absolute top-[13%] left-[2%] px-6 py-2 bg-scriptorium-gold border border-black rounded-xl hover:bg-scriptorium-gold-light transition-transform hover:scale-105 shadow-lg group">
+                <span class="font-dancing font-bold text-xl md:text-2xl text-white drop-shadow-sm">Room</span>
+            </a>
+
+            <a href="/add-books" class="absolute top-[26%] left-[2%] px-6 py-2 bg-scriptorium-gold border border-black rounded-xl hover:bg-scriptorium-gold-light transition-transform hover:scale-105 shadow-lg">
+                <span class="font-dancing font-bold text-xl md:text-2xl text-white drop-shadow-sm">Add Books</span>
+            </a>
+
+            <a href="/add-reflection" class="absolute top-[64%] left-[24%] w-[20%] max-w-[210px] py-2 flex justify-center bg-scriptorium-gold border border-black rounded-xl hover:bg-scriptorium-gold-light transition-transform hover:scale-105 shadow-lg">
+                <span class="font-dancing font-bold text-xl md:text-2xl text-white drop-shadow-sm text-center">Add Reflection</span>
+            </a>
+
+            <a href="/currently-reading" class="absolute top-[80%] left-[45%] w-[20%] max-w-[210px] py-2 flex justify-center bg-scriptorium-gold border border-black rounded-xl hover:bg-scriptorium-gold-light transition-transform hover:scale-105 shadow-lg">
+                <span class="font-dancing font-bold text-xl md:text-2xl text-white drop-shadow-sm text-center">Currently Reading</span>
+            </a>
+
+            <a href="/reflection-history" class="absolute top-[63%] left-[68%] w-[18%] max-w-[200px] py-2 flex justify-center bg-scriptorium-gold border border-black rounded-xl hover:bg-scriptorium-gold-light transition-transform hover:scale-105 shadow-lg">
+                <span class="font-dancing font-bold text-xl md:text-2xl text-white drop-shadow-sm text-center">Reflection History</span>
+            </a>
+
+            <a href="/theatre" class="absolute top-[85%] left-[7%] px-6 py-2 bg-scriptorium-gold border border-black rounded-xl hover:bg-scriptorium-gold-light transition-transform hover:scale-105 shadow-lg">
+                <span class="font-dancing font-bold text-xl md:text-2xl text-white drop-shadow-sm">Theatre</span>
+            </a>
+
+            <a href="/music" class="absolute top-[85%] left-[75%] px-6 py-2 bg-scriptorium-gold border border-black rounded-xl hover:bg-scriptorium-gold-light transition-transform hover:scale-105 shadow-lg">
+                <span class="font-dancing font-bold text-xl md:text-2xl text-white drop-shadow-sm">Music Room</span>
+            </a>
+
+            <div class="absolute top-[21%] left-[21%] w-4 h-4 rounded-full bg-gradient-to-b from-[#4DD9B5] to-[#00DDA4] blur-[2px] animate-pulse"></div>
+            <div class="absolute top-[83%] left-[24%] w-4 h-4 rounded-full bg-gradient-to-b from-[#4DD9B5] to-[#00DDA4] blur-[2px] animate-pulse"></div>
+            <div class="absolute top-[64%] right-[8%] w-4 h-4 rounded-full bg-gradient-to-b from-[#4DD9B5] to-[#00DDA4] blur-[2px] animate-pulse"></div>
+
+        </div>
+    </main>
+
+</body>
+</html>

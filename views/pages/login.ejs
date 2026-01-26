@@ -201,10 +201,10 @@
         });
       });
 
-// UPDATE: Made the function 'async' to handle the backend request
+      // UPDATE: Made the function 'async' to handle the backend request
       loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        
+
         // Reset messages
         message.classList.add("hidden");
         message.classList.remove("text-green-400");
@@ -215,7 +215,7 @@
         const password = passwordInput.value;
 
         // --- 1. VALIDATION ---
-        
+
         // Email check
         if (!emailRegex.test(email)) {
           showError("Please enter a valid email address.");
@@ -241,7 +241,7 @@
         }
 
         // --- VALIDATION ---
-        
+
         // Email Check
         if (!emailRegex.test(email)) {
           showError("Please enter a valid email address.");
@@ -268,10 +268,11 @@
           return;
         }
         if (!/[!_@#$%^&*(),.?":{}|<>]/.test(password)) {
-          showError("Password must include at least one special character (!@#$...).");
+          showError(
+            "Password must include at least one special character (!@#$...).",
+          );
           return;
         }
-
 
         // --- 2. BACKEND CONNECTION LOGIC ---
 
@@ -282,38 +283,44 @@
         submitBtn.disabled = true;
 
         try {
-            // Call backend API
-            const response = await fetch('https://scriptorium-backend-six.vercel.app/api/user/login', { 
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
+          // Call backend API
+          const response = await fetch(
+            "https://scriptorium-backend-six.vercel.app/api/user/login",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            },
+          );
 
-            const data = await response.json();
+          const data = await response.json();
 
-            if (response.ok) {
-                // SUCCESS: Store token and redirect
-                localStorage.setItem('token', data.token); // Save JWT for later
-                
-                showSuccess("Login successful! Redirecting...");
-                
-                // Wait 4 second so user sees the success message, then go to room
-                setTimeout(() => {
-                    window.location.href = '/room'; 
-                }, 4000);
+          if (response.ok) {
+            // 1. Save to LocalStorage (for client-side API calls if needed)
+            localStorage.setItem("token", data.token);
 
-            } else {
-                // FAILURE: Show the error message from the backend
-                showError(data.message || "Login failed. Please check your credentials.");
-            }
+            // 2. Save to Cookie (So the EJS server can see it)
+            // path=/ ensures it is available on all pages
+            document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Strict`;
 
+            showSuccess("Login successful! Redirecting...");
+
+            setTimeout(() => {
+              window.location.href = "/room";
+            }, 4000); // Reduced time for better UX
+          } else {
+            // FAILURE: Show the error message from the backend
+            showError(
+              data.message || "Login failed. Please check your credentials.",
+            );
+          }
         } catch (error) {
-            console.error("Login Error:", error);
-            showError("Unable to connect to the server.");
+          console.error("Login Error:", error);
+          showError("Unable to connect to the server.");
         } finally {
-            // Reset button state
-            submitBtn.innerText = originalBtnText;
-            submitBtn.disabled = false;
+          // Reset button state
+          submitBtn.innerText = originalBtnText;
+          submitBtn.disabled = false;
         }
       });
 

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Email Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-scriptorium-dark text-white min-h-screen flex items-center justify-center"
+  >
+    <div class="max-w-md text-center p-6 bg-gray-900 rounded-xl shadow-lg">
+      <h1 class="text-3xl font-bold mb-4">Verifying your email…</h1>
+
+      <!-- Spinner -->
+      <div id="spinner" class="flex justify-center mb-4">
+        <div
+          class="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"
+        ></div>
+      </div>
+
+      <p id="message" class="text-lg opacity-80"></p>
+    </div>
+
+    <script>
+      const BACKEND_URL = "http://localhost:8080"; // change in production
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+      const messageEl = document.getElementById("message");
+      const spinner = document.getElementById("spinner");
+
+      if (!token) {
+        spinner.style.display = "none";
+        messageEl.textContent = "Invalid verification link.";
+        messageEl.classList.add("text-red-500");
+      } else {
+        messageEl.textContent = "Verifying… please wait";
+
+        fetch(`${BACKEND_URL}/api/user/verify?token=${token}`)
+          .then((res) =>
+            res.json().then((data) => ({ status: res.status, data })),
+          )
+          .then(({ status, data }) => {
+            spinner.style.display = "none";
+            if (status === 200) {
+              messageEl.innerHTML = `
+                <span class="text-green-400 font-semibold">${data.message}</span><br>
+                <a href="/login" class="underline text-blue-400 mt-2 inline-block">Go to login</a>
+              `;
+            } else {
+              messageEl.textContent = `Verification failed: ${data.message}`;
+              messageEl.classList.add("text-red-500 font-semibold");
+            }
+          })
+          .catch(() => {
+            spinner.style.display = "none";
+            messageEl.textContent = "Something went wrong.";
+            messageEl.classList.add("text-red-500 font-semibold");
+          });
+      }
+    </script>
+  </body>
+</html>

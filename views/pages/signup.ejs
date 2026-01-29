@@ -180,7 +180,7 @@
         </div>
       </div>
     </div>
-<script>
+    <script>
       const form = document.getElementById("signupForm");
       const emailInput = document.getElementById("email");
       const passwordInput = document.getElementById("password");
@@ -197,7 +197,7 @@
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        
+
         // Reset message
         message.classList.add("hidden");
         message.classList.remove("text-green-400");
@@ -209,51 +209,53 @@
 
         // --- 1. GENERATE USERNAME AUTOMATICALLY ---
         // "john.doe@gmail.com" -> "john.doe"
-        const generatedUserName = email.split('@')[0]; 
+        const generatedUserName = email.split("@")[0];
 
         // --- VALIDATION ---
-        
+
         // 1. Email Check
-        if (!emailRegex.test(email)) { 
-            showError("Please enter a valid email address."); 
-            return; 
+        if (!emailRegex.test(email)) {
+          showError("Please enter a valid email address.");
+          return;
         }
 
         // 2. Password Length
-        if (password.length < 8) { 
-            showError("Password must be at least 8 characters long."); 
-            return; 
+        if (password.length < 8) {
+          showError("Password must be at least 8 characters long.");
+          return;
         }
 
         // 3. Password Complexity Checks
         // Check for at least one Uppercase Letter
         if (!/[A-Z]/.test(password)) {
-            showError("Password must contain at least one uppercase letter.");
-            return;
+          showError("Password must contain at least one uppercase letter.");
+          return;
         }
 
         // Check for at least one Lowercase Letter
         if (!/[a-z]/.test(password)) {
-            showError("Password must contain at least one lowercase letter.");
-            return;
+          showError("Password must contain at least one lowercase letter.");
+          return;
         }
 
         // Check for at least one Digit (0-9)
         if (!/\d/.test(password)) {
-            showError("Password must contain at least one number.");
-            return;
+          showError("Password must contain at least one number.");
+          return;
         }
 
         // Special character
         if (!/[!_@#$%^&*(),.?":{}|<>]/.test(password)) {
-            showError("Password must include at least one special character (!@#$...).");
-            return;
+          showError(
+            "Password must include at least one special character (!@#$...).",
+          );
+          return;
         }
 
         // 4. Confirm Password Match
-        if (password !== confirm) { 
-            showError("Passwords do not match."); 
-            return; 
+        if (password !== confirm) {
+          showError("Passwords do not match.");
+          return;
         }
 
         // --- BACKEND CALL ---
@@ -263,31 +265,35 @@
 
         try {
           // IMPORTANT: Replace with your actual Vercel URL
-          const response = await fetch('https://scriptorium-backend-six.vercel.app/api/user/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userName: generatedUserName, // Sending the extracted name
-              email: email,
-              password: password,
-              password2: confirm 
-            })
-          });
+          const response = await fetch(
+            "https://scriptorium-backend-six.vercel.app/api/user/register",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                userName: generatedUserName, // Sending the extracted name
+                email: email,
+                password: password,
+                password2: confirm,
+              }),
+            },
+          );
 
           const data = await response.json();
 
           if (response.ok) {
-            showSuccess("Account created! Redirecting to login...");
+            showSuccess(
+              "Account created! Please check your email to verify your account before logging in.",
+            );
             setTimeout(() => {
-                window.location.href = '/login';
+              window.location.href = "/login";
             }, 1500);
           } else {
-            // If John.Doe@gmail and John.Doe@yahoo try to sign up, 
+            // If John.Doe@gmail and John.Doe@yahoo try to sign up,
             // the second one might fail because the username is taken.
             // This handles that error:
             showError(data.message || "Signup failed.");
           }
-
         } catch (err) {
           console.error(err);
           showError("Could not connect to the server.");
@@ -299,13 +305,15 @@
 
       function showError(text) {
         message.textContent = text;
-        message.className = "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-red-500/10 border-red-400 text-red-300";
+        message.className =
+          "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-red-500/10 border-red-400 text-red-300";
         message.classList.remove("hidden");
       }
 
       function showSuccess(text) {
         message.textContent = text;
-        message.className = "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-green-500/10 border-green-400 text-green-300";
+        message.className =
+          "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-green-500/10 border-green-400 text-green-300";
         message.classList.remove("hidden");
       }
     </script>

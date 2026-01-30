@@ -82,7 +82,7 @@ router.get("/music", requireAuth, (req, res) => {
 });
 
 router.get("/theatre", requireAuth, (req, res) => {
-  res.render("pages/placeholder", { pageName: "Theatre" });
+  res.render("pages/theatre");
 });
 
 router.get("/ai-recommendations", requireAuth, (req, res) => {

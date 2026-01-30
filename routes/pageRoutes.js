@@ -97,6 +97,14 @@ router.get("/add-books", requireAuth, (req, res) => {
   res.render("pages/placeholder", { pageName: "Add Books" });
 });
 
+router.get("/currently-watching", requireAuth, (req, res) => {
+  res.render("pages/placeholder", { pageName: "Currently Watching" });
+});
+
+router.get("/add-media", requireAuth, (req, res) => {
+  res.render("pages/placeholder", { pageName: "Add Media" });
+});
+
 router.get("/add-reflection", requireAuth, (req, res) => {
   res.render("pages/placeholder", { pageName: "Add Reflection" });
 });

@@ -82,7 +82,7 @@ router.get("/music", requireAuth, (req, res) => {
 });
 
 router.get("/theatre", requireAuth, (req, res) => {
-  res.render("pages/placeholder", { pageName: "Theatre" });
+  res.render("pages/theatre");
 });
 
 router.get("/ai-recommendations", requireAuth, (req, res) => {
@@ -95,6 +95,14 @@ router.get("/currently-reading", requireAuth, (req, res) => {
 
 router.get("/add-books", requireAuth, (req, res) => {
   res.render("pages/placeholder", { pageName: "Add Books" });
+});
+
+router.get("/currently-watching", requireAuth, (req, res) => {
+  res.render("pages/placeholder", { pageName: "Currently Watching" });
+});
+
+router.get("/add-media", requireAuth, (req, res) => {
+  res.render("pages/placeholder", { pageName: "Add Media" });
 });
 
 router.get("/add-reflection", requireAuth, (req, res) => {

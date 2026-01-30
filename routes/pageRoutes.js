@@ -78,7 +78,7 @@ router.get("/library", requireAuth, (req, res) => {
 });
 
 router.get("/music", requireAuth, (req, res) => {
-  res.render("pages/placeholder", { pageName: "Music Room" });
+  res.render("pages/music");
 });
 
 router.get("/theatre", requireAuth, (req, res) => {
@@ -103,6 +103,14 @@ router.get("/currently-watching", requireAuth, (req, res) => {
 
 router.get("/add-media", requireAuth, (req, res) => {
   res.render("pages/placeholder", { pageName: "Add Media" });
+});
+
+router.get("/currently-listening", requireAuth, (req, res) => {
+  res.render("pages/placeholder", { pageName: "Currently Listening" });
+});
+
+router.get("/add-music", requireAuth, (req, res) => {
+  res.render("pages/placeholder", { pageName: "Add Music" });
 });
 
 router.get("/add-reflection", requireAuth, (req, res) => {

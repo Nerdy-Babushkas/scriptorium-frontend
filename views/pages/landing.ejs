@@ -1,176 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Scriptorium - Your Space to Create</title>
-
-    <link
-      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;600;700&family=Roboto:wght@300;400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/css/style.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/js/tailwind.config.js"></script>
-  </head>
-  <body class="bg-scriptorium-dark min-h-screen overflow-x-hidden relative">
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div
-        class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]"
-        style="left: 177px; top: -210px"
-      ></div>
-
-      <div
-        class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]"
-        style="left: 175px; top: 639px"
-      ></div>
-
-      <div
-        class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]"
-        style="right: -193px; top: 294px"
-      ></div>
-
-      <div
-        class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]"
-        style="right: -213px; top: 1375px"
-      ></div>
-
-      <div
-        class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]"
-        style="left: -190px; top: 1728px"
-      ></div>
-    </div>
-
-    <%- include('../partials/navbar') %>
+<head>
+    <%- include('../partials/head_public', { title: 'Scriptorium - Your Space to Create' }) %>
+</head>
+<body class="bg-scriptorium-dark min-h-screen overflow-x-hidden relative">
+    
+    <%- include('../partials/background_blobs') %>
+    <%- include('../partials/navbar_public') %>
 
     <div class="relative z-10">
-      <section class="pt-19 sm:pt-27 pb-12 sm:pb-20 px-4 sm:px-8 lg:px-16">
-        <div class="max-w-7xl mx-auto">
-          <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div class="space-y-6 sm:space-y-8 order-2 lg:order-1">
-              <h1
-                class="font-dancing text-4xl sm:text-5xl lg:text-6xl xl:text-[64px] font-bold text-white leading-[110%] capitalize"
-              >
-                Your Space to Think, Feel, and Create.
-              </h1>
-              <p
-                class="font-roboto text-lg sm:text-xl text-white leading-[137.5%] max-w-[524px]"
-              >
-                Step into your virtual room — explore, reflect, and rediscover
-                the joy of learning through stories and sounds.
-              </p>
-              <div class="flex flex-col sm:flex-row gap-4 sm:gap-5 pt-4">
-                <a
-                  href="/login"
-                  class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-teal hover:bg-scriptorium-teal/90 transition-colors px-12 py-3.5 rounded-[50px] text-center"
-                >
-                  Log in
-                </a>
-                <a
-                  href="/signup"
-                  class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] border border-scriptorium-blue hover:bg-scriptorium-blue/10 transition-colors px-12 py-3.5 rounded-[50px] text-center"
-                >
-                  Sign up
-                </a>
-              </div>
+        <section class="pt-19 sm:pt-27 pb-12 sm:pb-20 px-4 sm:px-8 lg:px-16">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                    <div class="space-y-6 sm:space-y-8 order-2 lg:order-1">
+                        <h1 class="font-dancing text-4xl sm:text-5xl lg:text-6xl xl:text-[64px] font-bold text-white leading-[110%] capitalize">
+                            Your Space to Think, Feel, and Create.
+                        </h1>
+                        <p class="font-roboto text-lg sm:text-xl text-white leading-[137.5%] max-w-[524px]">
+                            Step into your virtual room — explore, reflect, and rediscover the joy of learning through stories and sounds.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 sm:gap-5 pt-4">
+                            <a href="/login" class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-teal hover:bg-scriptorium-teal/90 transition-colors px-12 py-3.5 rounded-[50px] text-center">Log in</a>
+                            <a href="/signup" class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] border border-scriptorium-blue hover:bg-scriptorium-blue/10 transition-colors px-12 py-3.5 rounded-[50px] text-center">Sign up</a>
+                        </div>
+                    </div>
+                    <div class="order-1 lg:order-2 flex justify-center lg:justify-end">
+                        <img src="/assets/hero-image.png" alt="Virtual learning space" class="w-full max-w-[400px] sm:max-w-[500px] lg:max-w-[624px] h-auto" />
+                    </div>
+                </div>
             </div>
+        </section>
 
-            <div class="order-1 lg:order-2 flex justify-center lg:justify-end">
-              <img
-                src="/assets/hero-image.png"
-                alt="Virtual learning space illustration"
-                class="w-full max-w-[400px] sm:max-w-[500px] lg:max-w-[624px] h-auto"
-              />
+        <section id="about" class="pt-6 sm:pt-10 pb-12 sm:pb-20 px-4 sm:px-8 lg:px-16">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                    <div class="flex justify-center lg:justify-start">
+                        <img src="/assets/hero-image2.png" alt="Isometric music room" class="w-full max-w-[400px] sm:max-w-[500px] lg:max-w-[726px] h-auto" />
+                    </div>
+                    <div class="space-y-6 sm:space-y-8">
+                        <h2 class="font-dancing text-4xl sm:text-5xl lg:text-6xl xl:text-[64px] font-bold text-white leading-[110%] capitalize">All in one place!!!</h2>
+                        <p class="font-roboto text-lg sm:text-xl text-white leading-[137.5%] max-w-[524px]">Stay organized with Room Spaces, Goals, and Rewards that encourage you to stay productive.</p>
+                        <div class="flex flex-col sm:flex-row sm:flex-nowrap gap-3 pt-4">
+                            <button class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-orange hover:bg-scriptorium-orange/90 transition-colors px-8 py-3.5 rounded-[15px]">Track</button>
+                            <button class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-yellow hover:bg-scriptorium-yellow/90 transition-colors px-6 py-3.5 rounded-[15px]">Visualize</button>
+                            <button class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-lightblue hover:bg-scriptorium-lightblue/90 transition-colors px-8 py-3.5 rounded-[15px]">Reflect</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="about" class="pt-6 sm:pt-10 pb-12 sm:pb-20 px-4 sm:px-8 lg:px-16">
-        <div class="max-w-7xl mx-auto">
-          <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div class="flex justify-center lg:justify-start">
-              <img
-                src="/assets/hero-image2.png"
-                alt="Isometric music room illustration"
-                class="w-full max-w-[400px] sm:max-w-[500px] lg:max-w-[726px] h-auto"
-              />
+        <section id="features" class="pt-6 sm:pt-10 pb-20 px-4 sm:px-8 lg:px-16">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                    <div class="space-y-6 sm:space-y-10 order-2 lg:order-1">
+                        <h2 class="font-dancing text-4xl sm:text-5xl lg:text-6xl xl:text-[64px] font-bold text-white leading-[110%] capitalize">AI Recommendations Based On:</h2>
+                        <div class="flex flex-col gap-4 max-w-[300px]">
+                            <button class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-orange hover:bg-scriptorium-orange/90 transition-colors px-8 py-3.5 rounded-[15px]">Your Tastes</button>
+                            <button class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-yellow hover:bg-scriptorium-yellow/90 transition-colors px-8 py-3.5 rounded-[15px]">What's Trending</button>
+                            <button class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-lightblue hover:bg-scriptorium-lightblue/90 transition-colors px-8 py-3.5 rounded-[15px]">Your Mood</button>
+                        </div>
+                    </div>
+                    <div class="order-1 lg:order-2 flex justify-center lg:justify-end">
+                        <img src="/assets/hero-image3.png" alt="AI recommendation bot" class="w-full max-w-[400px] sm:max-w-[500px] lg:max-w-[720px] h-auto" />
+                    </div>
+                </div>
             </div>
-
-            <div class="space-y-6 sm:space-y-8">
-              <h2
-                class="font-dancing text-4xl sm:text-5xl lg:text-6xl xl:text-[64px] font-bold text-white leading-[110%] capitalize"
-              >
-                All in one place!!!
-              </h2>
-              <p
-                class="font-roboto text-lg sm:text-xl text-white leading-[137.5%] max-w-[524px]"
-              >
-                Stay organized with Room Spaces, Goals, and Rewards that
-                encourage you to stay productive.
-              </p>
-              <div class="flex flex-col sm:flex-row sm:flex-nowrap gap-3 pt-4">
-                <button
-                  class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-orange hover:bg-scriptorium-orange/90 transition-colors px-8 py-3.5 rounded-[15px] whitespace-nowrap"
-                >
-                  Track
-                </button>
-
-                <button
-                  class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-yellow hover:bg-scriptorium-yellow/90 transition-colors px-6 py-3.5 rounded-[15px] whitespace-nowrap"
-                >
-                  Visualize
-                </button>
-
-                <button
-                  class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-lightblue hover:bg-scriptorium-lightblue/90 transition-colors px-8 py-3.5 rounded-[15px] whitespace-nowrap"
-                >
-                  Reflect
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="features" class="pt-6 sm:pt-10 pb-20 px-4 sm:px-8 lg:px-16">
-        <div class="max-w-7xl mx-auto">
-          <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div class="space-y-6 sm:space-y-10 order-2 lg:order-1">
-              <h2
-                class="font-dancing text-4xl sm:text-5xl lg:text-6xl xl:text-[64px] font-bold text-white leading-[110%] capitalize"
-              >
-                AI Recommendations Based On:
-              </h2>
-              <div class="flex flex-col gap-4 max-w-[300px]">
-                <button
-                  class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-orange hover:bg-scriptorium-orange/90 transition-colors px-8 py-3.5 rounded-[15px] text-center"
-                >
-                  Your Tastes
-                </button>
-                <button
-                  class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-yellow hover:bg-scriptorium-yellow/90 transition-colors px-8 py-3.5 rounded-[15px] text-center"
-                >
-                  What's Trending
-                </button>
-                <button
-                  class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-lightblue hover:bg-scriptorium-lightblue/90 transition-colors px-8 py-3.5 rounded-[15px] text-center"
-                >
-                  Your Mood
-                </button>
-              </div>
-            </div>
-
-            <div class="order-1 lg:order-2 flex justify-center lg:justify-end">
-              <img
-                src="/assets/hero-image3.png"
-                alt="AI recommendation bot illustration"
-                class="w-full max-w-[400px] sm:max-w-[500px] lg:max-w-[720px] h-auto"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
     </div>
-  </body>
+</body>
 </html>

@@ -50,3 +50,16 @@
     /* ... (Your dark mode variables are fine to leave out for MVP if you want to save space, but keeping them is safer) */
   }
 }
+
+/* Floating Animation for 3D Props (Rocket, Doll, etc.) */
+@keyframes space-float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(-10px, -15px) rotate(-3deg); }
+    50% { transform: translate(0, -25px) rotate(0deg); }
+    75% { transform: translate(10px, -15px) rotate(3deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.animate-space-float {
+    animation: space-float 8s ease-in-out infinite;
+}

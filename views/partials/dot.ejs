@@ -1,0 +1,20 @@
+<% 
+    // Logic to switch colors based on parameter
+    let bgClass = "bg-[#FFD700]"; // Default Gold
+    let shadowClass = "shadow-[0_0_20px_rgba(255,215,0,0.8)]";
+    let textBorder = "border-[#FFD700]/30";
+    let textColor = "text-[#FFD700]";
+
+    if (typeof color !== 'undefined' && color === 'green') {
+        bgClass = "bg-[#00DDA4]";
+        shadowClass = "shadow-[0_0_15px_rgba(0,221,164,0.8)]";
+        textBorder = "border-white/10";
+        textColor = "text-white";
+    }
+%>
+
+<a href="<%= link %>" class="absolute <%= pos %> w-5 h-5 md:w-6 md:h-6 <%= bgClass %> rounded-full <%= shadowClass %> cursor-pointer hover:scale-125 transition-transform dot-ring group/dot flex items-center justify-center z-20">
+    <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-black/90 <%= textColor %> font-outfit text-sm px-3 py-1 rounded-md opacity-0 group-hover/dot:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border <%= textBorder %> shadow-xl">
+        <%= label %>
+    </div>
+</a>

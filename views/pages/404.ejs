@@ -23,7 +23,7 @@
              style="left: -190px; top: 1728px;"></div>
     </div>
 
-    <%- include('../partials/navbar') %>
+    <%- include('../partials/navbar_public') %>
 
     <main class="flex-grow flex items-center justify-center relative z-10 pt-20 pb-12 px-6">
         <div class="container mx-auto max-w-6xl"> 
@@ -56,26 +56,12 @@
                 </div>
 
                 <div class="order-1 lg:order-2 flex justify-center">
-                    <img src="/assets/astro4.png" 
-                         alt="Lost Astronaut Reading" 
-                         class="w-full max-w-[400px] lg:max-w-[600px] h-auto drop-shadow-2xl animate-space-float">
+                    <%- include('../partials/floating_prop', { img: '/assets/astro4.png', alt: 'Rocket Launching' }) %>
                 </div>
 
             </div>
         </div>
     </main>
 
-    <style>
-        @keyframes space-float {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(-20px, -30px) rotate(-5deg); }
-            50% { transform: translate(0, -50px) rotate(0deg); }
-            75% { transform: translate(20px, -30px) rotate(5deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
-        }
-        .animate-space-float {
-            animation: space-float 12s ease-in-out infinite;
-        }
-    </style>
 </body>
 </html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress - Scriptorium</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'scriptorium-brown': '#3E2723',
+                        'scriptorium-gold': '#FFDA6D',
+                        'card-bg': 'rgba(20, 30, 35, 0.95)', 
+                        'teal-neon': '#00C49A', 
+                        'teal-dark': '#1B4B43',
+                        'danger': '#D90429',
+                        'input-bg': 'rgba(0, 0, 0, 0.4)',
+                    },
+                    fontFamily: {
+                        'dancing': ['"Dancing Script"', 'cursive'],
+                        'outfit': ['"Outfit"', 'sans-serif'],
+                        'roboto': ['"Roboto"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom Scrollbar */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #00C49A; border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #00A07D; }
+    </style>
+</head>
+<body class="min-h-screen relative font-outfit text-white overflow-hidden flex flex-col">
+
+    <div class="fixed inset-0 z-0">
+        <img src="/assets/room2.png" alt="Room Background" class="w-full h-full object-cover">
+    </div>
+
+    <div class="fixed inset-0 z-0 bg-black/75 backdrop-blur-[6px]"></div>
+
+    <nav class="relative z-20 px-6 lg:px-12 py-4 flex items-center justify-between gap-8 bg-[#2C1810]/80 backdrop-blur-sm border-b border-white/5">
+        <a href="/room" class="font-dancing font-bold text-3xl text-white tracking-wide hover:opacity-80 transition-opacity whitespace-nowrap">
+            Scriptorium
+        </a>
+        <div class="hidden md:flex flex-grow max-w-2xl">
+            <div class="w-full bg-[#A8A8A8] rounded-xl flex items-center px-4 py-2 shadow-inner transition-all focus-within:ring-2 focus-within:ring-scriptorium-gold/50">
+                <svg class="w-5 h-5 text-[#1E1E1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input type="text" placeholder="Search..." class="w-full bg-transparent border-none outline-none font-outfit font-medium text-lg text-[#1E1E1E] placeholder-[#1E1E1E]/70 ml-3">
+            </div>
+        </div>
+        <div class="flex items-center gap-6 lg:gap-8 whitespace-nowrap">
+            <div class="hidden lg:flex items-center gap-6">
+                <a href="/progress" class="text-lg font-medium text-scriptorium-gold transition-colors">Progress</a>
+                <a href="/rewards" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Rewards</a>
+                <a href="/customise" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Customise</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="p-2 text-white hover:bg-white/10 rounded-lg transition-colors">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <a href="/account" class="hover:opacity-80 transition-opacity">
+                    <div class="w-10 h-10 rounded-full bg-white/20 overflow-hidden border border-white/30">
+                        <img src="https://api.builder.io/api/v1/image/assets/TEMP/8bcae568cf028f604b41ea77716260a12cae9955?width=92" alt="Profile" class="w-full h-full object-cover">
+                    </div>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="relative z-10 flex-grow flex items-center justify-center p-4">
+        
+        <div class="w-full max-w-2xl h-[80vh] bg-card-bg rounded-[30px] border border-teal-neon/30 shadow-[0_0_50px_rgba(0,196,154,0.15)] p-8 backdrop-blur-xl flex flex-col relative overflow-hidden">
+            
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1 bg-teal-neon blur-md shadow-[0_0_20px_#00C49A]"></div>
+
+            <h1 class="font-dancing text-5xl text-white text-center mb-6 drop-shadow-md shrink-0">
+                Progress
+            </h1>
+
+            <div class="flex bg-black/30 rounded-full p-1 w-max mx-auto mb-6 border border-white/10 shrink-0">
+                <button onclick="filterGoals('active')" id="btn-active" class="px-6 py-1.5 rounded-full bg-teal-neon/20 text-teal-neon border border-teal-neon font-medium text-sm transition-all">
+                    Active Goals
+                </button>
+                <button onclick="filterGoals('completed')" id="btn-completed" class="px-6 py-1.5 rounded-full text-white/50 hover:text-white font-medium text-sm transition-all">
+                    Completed
+                </button>
+            </div>
+
+            <div id="goals-container" class="flex-1 flex flex-col gap-3 overflow-y-auto custom-scroll pr-2 mb-6">
+                </div>
+
+            <div class="flex justify-center gap-4 mt-auto shrink-0">
+                <button onclick="openModal()" class="bg-teal-neon text-black font-outfit font-bold text-sm px-8 py-3 rounded-full uppercase tracking-wider hover:bg-white hover:scale-105 transition-all shadow-lg shadow-teal-neon/20">
+                    Add a Goal
+                </button>
+                <a href="/room" class="bg-danger text-white font-outfit font-bold text-sm px-8 py-3 rounded-full uppercase tracking-wider hover:bg-red-600 hover:scale-105 transition-all shadow-lg">
+                    Cancel
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+    <div id="goal-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
+        <div class="w-full max-w-md bg-card-bg border border-teal-neon/30 rounded-2xl p-6 shadow-2xl relative">
+            
+            <h2 class="font-outfit text-2xl font-bold text-white mb-6">Create a new goal</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-white/70 text-sm mb-1 font-medium">Goal Name/Description</label>
+                    <input type="text" id="modal-title" class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors" placeholder="e.g. Read 5 chapters">
+                </div>
+
+                <div>
+                    <label class="block text-white/70 text-sm mb-1 font-medium">Goal Type</label>
+                    <select id="modal-type" class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors">
+                        <option value="book">Book</option>
+                        <option value="music">Music</option>
+                        <option value="podcast">Podcast</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-white/70 text-sm mb-1 font-medium">Target Value</label>
+                    <input type="number" id="modal-target" class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors" placeholder="e.g. 10">
+                </div>
+
+                <div>
+                    <label class="block text-white/70 text-sm mb-1 font-medium">Current Progress</label>
+                    <input type="number" id="modal-current" class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors" placeholder="e.g. 0">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-8">
+                <button onclick="closeModal()" class="text-white/70 hover:text-white font-medium px-4 py-2 transition-colors">CANCEL</button>
+                <button onclick="saveGoalFromModal()" class="bg-teal-neon text-black font-bold px-6 py-2 rounded-lg hover:bg-white transition-colors">SAVE</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Mock Data
+        let goals = [
+            { id: 1, type: 'book', title: "Read 5 chapters of 'Mind's Relativity'", current: 4, total: 5, status: 'active' },
+            { id: 2, type: 'music', title: "Listen to 10 new artists", current: 8, total: 10, status: 'active' },
+            { id: 3, type: 'book', title: "Complete Reading list for this month", current: 2, total: 4, status: 'active' },
+            { id: 4, type: 'podcast', title: "Reflect on 5 podcasts", current: 1, total: 5, status: 'active' },
+            { id: 5, type: 'book', title: "Read 5 chapters of 'The Alchemist'", current: 5, total: 5, status: 'completed' },
+            { id: 6, type: 'music', title: "Listen to Jazz Classics", current: 2, total: 10, status: 'active' }, // Added to test scroll
+            { id: 7, type: 'book', title: "Read 'Dune' part 1", current: 1, total: 3, status: 'active' } // Added to test scroll
+        ];
+
+        let currentFilter = 'active';
+
+        const icons = {
+            book: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>`,
+            music: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>`,
+            podcast: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>`
+        };
+
+        function render() {
+            const container = document.getElementById('goals-container');
+            container.innerHTML = '';
+            
+            const filtered = goals.filter(g => g.status === currentFilter);
+
+            filtered.forEach(goal => {
+                const pct = Math.round((goal.current / goal.total) * 100);
+                
+                // Card Item
+                const item = document.createElement('div');
+                item.className = "group flex items-center gap-3 bg-teal-dark/30 hover:bg-teal-dark/50 border border-white/5 rounded-xl p-3 transition-colors shrink-0";
+                
+                item.innerHTML = `
+                    <div class="w-10 h-10 rounded-full bg-teal-neon flex items-center justify-center text-teal-dark shadow-sm shrink-0">
+                        ${icons[goal.type] || icons.book}
+                    </div>
+                    
+                    <div class="flex-grow min-w-0">
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="text-sm font-medium text-white truncate pr-2">${goal.title}</span>
+                        </div>
+                        <div class="w-full h-2 bg-black/40 rounded-full overflow-hidden">
+                            <div class="h-full bg-teal-neon rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="text-right shrink-0 min-w-[50px]">
+                        <div class="text-sm font-bold text-white">${goal.current}/${goal.total}</div>
+                        <div class="text-xs text-teal-neon/80">${pct}%</div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // --- Modal Logic ---
+        function openModal() {
+            const modal = document.getElementById('goal-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('goal-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            // Clear inputs
+            document.getElementById('modal-title').value = '';
+            document.getElementById('modal-target').value = '';
+            document.getElementById('modal-current').value = '';
+        }
+
+        function saveGoalFromModal() {
+            const title = document.getElementById('modal-title').value;
+            const type = document.getElementById('modal-type').value;
+            const target = document.getElementById('modal-target').value;
+            const current = document.getElementById('modal-current').value || 0; // Default to 0 if empty
+
+            if(!title || !target) return alert("Please fill in a title and target.");
+
+            goals.unshift({
+                id: Date.now(),
+                type: type,
+                title: title,
+                current: parseInt(current),
+                total: parseInt(target),
+                status: 'active'
+            });
+
+            closeModal();
+            render();
+        }
+
+        function filterGoals(status) {
+            currentFilter = status;
+            
+            const activeBtn = document.getElementById('btn-active');
+            const completedBtn = document.getElementById('btn-completed');
+            const activeClass = "bg-teal-neon/20 text-teal-neon border border-teal-neon";
+            const inactiveClass = "text-white/50 hover:text-white border-transparent";
+
+            if(status === 'active') {
+                activeBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${activeClass}`;
+                completedBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${inactiveClass}`;
+            } else {
+                completedBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${activeClass}`;
+                activeBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${inactiveClass}`;
+            }
+            render();
+        }
+
+        // Init
+        render();
+
+    </script>
+</body>
+</html>

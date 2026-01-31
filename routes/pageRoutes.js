@@ -70,7 +70,7 @@ router.get("/customise", requireAuth, (req, res) => {
 });
 
 router.get("/progress", requireAuth, (req, res) => {
-  res.render("pages/placeholder", { pageName: "Progress" });
+  res.render("pages/progress");
 });
 
 router.get("/library", requireAuth, (req, res) => {

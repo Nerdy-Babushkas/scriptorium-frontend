@@ -1,29 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Babushka - Scriptorium</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/js/tailwind.config.js"></script>
+    <%- include('../partials/head_public', { title: 'Contact Babushka - Scriptorium' }) %>
 </head>
 <body class="bg-scriptorium-dark min-h-screen relative overflow-x-hidden font-outfit text-white flex flex-col">
 
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]" 
-             style="left: 177px; top: -210px;"></div>
-        <div class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]" 
-             style="left: 175px; top: 639px;"></div>
-        <div class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]" 
-             style="right: -193px; top: 294px;"></div>
-        <div class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]" 
-             style="left: -190px; top: 1728px;"></div>
-    </div>
-
-    <%- include('../partials/navbar') %>
+    <%- include('../partials/background_blobs') %>
+    <%- include('../partials/navbar_public') %>
 
     <main class="flex-grow flex items-center justify-center relative z-10 pt-20 pb-12 px-6">
         <div class="container mx-auto max-w-6xl">
@@ -72,30 +55,11 @@
                 </div>
 
                 <div class="order-1 lg:order-2 flex justify-center">
-                    <div class="relative">
-                        <div class="absolute inset-0 bg-[#06D6A0] rounded-full blur-[80px] opacity-20 animate-pulse"></div>
-                        
-                        <img src="/assets/doll.png" 
-                             alt="Cute 3D Matryoshka Doll" 
-                             class="w-full max-w-[400px] lg:max-w-[600px] h-auto drop-shadow-2xl animate-space-float object-contain">
-                    </div>
+                    <%- include('../partials/floating_prop', { img: '/assets/doll.png', alt: 'Cute 3D Matryoshka Doll' }) %>
                 </div>
 
             </div>
         </div>
     </main>
-
-    <style>
-        @keyframes space-float {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(-10px, -15px) rotate(-3deg); }
-            50% { transform: translate(0, -25px) rotate(0deg); }
-            75% { transform: translate(10px, -15px) rotate(3deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
-        }
-        .animate-space-float {
-            animation: space-float 8s ease-in-out infinite;
-        }
-    </style>
 </body>
 </html>

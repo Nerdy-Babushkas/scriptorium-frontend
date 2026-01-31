@@ -1,0 +1,42 @@
+<div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+    <div class="absolute left-[10%] top-0 w-[500px] h-[500px] bg-scriptorium-gold rounded-full opacity-20 blur-[120px]"></div>
+    <div class="absolute right-0 top-[40%] w-[600px] h-[600px] bg-scriptorium-gold-light rounded-full opacity-15 blur-[130px]"></div>
+</div>
+
+<nav class="relative z-20 px-6 lg:px-12 py-4 flex items-center justify-between gap-8 bg-[#2C1810]/90 backdrop-blur-sm border-b border-white/5">
+    
+    <a href="/room" class="font-dancing font-bold text-3xl text-white tracking-wide hover:opacity-80 transition-opacity whitespace-nowrap">
+        Scriptorium
+    </a>
+
+    <div class="hidden md:flex flex-grow max-w-2xl">
+        <div class="w-full bg-[#A8A8A8] rounded-xl flex items-center px-4 py-2 shadow-inner transition-all focus-within:ring-2 focus-within:ring-scriptorium-gold/50">
+            <svg class="w-5 h-5 text-[#1E1E1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input type="text" placeholder="Search..." class="w-full bg-transparent border-none outline-none font-outfit font-medium text-lg text-[#1E1E1E] placeholder-[#1E1E1E]/70 ml-3">
+        </div>
+    </div>
+
+    <div class="flex items-center gap-6 lg:gap-8 whitespace-nowrap">
+        <div class="hidden lg:flex items-center gap-6">
+            <a href="/progress" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Progress</a>
+            <a href="/rewards" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Rewards</a>
+            <a href="/customise" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Customise</a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <button class="p-2 text-white hover:bg-white/10 rounded-lg transition-colors">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+
+            <a href="/account" class="hover:opacity-80 transition-opacity">
+                <div class="w-10 h-10 rounded-full bg-white/20 overflow-hidden border border-white/30">
+                    <img src="/assets/account.png" alt="Profile" class="w-full h-full object-cover">
+                </div>
+            </a>
+        </div>
+    </div>
+</nav>

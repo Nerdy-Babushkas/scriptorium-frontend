@@ -1,142 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Room - Scriptorium</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'scriptorium-brown': '#3E2723',
-                        'scriptorium-gold': '#FFDA6D',
-                        'scriptorium-gold-light': '#FFE08A', 
-                        'scriptorium-gray-search': '#A8A8A8',
-                    },
-                    fontFamily: {
-                        'dancing': ['"Dancing Script"', 'cursive'],
-                        'outfit': ['"Outfit"', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        /* Pulse animation for the interactive dots */
-        @keyframes pulse-ring {
-            0% { transform: scale(0.8); opacity: 0.5; }
-            100% { transform: scale(2); opacity: 0; }
-        }
-        .dot-ring::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            background-color: inherit;
-            border-radius: 50%;
-            z-index: -1;
-            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-        }
-    </style>
+    <%- include('../partials/head', { title: 'My Room - Scriptorium' }) %>
 </head>
 <body class="bg-[#2C1810] min-h-screen relative overflow-x-hidden font-outfit text-white">
 
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute left-[10%] top-0 w-[500px] h-[500px] bg-scriptorium-gold rounded-full opacity-20 blur-[120px]"></div>
-        <div class="absolute right-0 top-[40%] w-[600px] h-[600px] bg-scriptorium-gold-light rounded-full opacity-15 blur-[130px]"></div>
-    </div>
-
-    <nav class="relative z-20 px-6 lg:px-12 py-4 flex items-center justify-between gap-8 bg-[#2C1810]/90 backdrop-blur-sm border-b border-white/5">
-        
-        <a href="/room" class="font-dancing font-bold text-3xl text-white tracking-wide hover:opacity-80 transition-opacity whitespace-nowrap">
-            Scriptorium
-        </a>
-
-        <div class="hidden md:flex flex-grow max-w-2xl">
-            <div class="w-full bg-[#A8A8A8] rounded-xl flex items-center px-4 py-2 shadow-inner transition-all focus-within:ring-2 focus-within:ring-scriptorium-gold/50">
-                <svg class="w-5 h-5 text-[#1E1E1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-                <input type="text" placeholder="Search..." class="w-full bg-transparent border-none outline-none font-outfit font-medium text-lg text-[#1E1E1E] placeholder-[#1E1E1E]/70 ml-3">
-            </div>
-        </div>
-
-        <div class="flex items-center gap-6 lg:gap-8 whitespace-nowrap">
-            
-            <div class="hidden lg:flex items-center gap-6">
-                <a href="/progress" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Progress</a>
-                <a href="/rewards" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Rewards</a>
-                <a href="/customise" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Customise</a>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <button class="p-2 text-white hover:bg-white/10 rounded-lg transition-colors">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-
-                <a href="/account" class="hover:opacity-80 transition-opacity">
-                    <div class="w-10 h-10 rounded-full bg-white/20 overflow-hidden border border-white/30">
-                        <img src="/assets/account.png" alt="Profile" class="w-full h-full object-cover">                    
-                    </div>
-                </a>
-            </div>
-        </div>
-    </nav>
+    <%- include('../partials/navbar_app') %>
 
     <main class="relative z-0 mt-6 px-4 md:px-8 max-w-[1400px] mx-auto pb-12">
-        
         <div class="md:hidden mb-6">
             <div class="w-full bg-[#A8A8A8] rounded-xl flex items-center px-4 py-2 shadow-inner">
-                <svg class="w-5 h-5 text-[#1E1E1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-                <input type="text" placeholder="Search..." class="w-full bg-transparent border-none outline-none font-outfit font-medium text-lg text-[#1E1E1E] placeholder-[#1E1E1E]/70 ml-3">
+                <input type="text" placeholder="Search..." class="w-full bg-transparent border-none outline-none font-outfit font-medium text-lg text-[#1E1E1E]">
             </div>
         </div>
 
         <div class="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
-            
-            <img src="/assets/room.jpg" 
-                 alt="Cozy Room" 
-                 class="w-full h-auto object-cover block">
+            <img src="/assets/room.jpg" alt="Cozy Room" class="w-full h-auto object-cover block">
 
-            <a href="/library" class="absolute top-[34%] left-[21%] w-5 h-5 md:w-6 md:h-6 bg-[#00DDA4] rounded-full shadow-[0_0_15px_rgba(0,221,164,0.8)] cursor-pointer hover:scale-125 transition-transform dot-ring group/dot flex items-center justify-center" aria-label="Go to Library">
-                <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-black/80 text-white font-outfit text-sm px-3 py-1 rounded-md opacity-0 group-hover/dot:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10 shadow-xl">
-                    Library
-                </div>
-            </a>
+            <%- include('../partials/dot', { link: '/library', pos: 'top-[34%] left-[21%]', label: 'Library' }) %>
+            <%- include('../partials/dot', { link: '/music', pos: 'top-[85%] left-[25%]', label: 'Music Room' }) %>
+            <%- include('../partials/dot', { link: '/theatre', pos: 'top-[72%] right-[8%]', label: 'Theatre' }) %>
 
-            <a href="/music" class="absolute top-[85%] left-[25%] w-5 h-5 md:w-6 md:h-6 bg-[#00DDA4] rounded-full shadow-[0_0_15px_rgba(0,221,164,0.8)] cursor-pointer hover:scale-125 transition-transform dot-ring group/dot flex items-center justify-center" aria-label="Go to Music Room">
-                 <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-black/80 text-white font-outfit text-sm px-3 py-1 rounded-md opacity-0 group-hover/dot:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10 shadow-xl">
-                    Music Room
-                </div>
-            </a>
-
-            <a href="/theatre" class="absolute top-[72%] right-[8%] w-5 h-5 md:w-6 md:h-6 bg-[#00DDA4] rounded-full shadow-[0_0_15px_rgba(0,221,164,0.8)] cursor-pointer hover:scale-125 transition-transform dot-ring group/dot flex items-center justify-center" aria-label="Go to Theatre">
-                 <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-black/80 text-white font-outfit text-sm px-3 py-1 rounded-md opacity-0 group-hover/dot:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10 shadow-xl">
-                    Theatre
-                </div>
-            </a>
-
-           <a href="/ai-recommendations" class="absolute top-[5%] right-[3%] group/ai cursor-pointer block" aria-label="Ask AI Librarian">
-                <div class="w-10 h-10 md:w-12 md:h-12 bg-[#3E2723]/60 backdrop-blur-md rounded-xl border border-scriptorium-gold flex items-center justify-center animate-pulse hover:bg-[#3E2723]/80 transition-colors shadow-[0_0_20px_rgba(255,218,109,0.3)]">
-                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-scriptorium-gold">
-                        <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                     </svg>
-                </div>
-                <div class="absolute top-14 right-0 bg-black/80 text-scriptorium-gold font-outfit text-sm px-3 py-1 rounded-md opacity-0 group-hover/ai:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-scriptorium-gold/30">
-                    AI Recommendations
-                </div>
-            </a>
-
+            <div class="absolute top-[5%] right-[3%]">
+                <%- include('../partials/ai_button') %>
+            </div>
         </div>
     </main>
 

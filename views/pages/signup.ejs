@@ -289,9 +289,6 @@
               window.location.href = "/login";
             }, 1500);
           } else {
-            // If John.Doe@gmail and John.Doe@yahoo try to sign up,
-            // the second one might fail because the username is taken.
-            // This handles that error:
             showError(data.message || "Signup failed.");
           }
         } catch (err) {

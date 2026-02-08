@@ -46,7 +46,7 @@
         <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div class="flex items-center justify-center order-2 lg:order-1">
             <img
-              src="https://api.builder.io/api/v1/image/assets/TEMP/5f7135437cc1a5b8f6a91703e8ede3bd5a760ff9?width=1130"
+              src="/assets/office.png"
               alt="Woman working at desk with books"
               class="w-full max-w-[565px] h-auto drop-shadow-2xl"
             />
@@ -210,35 +210,9 @@
         message.classList.remove("text-green-400");
         message.classList.add("text-red-400");
 
-        // const email = emailInput.value.trim().toLowerCase();
-        const email = emailInput.value.trim();
+        const email = emailInput.value.trim().toLowerCase();
+        //const email = emailInput.value.trim();
         const password = passwordInput.value;
-
-        // --- 1. VALIDATION ---
-
-        // Email check
-        if (!emailRegex.test(email)) {
-          showError("Please enter a valid email address.");
-          return;
-        }
-
-        // Password granular check
-        if (password.length < 8) {
-          showError("Password must be at least 8 characters long.");
-          return;
-        }
-        if (!/[A-Z]/.test(password)) {
-          showError("Password must include at least one uppercase letter.");
-          return;
-        }
-        if (!/[a-z]/.test(password)) {
-          showError("Password must include at least one lowercase letter.");
-          return;
-        }
-        if (!/\d/.test(password)) {
-          showError("Password must include at least one number.");
-          return;
-        }
 
         // --- VALIDATION ---
 

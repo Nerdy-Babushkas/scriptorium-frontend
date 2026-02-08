@@ -117,7 +117,9 @@ router.get("/add-reflection", requireAuth, (req, res) => {
   res.render("pages/placeholder", { pageName: "Add Reflection" });
 });
 
-
+router.get("/verify-email", (req, res) => {
+  res.render("pages/verify-email");
+});
 
 router.use((req, res) => {
   res.status(404).render("pages/404");

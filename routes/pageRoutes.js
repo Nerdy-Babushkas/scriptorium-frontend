@@ -117,7 +117,18 @@ router.get("/add-reflection", requireAuth, (req, res) => {
   res.render("pages/placeholder", { pageName: "Add Reflection" });
 });
 
+router.get("/verify-email", (req, res) => {
+  res.render("pages/verify-email");
+});
 
+router.get("/forgot-password", (req, res) => {
+  res.render("pages/forgot-password");
+});
+
+router.get("/reset-password/:token", (req, res) => {
+  const { token } = req.params;
+  res.render("pages/reset-password", { token });
+});
 
 router.use((req, res) => {
   res.status(404).render("pages/404");

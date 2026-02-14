@@ -11,7 +11,20 @@
             <a href="/#about" class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">About</a>
             <a href="/#features" class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">Features</a>
             <a href="/contact" class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">Contact</a>
-            <a href="/login" class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">Login</a>
+            <% if (user) { %>
+                <form action="/logout" method="POST" class="inline">
+                    <button type="submit"
+                    class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">
+                        Logout
+                    </button>
+                </form>
+            <% } else { %>
+                <a href="/login"
+                class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">
+                Login
+                </a>
+            <% } %>
+
         </div>
 
         <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
@@ -25,7 +38,18 @@
         <a href="/#about" class="block text-white font-outfit text-lg">About</a>
         <a href="/#features" class="block text-white font-outfit text-lg">Features</a>
         <a href="/contact" class="block text-white font-outfit text-lg">Contact</a>
-        <a href="/login" class="block text-white font-outfit text-lg">Login</a>
+        <% if (user) { %>
+            <form action="/logout" method="POST">
+                <button type="submit" class="block text-white font-outfit text-lg">
+                    Logout
+                </button>
+            </form>
+        <% } else { %>
+            <a href="/login" class="block text-white font-outfit text-lg">
+                Login
+            </a>
+        <% } %>
+
     </div>
 </nav>
 

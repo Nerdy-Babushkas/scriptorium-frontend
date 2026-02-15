@@ -1,29 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Not Found - Scriptorium</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/js/tailwind.config.js"></script>
+    <%- include('../partials/head_public', { title: 'Page Not Found - Scriptorium' }) %>
 </head>
 <body class="bg-scriptorium-dark min-h-screen relative overflow-x-hidden font-outfit text-white flex flex-col">
 
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]" 
-             style="left: 177px; top: -210px;"></div>
-        <div class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]" 
-             style="left: 175px; top: 639px;"></div>
-        <div class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]" 
-             style="right: -193px; top: 294px;"></div>
-        <div class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]" 
-             style="left: -190px; top: 1728px;"></div>
-    </div>
+    <%- include('../partials/background_blobs') %>
 
-    <%- include('../partials/navbar') %>
+    <% if (typeof user !== 'undefined' && user) { %>
+        <%- include('../partials/navbar_app') %>
+    <% } else { %>
+        <%- include('../partials/navbar_public') %>
+    <% } %>
 
     <main class="flex-grow flex items-center justify-center relative z-10 pt-20 pb-12 px-6">
         <div class="container mx-auto max-w-6xl"> 
@@ -44,38 +32,27 @@
                     </p>
 
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-                        <a href="/room" 
-                           class="px-8 py-3 rounded-[50px] bg-[#06D6A0] hover:bg-[#00b885] text-white font-outfit text-lg font-bold uppercase tracking-widest transition-all shadow-lg transform hover:scale-105 text-center">
-                            Back to Room
-                        </a>
-                         <a href="/" 
-                           class="px-8 py-3 rounded-[50px] border border-[#118AB2] hover:bg-[#118AB2]/10 text-white font-outfit text-lg font-bold uppercase tracking-widest transition-all text-center">
-                            Go Home
-                        </a>
+                        <% if (typeof user !== 'undefined' && user) { %>
+                            <a href="/room" 
+                               class="px-8 py-3 rounded-[50px] bg-[#06D6A0] hover:bg-[#00b885] text-white font-outfit text-lg font-bold uppercase tracking-widest transition-all shadow-lg transform hover:scale-105 text-center">
+                                Back to Room
+                            </a>
+                        <% } else { %>
+                            <a href="/" 
+                               class="px-8 py-3 rounded-[50px] bg-[#06D6A0] hover:bg-[#00b885] text-white font-outfit text-lg font-bold uppercase tracking-widest transition-all shadow-lg transform hover:scale-105 text-center">
+                                Go Home
+                            </a>
+                        <% } %>
                     </div>
                 </div>
 
                 <div class="order-1 lg:order-2 flex justify-center">
-                    <img src="/assets/astro4.png" 
-                         alt="Lost Astronaut Reading" 
-                         class="w-full max-w-[400px] lg:max-w-[600px] h-auto drop-shadow-2xl animate-space-float">
+                    <%- include('../partials/floating_prop', { img: '/assets/astro4.png', alt: 'Rocket Launching' }) %>
                 </div>
 
             </div>
         </div>
     </main>
 
-    <style>
-        @keyframes space-float {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(-20px, -30px) rotate(-5deg); }
-            50% { transform: translate(0, -50px) rotate(0deg); }
-            75% { transform: translate(20px, -30px) rotate(5deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
-        }
-        .animate-space-float {
-            animation: space-float 12s ease-in-out infinite;
-        }
-    </style>
 </body>
 </html>

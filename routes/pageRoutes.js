@@ -106,6 +106,11 @@ router.get("/ai-recommendations", requireAuth, (req, res) => {
   res.render("pages/placeholder", { pageName: "AI Recommendations" });
 });
 
+router.get('/search', (req, res) => {
+    const query = req.query.q; // Capture query from URL
+    res.render('pages/search-results', { query }); // Pass it to view (optional, used in Navbar)
+});
+
 router.get("/currently-reading", requireAuth, (req, res) => {
   res.render("pages/placeholder", { pageName: "Currently Reading" });
 });

@@ -12,17 +12,18 @@ function getUserIdFromCookie(req) {
   const token = req.cookies?.token;
   if (!token) return null;
 
-  const decoded = jwt.decode(token); // skip auth: no signature check
+  const decoded = jwt.decode(token); // no signature check
   return decoded?._id || null;
 }
 
-// GET goals for logged-in user (cookie token must exist)
+// GET goals for logged-in user
 router.get("/user", async (req, res) => {
   try {
     const userId = getUserIdFromCookie(req);
     if (!userId) return res.status(401).json({ message: "Not logged in" });
 
-    const r = await fetch(`${BACKEND_BASE}/api/goals/noauth/user/${userId}`);
+    // NOTE: no /noauth needed if you added the :userId routes to routes/goals.js
+    const r = await fetch(`${BACKEND_BASE}/api/goals/user/${userId}`);
     const text = await r.text();
     res.status(r.status).send(text);
   } catch (e) {
@@ -36,10 +37,10 @@ router.post("/add", async (req, res) => {
     const userId = getUserIdFromCookie(req);
     if (!userId) return res.status(401).json({ message: "Not logged in" });
 
-    const r = await fetch(`${BACKEND_BASE}/api/goals/noauth/add`, {
+    const r = await fetch(`${BACKEND_BASE}/api/goals/add/${userId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, ...req.body }),
+      body: JSON.stringify(req.body), // DO NOT add userId here
     });
 
     const text = await r.text();
@@ -56,11 +57,11 @@ router.put("/update/:id", async (req, res) => {
     if (!userId) return res.status(401).json({ message: "Not logged in" });
 
     const r = await fetch(
-      `${BACKEND_BASE}/api/goals/noauth/update/${req.params.id}`,
+      `${BACKEND_BASE}/api/goals/update/${req.params.id}/${userId}`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, ...req.body }),
+        body: JSON.stringify(req.body), // DO NOT add userId here
       },
     );
 

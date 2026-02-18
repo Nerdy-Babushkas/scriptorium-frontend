@@ -24,23 +24,6 @@ const requireAuth = (req, res, next) => {
   }
 };
 
-router.use((req, res, next) => {
-  res.locals.user = null;
-
-  const token = req.cookies.token;
-
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      res.locals.user = decoded; // this makes <%= user %> available in EJS
-    } catch (err) {
-      res.clearCookie("token");
-    }
-  }
-
-  next();
-});
-
 router.get("/", (req, res) => {
   //done
 
@@ -87,7 +70,7 @@ router.get("/customise", requireAuth, (req, res) => {
 });
 
 router.get("/progress", requireAuth, (req, res) => {
-  res.render("pages/progress");
+  res.render("pages/placeholder", { pageName: "Progress" });
 });
 
 router.get("/library", requireAuth, (req, res) => {
@@ -145,16 +128,6 @@ router.get("/forgot-password", (req, res) => {
 router.get("/reset-password/:token", (req, res) => {
   const { token } = req.params;
   res.render("pages/reset-password", { token });
-});
-
-router.post("/logout", (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-  });
-
-  res.redirect("/");
 });
 
 router.use((req, res) => {

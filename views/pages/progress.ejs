@@ -152,120 +152,151 @@
     </div>
 
     <script>
-        // Mock Data
-        let goals = [
-            { id: 1, type: 'book', title: "Read 5 chapters of 'Mind's Relativity'", current: 4, total: 5, status: 'active' },
-            { id: 2, type: 'music', title: "Listen to 10 new artists", current: 8, total: 10, status: 'active' },
-            { id: 3, type: 'book', title: "Complete Reading list for this month", current: 2, total: 4, status: 'active' },
-            { id: 4, type: 'podcast', title: "Reflect on 5 podcasts", current: 1, total: 5, status: 'active' },
-            { id: 5, type: 'book', title: "Read 5 chapters of 'The Alchemist'", current: 5, total: 5, status: 'completed' },
-            { id: 6, type: 'music', title: "Listen to Jazz Classics", current: 2, total: 10, status: 'active' }, // Added to test scroll
-            { id: 7, type: 'book', title: "Read 'Dune' part 1", current: 1, total: 3, status: 'active' } // Added to test scroll
-        ];
+  let goals = [];
+  let currentFilter = "active";
 
-        let currentFilter = 'active';
+  const icons = {
+    book: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>`,
+    music: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>`,
+    podcast: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>`
+  };
 
-        const icons = {
-            book: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>`,
-            music: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>`,
-            podcast: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>`
-        };
+  function getCookie(name) {
+    const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+    return match ? decodeURIComponent(match[2]) : null;
+  }
 
-        function render() {
-            const container = document.getElementById('goals-container');
-            container.innerHTML = '';
-            
-            const filtered = goals.filter(g => g.status === currentFilter);
+  async function loadGoals() {
+    const token = getCookie("token");
+    if (!token) {
+      console.error("No token cookie found. Goals cannot be loaded.");
+      render();
+      return;
+    }
 
-            filtered.forEach(goal => {
-                const pct = Math.round((goal.current / goal.total) * 100);
-                
-                // Card Item
-                const item = document.createElement('div');
-                item.className = "group flex items-center gap-3 bg-teal-dark/30 hover:bg-teal-dark/50 border border-white/5 rounded-xl p-3 transition-colors shrink-0";
-                
-                item.innerHTML = `
-                    <div class="w-10 h-10 rounded-full bg-teal-neon flex items-center justify-center text-teal-dark shadow-sm shrink-0">
-                        ${icons[goal.type] || icons.book}
-                    </div>
-                    
-                    <div class="flex-grow min-w-0">
-                        <div class="flex justify-between items-end mb-1">
-                            <span class="text-sm font-medium text-white truncate pr-2">${goal.title}</span>
-                        </div>
-                        <div class="w-full h-2 bg-black/40 rounded-full overflow-hidden">
-                            <div class="h-full bg-teal-neon rounded-full" style="width: ${pct}%"></div>
-                        </div>
-                    </div>
+    const res = await fetch("/api/goals/user", {
+      headers: {
+        Authorization: `jwt ${token}`
+      }
+    });
 
-                    <div class="text-right shrink-0 min-w-[50px]">
-                        <div class="text-sm font-bold text-white">${goal.current}/${goal.total}</div>
-                        <div class="text-xs text-teal-neon/80">${pct}%</div>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-        }
+    if (!res.ok) {
+      console.error("Failed to load goals:", await res.text());
+      render();
+      return;
+    }
 
-        // --- Modal Logic ---
-        function openModal() {
-            const modal = document.getElementById('goal-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
+    goals = await res.json();
+    render();
+  }
 
-        function closeModal() {
-            const modal = document.getElementById('goal-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            // Clear inputs
-            document.getElementById('modal-title').value = '';
-            document.getElementById('modal-target').value = '';
-            document.getElementById('modal-current').value = '';
-        }
+  function render() {
+    const container = document.getElementById("goals-container");
+    container.innerHTML = "";
 
-        function saveGoalFromModal() {
-            const title = document.getElementById('modal-title').value;
-            const type = document.getElementById('modal-type').value;
-            const target = document.getElementById('modal-target').value;
-            const current = document.getElementById('modal-current').value || 0; // Default to 0 if empty
+    const filtered = goals.filter((g) => g.status === currentFilter);
 
-            if(!title || !target) return alert("Please fill in a title and target.");
+    filtered.forEach((goal) => {
+      const pct = goal.total > 0 ? Math.round((goal.current / goal.total) * 100) : 0;
 
-            goals.unshift({
-                id: Date.now(),
-                type: type,
-                title: title,
-                current: parseInt(current),
-                total: parseInt(target),
-                status: 'active'
-            });
+      const item = document.createElement("div");
+      item.className =
+        "group flex items-center gap-3 bg-teal-dark/30 hover:bg-teal-dark/50 border border-white/5 rounded-xl p-3 transition-colors shrink-0";
 
-            closeModal();
-            render();
-        }
+      item.innerHTML = `
+        <div class="w-10 h-10 rounded-full bg-teal-neon flex items-center justify-center text-teal-dark shadow-sm shrink-0">
+          ${icons[goal.type] || icons.book}
+        </div>
 
-        function filterGoals(status) {
-            currentFilter = status;
-            
-            const activeBtn = document.getElementById('btn-active');
-            const completedBtn = document.getElementById('btn-completed');
-            const activeClass = "bg-teal-neon/20 text-teal-neon border border-teal-neon";
-            const inactiveClass = "text-white/50 hover:text-white border-transparent";
+        <div class="flex-grow min-w-0">
+          <div class="flex justify-between items-end mb-1">
+            <span class="text-sm font-medium text-white truncate pr-2">${goal.title}</span>
+          </div>
+          <div class="w-full h-2 bg-black/40 rounded-full overflow-hidden">
+            <div class="h-full bg-teal-neon rounded-full" style="width: ${pct}%"></div>
+          </div>
+        </div>
 
-            if(status === 'active') {
-                activeBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${activeClass}`;
-                completedBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${inactiveClass}`;
-            } else {
-                completedBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${activeClass}`;
-                activeBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${inactiveClass}`;
-            }
-            render();
-        }
+        <div class="text-right shrink-0 min-w-[50px]">
+          <div class="text-sm font-bold text-white">${goal.current}/${goal.total}</div>
+          <div class="text-xs text-teal-neon/80">${pct}%</div>
+        </div>
+      `;
 
-        // Init
-        render();
+      container.appendChild(item);
+    });
+  }
 
-    </script>
+  function openModal() {
+    const modal = document.getElementById("goal-modal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+  }
+
+  function closeModal() {
+    const modal = document.getElementById("goal-modal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+
+    document.getElementById("modal-title").value = "";
+    document.getElementById("modal-type").value = "book";
+    document.getElementById("modal-target").value = "";
+    document.getElementById("modal-current").value = "";
+  }
+
+  async function saveGoalFromModal() {
+    const title = document.getElementById("modal-title").value.trim();
+    const type = document.getElementById("modal-type").value;
+    const total = Number(document.getElementById("modal-target").value);
+    const current = Number(document.getElementById("modal-current").value || 0);
+
+    if (!title || !total) return alert("Please fill in a title and target.");
+
+    const token = getCookie("token");
+    if (!token) return alert("Not logged in.");
+
+    const res = await fetch("/api/goals/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `jwt ${token}`
+      },
+      body: JSON.stringify({ title, type, current, total })
+    });
+
+    if (!res.ok) {
+      console.error("Failed to save goal:", await res.text());
+      return alert("Failed to save goal.");
+    }
+
+    const data = await res.json();
+    goals.unshift(data.goal);
+
+    closeModal();
+    render();
+  }
+
+  function filterGoals(status) {
+    currentFilter = status;
+
+    const activeBtn = document.getElementById("btn-active");
+    const completedBtn = document.getElementById("btn-completed");
+    const activeClass = "bg-teal-neon/20 text-teal-neon border border-teal-neon";
+    const inactiveClass = "text-white/50 hover:text-white border-transparent";
+
+    if (status === "active") {
+      activeBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${activeClass}`;
+      completedBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${inactiveClass}`;
+    } else {
+      completedBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${activeClass}`;
+      activeBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${inactiveClass}`;
+    }
+
+    render();
+  }
+
+  // Init
+  loadGoals();
+</script>
 </body>
 </html>

@@ -1,29 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Babushka - Scriptorium</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/js/tailwind.config.js"></script>
+    <%- include('../partials/head_public', { title: 'Contact Babushka - Scriptorium' }) %>
 </head>
 <body class="bg-scriptorium-dark min-h-screen relative overflow-x-hidden font-outfit text-white flex flex-col">
 
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]" 
-             style="left: 177px; top: -210px;"></div>
-        <div class="absolute w-[546px] h-[454px] rounded-full opacity-80 blur-[115px] bg-[#118AB2]" 
-             style="left: 175px; top: 639px;"></div>
-        <div class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]" 
-             style="right: -193px; top: 294px;"></div>
-        <div class="absolute w-[587px] h-[565px] rounded-full opacity-70 blur-[125px] bg-[#06D6A0]" 
-             style="left: -190px; top: 1728px;"></div>
-    </div>
-
-    <%- include('../partials/navbar') %>
+    <%- include('../partials/background_blobs') %>
+    <%- include('../partials/navbar_public') %>
 
     <main class="flex-grow flex items-center justify-center relative z-10 pt-20 pb-12 px-6">
         <div class="container mx-auto max-w-6xl">
@@ -72,30 +55,134 @@
                 </div>
 
                 <div class="order-1 lg:order-2 flex justify-center">
-                    <div class="relative">
-                        <div class="absolute inset-0 bg-[#06D6A0] rounded-full blur-[80px] opacity-20 animate-pulse"></div>
-                        
-                        <img src="/assets/doll.png" 
-                             alt="Cute 3D Matryoshka Doll" 
-                             class="w-full max-w-[400px] lg:max-w-[600px] h-auto drop-shadow-2xl animate-space-float object-contain">
-                    </div>
+                    <%- include('../partials/floating_prop', { img: '/assets/doll.png', alt: 'Cute 3D Matryoshka Doll' }) %>
                 </div>
 
             </div>
         </div>
+        
     </main>
+    <!-- ===== OUR BABUSHKAS SECTION ===== -->
+    <section class="mt-32 relative z-10 px-6">
+        <div class="max-w-6xl mx-auto space-y-28">
 
-    <style>
-        @keyframes space-float {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(-10px, -15px) rotate(-3deg); }
-            50% { transform: translate(0, -25px) rotate(0deg); }
-            75% { transform: translate(10px, -15px) rotate(3deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
-        }
-        .animate-space-float {
-            animation: space-float 8s ease-in-out infinite;
-        }
-    </style>
+            <div class="text-center space-y-4">
+                <h2 class="font-dancing text-5xl sm:text-6xl font-bold text-[#06D6A0]">
+                    Meet the Babushkas
+                </h2>
+                <p class="text-gray-300 font-roboto text-lg max-w-2xl mx-auto">
+                    Five minds. Five animals. One digital nesting doll.
+                </p>
+            </div>
+
+            <!-- Pranjal -->
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="flex justify-center">
+                    <img src="/assets/bunny-babushka.png"
+                        alt="Bunny Babushka - Pranjal Surjan"
+                        class="w-100 md:w-100 drop-shadow-2xl hover:scale-105 transition-transform duration-500">
+                </div>
+                <div class="space-y-6 text-center md:text-left">
+                    <h3 class="text-4xl font-bold text-[#06D6A0]">
+                        Pranjal Surjan
+                    </h3>
+                    <p class="text-[#118AB2] font-semibold text-lg">
+                        Team Captain · Frontend Lead
+                    </p>
+                    <p class="text-gray-300 leading-relaxed text-lg">
+                        She is doing tOOOOO much. Pranjal leads the team with a blend of vision and hands-on coding,
+                        shaping this amazing frontend experience while steering the project towards success.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Dylan -->
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="order-2 md:order-1 space-y-6 text-center md:text-left">
+                    <h3 class="text-4xl font-bold text-[#06D6A0]">
+                        Dylan Musiiwa
+                    </h3>
+                    <p class="text-[#118AB2] font-semibold text-lg">
+                        Gamification & Engagement Lead
+                    </p>
+                    <p class="text-gray-300 leading-relaxed text-lg">
+                        Playful and strategic. Dylan infuses gamification elements that captivate users, 
+                        creating an engaging and rewarding experience within our digital nesting doll.
+                    </p>
+                </div>
+                <div class="order-1 md:order-2 flex justify-center">
+                    <img src="/assets/panther-babushka.png"
+                        alt="Panther Babushka - Dylan Musiiwa"
+                        class="w-100 md:w-100 drop-shadow-2xl hover:scale-105 transition-transform duration-500">
+                </div>
+            </div>
+
+            <!-- Maksym -->
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="flex justify-center">
+                    <img src="/assets/penguin-babushka.png"
+                        alt="Penguin Babushka - Maksym Syromolot"
+                        class="w-100 md:w-100 drop-shadow-2xl hover:scale-105 transition-transform duration-500">
+                </div>
+                <div class="space-y-6 text-center md:text-left">
+                    <h3 class="text-4xl font-bold text-[#06D6A0]">
+                        Maksym Syromolot
+                    </h3>
+                    <p class="text-[#118AB2] font-semibold text-lg">
+                        Backend Engineer
+                    </p>
+                    <p class="text-gray-300 leading-relaxed text-lg">
+                        Maksym is our backend wizard, building robust and scalable systems that power our digital nesting doll.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Nelson -->
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="order-2 md:order-1 space-y-6 text-center md:text-left">
+                    <h3 class="text-4xl font-bold text-[#06D6A0]">
+                        Nelson Antonini
+                    </h3>
+                    <p class="text-[#118AB2] font-semibold text-lg">
+                        Backend Lead
+                    </p>
+                    <p class="text-gray-300 leading-relaxed text-lg">
+                        He is our team father ('papi' in Brazilian). 
+                        Nelson provides stability and guidance, ensuring our backend is robust and scalable 
+                        while mentoring the team with his experience and wisdom.
+                    </p>
+                </div>
+                <div class="order-1 md:order-2 flex justify-center">
+                    <img src="/assets/capybara-babushka.png"
+                        alt="Capybara Babushka - Nelson Antonini"
+                        class="w-100 md:w-100 drop-shadow-2xl hover:scale-105 transition-transform duration-500">
+                </div>
+            </div>
+
+            <!-- Harjasdeep -->
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="flex justify-center">
+                    <img src="/assets/sea-lion-babushka.png"
+                        alt="Sea Lion Babushka - Harjasdeep Singh"
+                        class="w-100 md:w-100 drop-shadow-2xl hover:scale-105 transition-transform duration-500">
+                </div>
+                <div class="space-y-6 text-center md:text-left">
+                    <h3 class="text-4xl font-bold text-[#06D6A0]">
+                        Harjasdeep Singh
+                    </h3>
+                    <p class="text-[#118AB2] font-semibold text-lg">
+                        Feature Engineer and Tester
+                    </p>
+                    <p class="text-gray-300 leading-relaxed text-lg">
+                        Harjasdeep is our feature maestro, crafting and testing new functionalities to ensure a 
+                        seamless user experience within our digital reflecting space.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
 </body>
 </html>

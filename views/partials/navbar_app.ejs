@@ -10,12 +10,7 @@
     </a>
 
     <div class="hidden md:flex flex-grow max-w-2xl">
-        <div class="w-full bg-[#A8A8A8] rounded-xl flex items-center px-4 py-2 shadow-inner transition-all focus-within:ring-2 focus-within:ring-scriptorium-gold/50">
-            <svg class="w-5 h-5 text-[#1E1E1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-            <input type="text" placeholder="Search..." class="w-full bg-transparent border-none outline-none font-outfit font-medium text-lg text-[#1E1E1E] placeholder-[#1E1E1E]/70 ml-3">
-        </div>
+        <%- include('./search_bar') %>
     </div>
 
     <div class="flex items-center gap-6 lg:gap-8 whitespace-nowrap">
@@ -58,27 +53,8 @@
             </div>
         </nav>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const profileBtn = document.getElementById('profile-menu-btn');
-                const dropdown = document.getElementById('profile-dropdown');
 
-                if (profileBtn && dropdown) {
-                    // Toggle menu on click
-                    profileBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        dropdown.classList.toggle('hidden');
-                    });
-
-                    // Close menu when clicking anywhere else
-                    document.addEventListener('click', (e) => {
-                        if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
-                            dropdown.classList.add('hidden');
-                        }
-                    });
-                }
-            });
-        </script>
+       <script src="/js/navbar.js"></script>
 
         <style>
             @keyframes fadeInDown {

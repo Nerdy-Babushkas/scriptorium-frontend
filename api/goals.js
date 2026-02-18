@@ -1,17 +1,28 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
+
 const router = express.Router();
 
 const BACKEND_BASE =
   process.env.BACKEND_BASE_URL ||
   "https://scriptorium-backend-git-dylan-nerdy-babushkas-projects.vercel.app";
 
-// GET goals for user
+// helper: cookie token -> userId (NO verify)
+function getUserIdFromCookie(req) {
+  const token = req.cookies?.token;
+  if (!token) return null;
+
+  const decoded = jwt.decode(token); // skip auth: no signature check
+  return decoded?._id || null;
+}
+
+// GET goals for logged-in user (cookie token must exist)
 router.get("/user", async (req, res) => {
   try {
-    const auth = req.headers.authorization || "";
-    const r = await fetch(`${BACKEND_BASE}/api/goals/user`, {
-      headers: { Authorization: auth },
-    });
+    const userId = getUserIdFromCookie(req);
+    if (!userId) return res.status(401).json({ message: "Not logged in" });
+
+    const r = await fetch(`${BACKEND_BASE}/api/goals/noauth/user/${userId}`);
     const text = await r.text();
     res.status(r.status).send(text);
   } catch (e) {
@@ -22,15 +33,15 @@ router.get("/user", async (req, res) => {
 // ADD goal
 router.post("/add", async (req, res) => {
   try {
-    const auth = req.headers.authorization || "";
-    const r = await fetch(`${BACKEND_BASE}/api/goals/add`, {
+    const userId = getUserIdFromCookie(req);
+    if (!userId) return res.status(401).json({ message: "Not logged in" });
+
+    const r = await fetch(`${BACKEND_BASE}/api/goals/noauth/add`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: auth,
-      },
-      body: JSON.stringify(req.body),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, ...req.body }),
     });
+
     const text = await r.text();
     res.status(r.status).send(text);
   } catch (e) {
@@ -41,15 +52,18 @@ router.post("/add", async (req, res) => {
 // UPDATE goal progress
 router.put("/update/:id", async (req, res) => {
   try {
-    const auth = req.headers.authorization || "";
-    const r = await fetch(`${BACKEND_BASE}/api/goals/update/${req.params.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: auth,
+    const userId = getUserIdFromCookie(req);
+    if (!userId) return res.status(401).json({ message: "Not logged in" });
+
+    const r = await fetch(
+      `${BACKEND_BASE}/api/goals/noauth/update/${req.params.id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, ...req.body }),
       },
-      body: JSON.stringify(req.body),
-    });
+    );
+
     const text = await r.text();
     res.status(r.status).send(text);
   } catch (e) {

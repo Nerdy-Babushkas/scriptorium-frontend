@@ -151,38 +151,26 @@
         </div>
     </div>
 
-    <script>
+ <script>
   let goals = [];
   let currentFilter = "active";
+  const API_BASE = "";
 
   const icons = {
     book: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>`,
     music: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>`,
-    podcast: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>`
+    podcast: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>`,
   };
 
-  function getCookie(name) {
-    const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-    return match ? decodeURIComponent(match[2]) : null;
-  }
-
   async function loadGoals() {
-    const token = getCookie("token");
-    if (!token) {
-      console.error("No token cookie found. Goals cannot be loaded.");
-      render();
-      return;
-    }
-
-    const res = await fetch(`/api/goals/user`, {
+    const res = await fetch(`${API_BASE}/api/goals/user`, {
       method: "GET",
-      headers: {
-        Authorization: `jwt ${token}`,
-      },
+      credentials: "include",
     });
 
     if (!res.ok) {
       console.error("Failed to load goals:", await res.text());
+      goals = [];
       render();
       return;
     }
@@ -198,7 +186,8 @@
     const filtered = goals.filter((g) => g.status === currentFilter);
 
     filtered.forEach((goal) => {
-      const pct = goal.total > 0 ? Math.round((goal.current / goal.total) * 100) : 0;
+      const pct =
+        goal.total > 0 ? Math.round((goal.current / goal.total) * 100) : 0;
 
       const item = document.createElement("div");
       item.className =
@@ -253,15 +242,10 @@
 
     if (!title || !total) return alert("Please fill in a title and target.");
 
-    const token = getCookie("token");
-    if (!token) return alert("Not logged in.");
-
-    const res = await fetch(`/api/goals/add`, {
+    const res = await fetch(`${API_BASE}/api/goals/add`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `jwt ${token}`,
-      },
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, type, current, total }),
     });
 
@@ -275,6 +259,26 @@
 
     closeModal();
     render();
+  }
+
+  async function updateGoalProgress(id, current) {
+    const res = await fetch(`${API_BASE}/api/goals/update/${id}`, {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ current }),
+    });
+
+    if (!res.ok) {
+      console.error("Failed to update goal:", await res.text());
+      return false;
+    }
+
+    const data = await res.json();
+    const idx = goals.findIndex((g) => g._id === id || g.id === id);
+    if (idx !== -1 && data.goal) goals[idx] = data.goal;
+    render();
+    return true;
   }
 
   function filterGoals(status) {
@@ -298,6 +302,7 @@
 
   loadGoals();
 </script>
+
 
 </body>
 </html>

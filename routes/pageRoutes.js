@@ -27,7 +27,7 @@ const requireAuth = (req, res, next) => {
 router.get("/", (req, res) => {
   //done
 
-  res.render("pages/viewProgress");
+  res.render("pages/landing");
 });
 
 router.get("/login", (req, res) => {

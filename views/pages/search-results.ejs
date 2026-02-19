@@ -61,22 +61,32 @@
                     </h1>
                     
                     <div class="flex bg-black/30 rounded-full p-1 w-max border border-white/10">
-                        <button class="px-6 py-1.5 rounded-full bg-[#00C49A]/20 text-[#00C49A] border border-[#00C49A] font-medium text-sm transition-all shadow-[0_0_10px_rgba(0,196,154,0.2)]">
+                        <a href="#" id="tab-books" class="px-6 py-1.5 rounded-full border border-transparent font-medium text-sm transition-all text-white/50 hover:text-white">
                             Books
-                        </button>
-                        <button class="px-6 py-1.5 rounded-full text-white/50 hover:text-white border border-transparent font-medium text-sm transition-all cursor-not-allowed">
+                        </a>
+                        <a href="#" id="tab-music" class="px-6 py-1.5 rounded-full border border-transparent font-medium text-sm transition-all text-white/50 hover:text-white">
                             Music
-                        </button>
+                        </a>
                         <button class="px-6 py-1.5 rounded-full text-white/50 hover:text-white border border-transparent font-medium text-sm transition-all cursor-not-allowed">
                             Movies
                         </button>
                     </div>
                 </div>
 
-                <button id="toggleFilters" class="group flex items-center gap-2 px-5 py-2 rounded-full border border-[#00C49A]/50 text-[#00C49A] hover:bg-[#00C49A]/10 hover:border-[#00C49A] transition-all font-medium text-sm">
-                    <span>Advanced Filters</span>
-                    <svg id="chevronIcon" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </button>
+                <div class="flex flex-col items-end gap-4">
+                    <div class="flex gap-3 text-sm font-medium text-white/60">
+                        <a href="/library" class="hover:text-[#00C49A] transition-colors">Library</a>
+                        <span>|</span>
+                        <a href="/music" class="hover:text-[#00C49A] transition-colors">Music</a>
+                        <span>|</span>
+                        <a href="/theatre" class="hover:text-[#00C49A] transition-colors">Theatre</a>
+                    </div>
+
+                    <button id="toggleFilters" class="group flex items-center gap-2 px-5 py-2 rounded-full border border-[#00C49A]/50 text-[#00C49A] hover:bg-[#00C49A]/10 hover:border-[#00C49A] transition-all font-medium text-sm">
+                        <span>Advanced Filters</span>
+                        <svg id="chevronIcon" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                </div>
             </div>
 
             <div id="filterPanel" class="hidden mb-12 p-8 glass-card rounded-3xl relative animate-fade-in-down border-[#00C49A]/20">
@@ -215,13 +225,13 @@
                     <svg class="w-5 h-5 text-[#00C49A] opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 </button>
 
-                <button class="shelf-btn w-full p-4 rounded-xl bg-white/5 border border-white/5 hover:border-[#00C49A] hover:bg-[#00C49A]/10 transition-all flex items-center justify-between group" data-shelf="reading">
-                    <div class="flex items-center gap-4">
-                        <span class="text-2xl group-hover:scale-110 transition-transform">📖</span>
-                        <span class="font-bold text-white group-hover:text-[#00C49A]">Currently Reading</span>
-                    </div>
-                    <svg class="w-5 h-5 text-[#00C49A] opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                </button>
+                <button id="btn-reading" class="shelf-btn w-full p-4 rounded-xl bg-white/5 border border-white/5 hover:border-[#00C49A] hover:bg-[#00C49A]/10 transition-all flex items-center justify-between group" data-shelf="reading">
+                <div class="flex items-center gap-4">
+                    <span id="btn-reading-icon" class="text-2xl group-hover:scale-110 transition-transform">📖</span>
+                    <span id="btn-reading-text" class="font-bold text-white group-hover:text-[#00C49A]">Currently Reading</span>
+                </div>
+                <svg class="w-5 h-5 text-[#00C49A] opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </button>
 
                 <button class="shelf-btn w-full p-4 rounded-xl bg-white/5 border border-white/5 hover:border-[#00C49A] hover:bg-[#00C49A]/10 transition-all flex items-center justify-between group" data-shelf="finished">
                     <div class="flex items-center gap-4">

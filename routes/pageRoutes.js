@@ -135,8 +135,8 @@ router.get("/add-music", requireAuth, (req, res) => {
   res.render("pages/placeholder", { pageName: "Add Music" });
 });
 
-router.get("/add-reflection", requireAuth, (req, res) => {
-  res.render("pages/placeholder", { pageName: "Add Reflection" });
+router.get('/add-reflection', (req, res) => {
+    res.render('pages/add-reflection');
 });
 
 router.get("/verify-email", (req, res) => {

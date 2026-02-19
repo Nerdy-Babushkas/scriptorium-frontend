@@ -27,18 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 2. DROPDOWN POPULATION ---
     async function loadDropdownItems() {
         try {
-            // Fetch Books, Music, and Movies
-            const [booksRes, musicRes, moviesRes] = await Promise.all([
+            const [booksRes, musicRes] = await Promise.all([
                 fetch('https://scriptorium-backend-six.vercel.app/api/books/shelf', { headers: { 'Authorization': `jwt ${token}` } }),
-                fetch('https://scriptorium-backend-six.vercel.app/api/music/shelf', { headers: { 'Authorization': `jwt ${token}` } }),
-                fetch('https://scriptorium-backend-six.vercel.app/api/movies/shelf', { headers: { 'Authorization': `jwt ${token}` } })
+                fetch('https://scriptorium-backend-six.vercel.app/api/music/shelf', { headers: { 'Authorization': `jwt ${token}` } })
             ]);
 
             const booksData = await booksRes.json();
             const musicData = await musicRes.json();
-            const moviesData = await moviesRes.json();
 
-            // Flatten lists including Favorites for all categories
+            // Combine all relevant shelves including Favorites
             const rawBooks = [
                 ...(booksData.favorites || []), 
                 ...(booksData.reading || []), 
@@ -49,18 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 ...(musicData.listening || []), 
                 ...(musicData.finished || [])
             ];
-            const rawMovies = [
-                ...(moviesData.favorites || []),
-                ...(moviesData.watching || []),
-                ...(moviesData.watched || [])
-            ];
 
-            // Remove duplicates
+            // Remove duplicates (e.g. item in both 'reading' and 'favorites')
             const uniqueBooks = Array.from(new Map(rawBooks.map(item => [item._id, item])).values());
             const uniqueTracks = Array.from(new Map(rawTracks.map(item => [item._id, item])).values());
-            const uniqueMovies = Array.from(new Map(rawMovies.map(item => [item._id, item])).values());
 
-            if (uniqueBooks.length === 0 && uniqueTracks.length === 0 && uniqueMovies.length === 0) {
+            if (uniqueBooks.length === 0 && uniqueTracks.length === 0) {
                 const opt = document.createElement('option');
                 opt.text = "No items in your active shelves";
                 itemSelect.add(opt);
@@ -104,24 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 itemSelect.appendChild(group);
             }
 
-            // Populate Movies Group
-            if (uniqueMovies.length > 0) {
-                const group = document.createElement('optgroup');
-                group.label = "Movies";
-                uniqueMovies.forEach(m => {
-                    const opt = document.createElement('option');
-                    opt.value = JSON.stringify({ 
-                        id: m._id, 
-                        type: 'movie', 
-                        title: m.title, 
-                        image: (m.poster && m.poster !== "N/A") ? m.poster : null
-                    });
-                    opt.text = `${m.title} (${m.year})`;
-                    group.appendChild(opt);
-                });
-                itemSelect.appendChild(group);
-            }
-
         } catch (error) {
             console.error(error);
             showToast('Error', 'Failed to load shelf items', 'error');
@@ -129,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 3. UI INTERACTIONS ---
+    
     moodBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const mood = btn.dataset.mood;
@@ -154,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const text = textArea.value.trim();
         const itemVal = itemSelect.value;
 
-        if (!itemVal) return showToast('Warning', 'Please select a book, track, or movie', 'error');
+        if (!itemVal) return showToast('Warning', 'Please select a book or track', 'error');
         if (text.length < 30) return showToast('Warning', 'Reflection must be at least 30 characters', 'error');
 
         const itemData = JSON.parse(itemVal);
@@ -173,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveBtn.textContent = 'Processing...';
 
         try {
+            // Updated to use the singular path 'reflection'
             let url = 'https://scriptorium-backend-six.vercel.app/api/reflection/add';
             let method = 'POST';
 
@@ -205,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- 4. HISTORY ---
+    
     async function loadHistory() {
         loadingHistory.classList.remove('hidden');
         historyList.innerHTML = '';
@@ -234,20 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderCard(ref) {
         const date = new Date(ref.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         const title = ref.metadata?.title || "Unknown Item";
-        
-        // Dynamic icons and placeholders
-        let typeIcon = '📖';
-        let fallback = 'https://via.placeholder.com/50?text=Item';
-        
-        if (ref.itemType === 'track') {
-            typeIcon = '🎵';
-            fallback = 'https://via.placeholder.com/50?text=Music';
-        } else if (ref.itemType === 'movie') {
-            typeIcon = '🎬';
-            fallback = 'https://via.placeholder.com/50?text=Movie';
-        }
-
-        const image = ref.metadata?.image || fallback;
+        const image = ref.metadata?.image || (ref.itemType === 'book' ? 'https://via.placeholder.com/50?text=Book' : 'https://via.placeholder.com/50?text=Music');
         
         const div = document.createElement('div');
         div.className = "bg-white/5 border border-white/5 rounded-xl p-4 hover:border-[#00C49A]/50 transition-all group flex gap-4";
@@ -267,7 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 <div class="flex justify-between items-center mt-2">
                     <div class="flex flex-wrap gap-2">
-                        <span>${typeIcon}</span>
                         ${ref.moodTags.map(m => `<span class="px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-white/60">${m}</span>`).join('')}
                     </div>
                     
@@ -304,6 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.toggle('selected', selectedMoods.includes(btn.dataset.mood));
         });
 
+        // Match the dropdown item
         for (let i = 0; i < itemSelect.options.length; i++) {
             try {
                 const optVal = JSON.parse(itemSelect.options[i].value);

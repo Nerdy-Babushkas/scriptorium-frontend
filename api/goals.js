@@ -74,12 +74,12 @@ router.put("/update/:id", async (req, res) => {
 });
 
 // DELETE goal
-router.delete("/delete/:id", async (req, res) => {
+router.delete("/delete/:id/:userId", async (req, res) => {
   try {
-    const userId = getUserIdFromCookie(req);
+    const { id, userId } = req.params;
     if (!userId) return res.status(401).json({ message: "Not logged in" });
 
-    const r = await fetch(`${BACKEND_BASE}/api/goals/delete/${req.params.id}/${userId}`, {
+    const r = await fetch(`${BACKEND_BASE}/api/goals/delete/${id}/${userId}`, {
       method: "DELETE",
     });
 
@@ -89,6 +89,7 @@ router.delete("/delete/:id", async (req, res) => {
     res.status(500).json({ message: "Proxy error", error: String(e) });
   }
 });
+
 
 
 module.exports = router;

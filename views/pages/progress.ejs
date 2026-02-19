@@ -165,6 +165,19 @@
     podcast: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>`,
   };
 
+  function getUserIdFromCookie() {
+  const match = document.cookie.match(/(?:^|;\s*)token=([^;]+)/);
+  if (!match) return null;
+
+  try {
+    const jwt = match[1].split(".")[1];
+    const payload = JSON.parse(atob(jwt.replace(/-/g, "+").replace(/_/g, "/")));
+    return payload._id || payload.id || payload.userId || null;
+  } catch {
+    return null;
+  }
+}
+
   function getGoalId(goal) {
     return goal._id || goal.id;
   }
@@ -246,14 +259,17 @@
       `;
 
       // Click to select + edit (active only)
-      item.addEventListener("click", () => {
-        selectedGoalId = id;
-        render(); // highlight selected
+   item.addEventListener("click", (e) => {
+  if (e.target.closest(".goal-bar")) return;
 
-        if (goal.status === "active") {
-          openEditModal(goal);
-        }
-      });
+  selectedGoalId = id;
+  render();
+
+  if (goal.status === "active") {
+    openEditModal(goal);
+  }
+});
+
 
       // Enable drag editing only for active goals (on the bar)
       const bar = item.querySelector(".goal-bar");
@@ -428,32 +444,40 @@
     render();
   }
 
-  async function deleteSelectedActiveGoal() {
-    if (!selectedGoalId) return alert("Select an active goal first.");
-
-    const goal = goals.find((g) => (g._id || g.id) === selectedGoalId);
-    if (!goal) return;
-
-    // ✅ compute completion instead of trusting status
-    const total = Number(goal.total || 0);
-    const current = Number(goal.current || 0);
-    const isCompleted = total > 0 && current >= total;
-    if (isCompleted) return alert("You can only delete active goals.");
-
-    const res = await fetch(`${API_BASE}/api/goals/delete/${selectedGoalId}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
-
-    if (!res.ok) {
-      console.error("Failed to delete goal:", await res.text());
-      return alert("Failed to delete goal.");
-    }
-
-    goals = goals.filter((g) => (g._id || g.id) !== selectedGoalId);
-    selectedGoalId = null;
-    render();
+  async function deleteSelectedActiveGoal(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
   }
+
+  if (!selectedGoalId) return alert("Select an active goal first.");
+
+  const goal = goals.find(g => (g._id || g.id) === selectedGoalId);
+  if (!goal) return;
+
+  const total = Number(goal.total || 0);
+  const current = Number(goal.current || 0);
+  const isCompleted = total > 0 && current >= total;
+  if (isCompleted) return alert("You can only delete active goals.");
+
+  const userId = getUserIdFromCookie();
+  if (!userId) return alert("Not logged in (missing token).");
+
+  const res = await fetch(`${API_BASE}/api/goals/delete/${selectedGoalId}/${userId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    console.error("Failed to delete goal:", await res.text());
+    return alert("Failed to delete goal.");
+  }
+
+  goals = goals.filter(g => (g._id || g.id) !== selectedGoalId);
+  selectedGoalId = null;
+  render();
+}
+
 
   // ✅ render() removed from here to avoid double-renders
   async function updateGoalProgress(id, current) {

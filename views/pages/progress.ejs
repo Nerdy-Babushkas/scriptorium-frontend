@@ -259,9 +259,19 @@
       `;
 
       // Click to select + edit (active only)
-   item.addEventListener("click", (e) => {
+  // Single click = select only
+item.addEventListener("click", (e) => {
+  if (e.target.closest(".goal-bar")) return; // bar interactions shouldn't select/open modal
+
+  selectedGoalId = id;
+  render();
+});
+
+// Double click = edit (active only)
+item.addEventListener("dblclick", (e) => {
   if (e.target.closest(".goal-bar")) return;
 
+  // ensure it's selected too
   selectedGoalId = id;
   render();
 
@@ -269,6 +279,7 @@
     openEditModal(goal);
   }
 });
+
 
 
       // Enable drag editing only for active goals (on the bar)
@@ -290,19 +301,21 @@
 
   function attachBarDrag(bar, item) {
     bar.addEventListener("pointerdown", (e) => {
-      e.stopPropagation();
+  e.preventDefault();
+  e.stopPropagation();
 
-      const id = bar.dataset.id;
-      const total = Number(bar.dataset.total);
+  const id = bar.dataset.id;
+  const total = Number(bar.dataset.total);
 
-      dragState.active = true;
-      dragState.id = id;
-      dragState.total = total;
-      dragState.item = item;
+  dragState.active = true;
+  dragState.id = id;
+  dragState.total = total;
+  dragState.item = item;
 
-      bar.setPointerCapture(e.pointerId);
-      updateBarFromPointer(e);
-    });
+  bar.setPointerCapture(e.pointerId);
+  updateBarFromPointer(e);
+});
+
 
     bar.addEventListener("pointermove", (e) => {
       if (!dragState.active) return;

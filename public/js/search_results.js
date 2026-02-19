@@ -1,5 +1,3 @@
-//frontend/public/js/search_results.js
-
 document.addEventListener('DOMContentLoaded', () => {
     
     // --- ELEMENTS ---
@@ -7,117 +5,146 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingState = document.getElementById('loadingState');
     const emptyState = document.getElementById('emptyState');
     const queryDisplay = document.getElementById('queryDisplay');
-    
-    // Filter Elements
-    const toggleFiltersBtn = document.getElementById('toggleFilters');
-    const filterPanel = document.getElementById('filterPanel');
-    const chevron = document.getElementById('chevronIcon');
-    const applyFiltersBtn = document.getElementById('applyFilters');
-    
-    // Input Fields
-    const filterGenre = document.getElementById('filterGenre');
-    const filterAuthor = document.getElementById('filterAuthor');
-    const filterYearFrom = document.getElementById('filterYearFrom');
-    const filterYearTo = document.getElementById('filterYearTo');
-
-    // Modal Elements
     const shelfModal = document.getElementById('shelfModal');
-    const modalBookTitle = document.getElementById('modalBookTitle');
-    const closeModalBtn = document.getElementById('closeModal');
-    const shelfButtons = document.querySelectorAll('.shelf-btn');
     
-    let currentBookData = null;
+    // Tab Elements
+    const tabBooks = document.getElementById('tab-books');
+    const tabMusic = document.getElementById('tab-music');
+
+    // Modal Dynamic Elements
+    const modalBookTitle = document.getElementById('modalBookTitle');
+    const btnReading = document.getElementById('btn-reading');
+    const btnReadingText = document.getElementById('btn-reading-text');
+    const btnReadingIcon = document.getElementById('btn-reading-icon');
+    
+    let currentItemData = null;
+    let currentType = 'books'; // Default
 
     // --- 1. INITIALIZATION ---
     const urlParams = new URLSearchParams(window.location.search);
     const initialQuery = urlParams.get('q');
+    currentType = urlParams.get('type') || 'books';
+
+    // Update Tabs UI & Search Bar Context
+    updateTabs(currentType);
+    updateSearchContext(currentType);
 
     if (initialQuery) {
         queryDisplay.textContent = initialQuery;
-        executeSearch(initialQuery);
+        executeSearch(initialQuery, currentType);
     } else {
         emptyState.classList.remove('hidden');
         queryDisplay.textContent = "Empty";
     }
 
-    // --- 2. SEARCH LOGIC ---
-    async function executeSearch(baseQuery) {
+    // --- 2. TAB SWITCHING LOGIC ---
+    function switchTab(type) {
+        if (currentType === type) return;
+        
+        // Update URL without reloading
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('type', type);
+        window.history.pushState({}, '', newUrl);
+        
+        currentType = type;
+        updateTabs(type);
+        updateSearchContext(type); // Ensure next search uses this type
+        
+        // Re-run search if query exists
+        const query = new URLSearchParams(window.location.search).get('q');
+        if (query) executeSearch(query, type);
+    }
+
+    // Bind Click Events
+    if(tabBooks) tabBooks.onclick = (e) => { e.preventDefault(); switchTab('books'); };
+    if(tabMusic) tabMusic.onclick = (e) => { e.preventDefault(); switchTab('music'); };
+
+    // --- 3. SEARCH LOGIC ---
+    async function executeSearch(query, type) {
         resultsGrid.innerHTML = '';
         emptyState.classList.add('hidden');
         loadingState.classList.remove('hidden');
 
-        // Construct Query for Google Books API
-        // "q" parameter can take special keywords like "inauthor:", "subject:" (genre), etc.
-        let apiQuery = baseQuery;
-
-        if (!filterPanel.classList.contains('hidden')) {
-            if (filterAuthor.value.trim()) apiQuery += `+inauthor:${filterAuthor.value.trim()}`;
-            if (filterGenre.value.trim()) apiQuery += `+subject:${filterGenre.value.trim()}`;
-            // Note: Date ranges are harder in Google Books simple API, filtering client-side or check API docs for strict ranges
-        }
-
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`https://scriptorium-backend-six.vercel.app/api/books/search?q=${encodeURIComponent(apiQuery)}`, {
-                headers: { 'Authorization': `jwt ${token}` }
-            });
+            let endpoint = '';
+            
+            if (type === 'music') {
+                endpoint = `https://scriptorium-backend-six.vercel.app/api/music/search?q=${encodeURIComponent(query)}`;
+            } else {
+                endpoint = `https://scriptorium-backend-six.vercel.app/api/books/search?q=${encodeURIComponent(query)}`;
+            }
+
+            const res = await fetch(endpoint, { headers: { 'Authorization': `jwt ${token}` } });
             const data = await res.json();
 
             loadingState.classList.add('hidden');
 
-            if (data.books && data.books.length > 0) {
-                // Client-side filtering for Years if needed
-                let books = data.books;
-                if (filterYearFrom.value) {
-                    books = books.filter(b => b.publishedDate && parseInt(b.publishedDate) >= parseInt(filterYearFrom.value));
-                }
-                if (filterYearTo.value) {
-                    books = books.filter(b => b.publishedDate && parseInt(b.publishedDate) <= parseInt(filterYearTo.value));
-                }
+            const items = type === 'music' ? data.tracks : data.books;
 
-                if(books.length > 0) renderBooks(books);
-                else showEmpty();
+            if (items && items.length > 0) {
+                renderItems(items, type);
             } else {
-                showEmpty();
+                emptyState.classList.remove('hidden');
             }
 
         } catch (error) {
             console.error(error);
             loadingState.classList.add('hidden');
-            showToast('Error', 'Failed to fetch results.', false);
+            // showToast('Error', 'Failed to fetch results.', 'error');
         }
     }
 
-    function showEmpty() {
-        emptyState.classList.remove('hidden');
-    }
+    // --- 4. RENDER ITEMS ---
+    function renderItems(items, type) {
+        items.forEach(item => {
+            let title, subtitle, image, id, year;
+            
+            if (type === 'music') {
+                title = item.title;
+                subtitle = item.artist?.name || 'Unknown Artist';
+                year = item.release?.date ? item.release.date.substring(0, 4) : '';
+                // Placeholder Logic for Music
+                if (item.coverUrl) {
+                    image = `<img src="${item.coverUrl}" alt="${title}" class="h-48 w-48 shadow-2xl rounded-full animate-spin-slow object-cover border-4 border-[#1a1a1a]">`;
+                } else {
+                    // Fallback to Vinyl Icon
+                    image = `
+                    <div class="h-48 w-48 rounded-full bg-[#1a1a1a] flex items-center justify-center shadow-2xl border-4 border-[#333] relative">
+                        <div class="absolute inset-0 rounded-full border-2 border-white/10" style="margin: 10px;"></div>
+                        <div class="absolute inset-0 rounded-full border-2 border-white/10" style="margin: 25px;"></div>
+                        <div class="absolute inset-0 rounded-full border-2 border-white/10" style="margin: 40px;"></div>
+                        <div class="w-16 h-16 bg-[#00C49A] rounded-full flex items-center justify-center">
+                            <svg class="w-8 h-8 text-[#05181c]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
+                        </div>
+                    </div>`;
+                }
+            } else {
+                title = item.title;
+                subtitle = item.authors ? item.authors[0] : 'Unknown';
+                year = item.publishedDate ? item.publishedDate.substring(0, 4) : 'N/A';
+                const thumb = item.imageLinks?.thumbnail || 'https://via.placeholder.com/150x220?text=No+Cover';
+                image = `<img src="${thumb}" alt="${title}" class="h-48 w-auto shadow-2xl rounded-md group-hover:scale-105 transition-transform duration-300">`;
+            }
 
-    // --- 3. RENDER CARDS (CRISP STYLE) ---
-    function renderBooks(books) {
-        books.forEach(book => {
-            const thumbnail = book.imageLinks?.thumbnail || 'https://via.placeholder.com/150x220?text=No+Cover';
-            const author = book.authors ? book.authors[0] : 'Unknown';
-            const year = book.publishedDate ? book.publishedDate.substring(0, 4) : 'N/A';
-            const bookJson = encodeURIComponent(JSON.stringify(book));
+            const itemJson = encodeURIComponent(JSON.stringify(item));
 
             const card = document.createElement('div');
-            // Matches the "Harry Potter" card style in your screenshot
-            card.className = "group bg-[#0f191e] border border-white/10 rounded-2xl overflow-hidden hover:border-teal-neon transition-all duration-300 flex flex-col hover:shadow-[0_0_20px_rgba(0,196,154,0.2)]";
+            card.className = "group bg-[#0f191e] border border-white/10 rounded-2xl overflow-hidden hover:border-[#00C49A] transition-all duration-300 flex flex-col hover:shadow-[0_0_20px_rgba(0,196,154,0.1)]";
             
             card.innerHTML = `
-                <div class="relative p-6 flex justify-center bg-black/20">
-                    <img src="${thumbnail}" alt="${book.title}" class="h-48 w-auto shadow-2xl rounded-md group-hover:scale-105 transition-transform duration-300">
+                <div class="relative p-6 flex justify-center bg-black/20 overflow-hidden">
+                    ${image}
                 </div>
                 
                 <div class="p-5 flex-grow flex flex-col">
-                    <h3 class="text-white font-bold text-lg leading-tight mb-1 line-clamp-2" title="${book.title}">${book.title}</h3>
-                    <p class="text-[#00C49A] text-sm font-semibold mb-1">${author}</p>
+                    <h3 class="text-white font-bold text-lg leading-tight mb-1 line-clamp-2" title="${title}">${title}</h3>
+                    <p class="text-[#00C49A] text-sm font-semibold mb-1">${subtitle}</p>
                     <p class="text-white/40 text-xs mb-4">${year}</p>
                     
                     <div class="mt-auto">
-
                         <button class="add-trigger-btn w-full py-3 bg-[#1a2c33] text-white border border-white/10 rounded-xl font-bold transition-all flex items-center justify-center gap-2 hover:bg-[#00C49A] hover:text-[#05181c] hover:border-[#00C49A] hover:shadow-lg"
-                            data-book="${bookJson}" data-title="${book.title}">
+                                data-item="${itemJson}" data-title="${title}">
                             <span class="text-xl leading-none">+</span> Add to Library
                         </button>
                     </div>
@@ -129,122 +156,109 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add Listeners
         document.querySelectorAll('.add-trigger-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                currentBookData = JSON.parse(decodeURIComponent(e.currentTarget.dataset.book));
+                currentItemData = JSON.parse(decodeURIComponent(e.currentTarget.dataset.item));
                 modalBookTitle.textContent = e.currentTarget.dataset.title;
-                shelfModal.classList.remove('hidden');
+                openModal();
             });
         });
     }
 
-    // --- 4. UI INTERACTION ---
-    
-    // Toggle Advanced Filters
-    toggleFiltersBtn.addEventListener('click', () => {
-        const isHidden = filterPanel.classList.contains('hidden');
-        if (isHidden) {
-            filterPanel.classList.remove('hidden');
-            chevron.style.transform = 'rotate(180deg)';
+    // --- 5. MODAL LOGIC ---
+    function openModal() {
+        shelfModal.classList.remove('hidden');
+        
+        // Dynamically update the 3rd button based on type
+        if (currentType === 'music') {
+            btnReading.dataset.shelf = 'listening'; // Change ID
+            btnReadingText.textContent = 'Currently Listening';
+            btnReadingIcon.textContent = '🎧';
         } else {
-            filterPanel.classList.add('hidden');
-            chevron.style.transform = 'rotate(0deg)';
+            btnReading.dataset.shelf = 'reading'; // Change ID
+            btnReadingText.textContent = 'Currently Reading';
+            btnReadingIcon.textContent = '📖';
         }
-    });
+    }
 
-    // Clear Button Logic for Inputs
-    document.querySelectorAll('.crisp-input').forEach(input => {
-        input.addEventListener('input', (e) => {
-            const btn = e.target.parentElement.querySelector('.clear-btn');
-            if(btn) btn.classList.toggle('hidden', !e.target.value);
-        });
-    });
-
-    document.querySelectorAll('.clear-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const input = e.target.parentElement.querySelector('input');
-            input.value = '';
-            btn.classList.add('hidden');
-        });
-    });
-
-    // Apply Filters
-    applyFiltersBtn.addEventListener('click', () => {
-        const currentQuery = new URLSearchParams(window.location.search).get('q');
-        if(currentQuery) executeSearch(currentQuery);
-    });
-
-    // --- 5. SHELF SAVING ---
-    shelfButtons.forEach(btn => {
+    document.querySelectorAll('.shelf-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
-            // Get the dataset value directly from the button or its closest parent
-            const targetBtn = e.target.closest('.shelf-btn');
-            const shelf = targetBtn.dataset.shelf;
-            
-            if (!currentBookData || !shelf) return;
+            // Use currentTarget to ensure we get the button, not the icon/text inside
+            const shelf = e.currentTarget.dataset.shelf;
+            if (!currentItemData || !shelf) return;
             
             shelfModal.classList.add('hidden');
-            showToast('Adding...', `Saving to your ${shelf} shelf`, 'info');
+            showToast('Adding...', `Saving to ${shelf}...`, 'info');
             
-            await processBookAddition(currentBookData, shelf);
+            await addToShelf(currentItemData, shelf, currentType);
         });
     });
 
-    closeModalBtn.addEventListener('click', () => {
-        shelfModal.classList.add('hidden');
-        currentBookData = null;
-    });
-
-    async function processBookAddition(bookData, shelf) {
+    async function addToShelf(data, shelf, type) {
         try {
             const token = localStorage.getItem('token');
-            if (!token) return showToast('Error', 'Please log in first.', 'error');
+            const endpoint = type === 'music' 
+                ? 'https://scriptorium-backend-six.vercel.app/api/music/shelf/add'
+                : 'https://scriptorium-backend-six.vercel.app/api/books/shelf/add';
 
-            const payload = { ...bookData, shelf: shelf };
+            const payload = { ...data, shelf: shelf };
 
-            const res = await fetch('https://scriptorium-backend-six.vercel.app/api/books/shelf/add', {
+            const res = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `jwt ${token}` },
                 body: JSON.stringify(payload)
             });
 
             if (res.ok) {
-                showToast('Success', `Book added to ${shelf}`, 'success');
+                showToast('Success', `Added to ${shelf}!`, 'success');
             } else {
                 const err = await res.json();
-                showToast('Warning', err.message || 'Could not add to shelf', 'error');
+                showToast('Warning', err.message || 'Failed to add.', 'error');
             }
         } catch (e) {
             console.error(e);
-            showToast('Error', 'Network error occurred', 'error');
+            showToast('Error', 'Network error.', 'error');
         }
     }
 
-    // --- TOAST NOTIFICATION ---
+    // --- UTILS ---
+    function updateTabs(type) {
+        const activeClass = "bg-[#00C49A]/20 text-[#00C49A] border-[#00C49A] shadow-[0_0_10px_rgba(0,196,154,0.2)]";
+        const inactiveClass = "text-white/50 hover:text-white border-transparent";
+
+        if (type === 'music') {
+            if(tabMusic) tabMusic.className = `px-6 py-1.5 rounded-full border font-medium text-sm transition-all ${activeClass}`;
+            if(tabBooks) tabBooks.className = `px-6 py-1.5 rounded-full border font-medium text-sm transition-all ${inactiveClass}`;
+        } else {
+            if(tabBooks) tabBooks.className = `px-6 py-1.5 rounded-full border font-medium text-sm transition-all ${activeClass}`;
+            if(tabMusic) tabMusic.className = `px-6 py-1.5 rounded-full border font-medium text-sm transition-all ${inactiveClass}`;
+        }
+    }
+
+    // This ensures that if you search again from the top bar, it keeps the current mode
+    function updateSearchContext(type) {
+        const searchForm = document.querySelector('form[action="/search"]');
+        if (searchForm) {
+            // Check if input exists, if not create it
+            let typeInput = searchForm.querySelector('input[name="type"]');
+            if (!typeInput) {
+                typeInput = document.createElement('input');
+                typeInput.type = 'hidden';
+                typeInput.name = 'type';
+                searchForm.appendChild(typeInput);
+            }
+            typeInput.value = type;
+        }
+    }
+
+    // Toast & Close Modal
     function showToast(title, msg, type) {
         const toast = document.getElementById('toast');
-        const tTitle = document.getElementById('toastTitle');
-        const tMsg = document.getElementById('toastMessage');
-        const tIcon = document.getElementById('toastIcon');
-
-        tTitle.textContent = title;
-        tMsg.textContent = msg;
-
-        // Styles based on type
-        if (type === 'success') {
-            toast.className = `fixed bottom-8 right-8 flex items-center gap-4 px-6 py-4 bg-[#064e3b] border-l-4 border-teal-neon rounded-xl shadow-2xl text-white transform transition-transform duration-500 z-[100]`;
-            tTitle.className = "font-bold text-lg text-teal-neon";
-            tIcon.textContent = "✅";
-        } else if (type === 'error') {
-            toast.className = `fixed bottom-8 right-8 flex items-center gap-4 px-6 py-4 bg-[#450a0a] border-l-4 border-red-500 rounded-xl shadow-2xl text-white transform transition-transform duration-500 z-[100]`;
-            tTitle.className = "font-bold text-lg text-red-500";
-            tIcon.textContent = "⚠️";
-        } else {
-            toast.className = `fixed bottom-8 right-8 flex items-center gap-4 px-6 py-4 bg-[#1e293b] border-l-4 border-blue-500 rounded-xl shadow-2xl text-white transform transition-transform duration-500 z-[100]`;
-            tTitle.className = "font-bold text-lg text-blue-400";
-            tIcon.textContent = "ℹ️";
-        }
-
-        // Animation
+        document.getElementById('toastTitle').textContent = title;
+        document.getElementById('toastMessage').textContent = msg;
+        toast.className = `fixed bottom-8 right-8 flex items-center gap-4 px-6 py-4 bg-[#0f191e] border-l-4 ${type === 'success' ? 'border-[#00C49A] text-[#00C49A]' : 'border-red-500 text-red-500'} rounded-xl shadow-2xl text-white transform transition-transform duration-500 z-[100]`;
         toast.classList.remove('translate-y-40');
         setTimeout(() => toast.classList.add('translate-y-40'), 3500);
     }
+    
+    const closeModal = document.getElementById('closeModal');
+    if(closeModal) closeModal.addEventListener('click', () => shelfModal.classList.add('hidden'));
 });

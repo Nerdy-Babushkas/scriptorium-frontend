@@ -1,3 +1,4 @@
+//api/goals.js
 const express = require("express");
 const jwt = require("jsonwebtoken");
 
@@ -71,5 +72,23 @@ router.put("/update/:id", async (req, res) => {
     res.status(500).json({ message: "Proxy error", error: String(e) });
   }
 });
+
+// DELETE goal
+router.delete("/delete/:id", async (req, res) => {
+  try {
+    const userId = getUserIdFromCookie(req);
+    if (!userId) return res.status(401).json({ message: "Not logged in" });
+
+    const r = await fetch(`${BACKEND_BASE}/api/goals/delete/${req.params.id}/${userId}`, {
+      method: "DELETE",
+    });
+
+    const text = await r.text();
+    res.status(r.status).send(text);
+  } catch (e) {
+    res.status(500).json({ message: "Proxy error", error: String(e) });
+  }
+});
+
 
 module.exports = router;

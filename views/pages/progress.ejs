@@ -104,7 +104,7 @@
                     Add a Goal
                 </button>
                 <a href="/room" class="bg-danger text-white font-outfit font-bold text-sm px-8 py-3 rounded-full uppercase tracking-wider hover:bg-red-600 hover:scale-105 transition-all shadow-lg">
-                    Cancel
+                    Delete a Goal
                 </a>
             </div>
 
@@ -154,6 +154,9 @@
  <script>
   let goals = [];
   let currentFilter = "active";
+  let selectedGoalId = null;
+  let editingGoalId = null;
+
   const API_BASE = "";
 
   const icons = {
@@ -161,6 +164,10 @@
     music: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>`,
     podcast: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>`,
   };
+
+  function getGoalId(goal) {
+    return goal._id || goal.id;
+  }
 
   async function loadGoals() {
     const res = await fetch(`${API_BASE}/api/goals/user`, {
@@ -179,143 +186,190 @@
     render();
   }
 
- function render() {
-  const container = document.getElementById("goals-container");
-  container.innerHTML = "";
+  function render() {
+    const container = document.getElementById("goals-container");
+    container.innerHTML = "";
 
-  // Normalize status in case backend doesn't set it consistently
-  const normalized = goals.map((g) => {
-    const total = Number(g.total || 0);
-    const current = Number(g.current || 0);
-    const isDone = total > 0 && current >= total;
-
-    // If status missing, infer it (doesn't break backend logic)
-    const status = g.status ? g.status : (isDone ? "completed" : "active");
-
-    return { ...g, total, current, status };
-  });
-
-  const filtered = normalized.filter((g) => g.status === currentFilter);
-
-  filtered.forEach((goal) => {
-    const pct = goal.total > 0 ? Math.round((goal.current / goal.total) * 100) : 0;
-
-    const item = document.createElement("div");
-    item.className =
-      "group flex items-center gap-3 bg-teal-dark/30 hover:bg-teal-dark/50 border border-white/5 rounded-xl p-3 transition-colors shrink-0";
-
-    const sliderHtml =
-      goal.status === "active"
-        ? `
-          <input
-            type="range"
-            min="0"
-            max="${goal.total}"
-            value="${goal.current}"
-            class="goal-slider w-full mt-2 accent-[#00C49A]"
-            data-id="${goal._id || goal.id}"
-          />
-        `
-        : "";
-
-    item.innerHTML = `
-      <div class="w-10 h-10 rounded-full bg-teal-neon flex items-center justify-center text-teal-dark shadow-sm shrink-0">
-        ${icons[goal.type] || icons.book}
-      </div>
-
-      <div class="flex-grow min-w-0">
-        <div class="flex justify-between items-end mb-1">
-          <span class="text-sm font-medium text-white truncate pr-2">${goal.title}</span>
-        </div>
-
-        <div class="w-full h-2 bg-black/40 rounded-full overflow-hidden">
-          <div class="goal-fill h-full bg-teal-neon rounded-full" style="width:${pct}%"></div>
-        </div>
-
-        ${sliderHtml}
-      </div>
-
-      <div class="text-right shrink-0 min-w-[70px]">
-        <div class="goal-count text-sm font-bold text-white">${goal.current}/${goal.total}</div>
-        <div class="goal-pct text-xs text-teal-neon/80">${pct}%</div>
-      </div>
-    `;
-
-    container.appendChild(item);
-
-    // Attach slider behavior (only for active goals)
-    if (goal.status === "active") {
-      const slider = item.querySelector(".goal-slider");
-      const fill = item.querySelector(".goal-fill");
-      const count = item.querySelector(".goal-count");
-      const pctEl = item.querySelector(".goal-pct");
-
-      wireSlider(slider, goal, fill, count, pctEl);
-    }
-  });
-}
-
-function wireSlider(slider, goal, fillEl, countEl, pctEl) {
-  let pendingValue = goal.current;
-
-  const updateUI = (val) => {
-    const current = Number(val);
-    pendingValue = current;
-
-    const pct = goal.total > 0 ? Math.round((current / goal.total) * 100) : 0;
-    fillEl.style.width = `${Math.min(pct, 100)}%`;
-    countEl.textContent = `${current}/${goal.total}`;
-    pctEl.textContent = `${Math.min(pct, 100)}%`;
-  };
-
-  // Live update while sliding
-  slider.addEventListener("input", (e) => {
-    updateUI(e.target.value);
-  });
-
-  const commit = async () => {
-    const id = goal._id || goal.id;
-    const newCurrent = Number(pendingValue);
-
-    // Save to backend
-    const ok = await updateGoalProgress(id, newCurrent);
-    if (!ok) return;
-
-    // Update local status for tab movement (without breaking backend)
-    const idx = goals.findIndex((g) => (g._id || g.id) === id);
-    if (idx !== -1) {
-      const total = Number(goals[idx].total || 0);
-      const current = Number(goals[idx].current || newCurrent);
-
-      // If backend returned updated goal in updateGoalProgress, goals[idx] already replaced.
-      // Ensure status matches completion:
+    // ✅ Persist normalized status back into goals (keeps delete/edit consistent)
+    goals = goals.map((g) => {
+      const total = Number(g.total || 0);
+      const current = Number(g.current || 0);
       const done = total > 0 && current >= total;
-      goals[idx].status = done ? "completed" : "active";
-    }
+      const status = g.status ? g.status : done ? "completed" : "active";
+      return { ...g, total, current, status };
+    });
 
-    // If it completed, keep user on Active tab but it will disappear from Active list,
-    // and appear in Completed tab.
-    render();
+    const filtered = goals.filter((g) => g.status === currentFilter);
+
+    filtered.forEach((goal) => {
+      const id = getGoalId(goal);
+      const pct = goal.total > 0 ? Math.round((goal.current / goal.total) * 100) : 0;
+
+      const item = document.createElement("div");
+      item.dataset.id = id;
+
+      const isSelected = selectedGoalId === id;
+
+      item.className =
+        `group flex items-center gap-3 border rounded-xl p-3 transition-colors shrink-0 ` +
+        (goal.status === "completed"
+          ? "bg-white/5 border-white/5 opacity-80"
+          : "bg-teal-dark/30 hover:bg-teal-dark/50 border-white/5 ") +
+        (isSelected ? " ring-2 ring-teal-neon" : "");
+
+      item.innerHTML = `
+        <div class="w-10 h-10 rounded-full bg-teal-neon flex items-center justify-center text-teal-dark shadow-sm shrink-0">
+          ${icons[goal.type] || icons.book}
+        </div>
+
+        <div class="flex-grow min-w-0">
+          <div class="flex justify-between items-end mb-1">
+            <span class="text-sm font-medium text-white truncate pr-2">${goal.title}</span>
+          </div>
+
+          <div 
+            class="goal-bar w-full h-2 bg-black/40 rounded-full overflow-hidden ${
+              goal.status === "active" ? "cursor-ew-resize" : ""
+            }"
+            data-id="${id}"
+            data-total="${goal.total}"
+            data-status="${goal.status}"
+          >
+            <div class="goal-fill h-full bg-teal-neon rounded-full" style="width:${pct}%"></div>
+          </div>
+        </div>
+
+        <div class="text-right shrink-0 min-w-[70px]">
+          <div class="goal-count text-sm font-bold text-white">${goal.current}/${goal.total}</div>
+          <div class="goal-pct text-xs text-teal-neon/80">${pct}%</div>
+        </div>
+      `;
+
+      // Click to select + edit (active only)
+      item.addEventListener("click", () => {
+        selectedGoalId = id;
+        render(); // highlight selected
+
+        if (goal.status === "active") {
+          openEditModal(goal);
+        }
+      });
+
+      // Enable drag editing only for active goals (on the bar)
+      const bar = item.querySelector(".goal-bar");
+      if (goal.status === "active") {
+        attachBarDrag(bar, item);
+      }
+
+      container.appendChild(item);
+    });
+  }
+
+  let dragState = {
+    active: false,
+    id: null,
+    total: 0,
+    item: null,
   };
 
-  // Save when user finishes dragging
-  slider.addEventListener("mouseup", commit);
-  slider.addEventListener("touchend", commit);
-  slider.addEventListener("change", commit);
-}
+  function attachBarDrag(bar, item) {
+    bar.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
 
+      const id = bar.dataset.id;
+      const total = Number(bar.dataset.total);
 
+      dragState.active = true;
+      dragState.id = id;
+      dragState.total = total;
+      dragState.item = item;
+
+      bar.setPointerCapture(e.pointerId);
+      updateBarFromPointer(e);
+    });
+
+    bar.addEventListener("pointermove", (e) => {
+      if (!dragState.active) return;
+      updateBarFromPointer(e);
+    });
+
+    bar.addEventListener("pointerup", async () => {
+      if (!dragState.active) return;
+      dragState.active = false;
+
+      const id = dragState.id;
+      const goal = goals.find((g) => (g._id || g.id) === id);
+      if (!goal) return;
+
+      const newCurrent = Number(goal.current);
+      await updateGoalProgress(id, newCurrent);
+
+      // ensure local status matches completion
+      const idx = goals.findIndex((g) => (g._id || g.id) === id);
+      if (idx !== -1) {
+        const total = Number(goals[idx].total || 0);
+        const current = Number(goals[idx].current || 0);
+        goals[idx].status = total > 0 && current >= total ? "completed" : "active";
+      }
+
+      render();
+    });
+  }
+
+  function updateBarFromPointer(e) {
+    const item = dragState.item;
+    if (!item) return;
+
+    const bar = item.querySelector(".goal-bar");
+    const fill = item.querySelector(".goal-fill");
+    const countEl = item.querySelector(".goal-count");
+    const pctEl = item.querySelector(".goal-pct");
+
+    const rect = bar.getBoundingClientRect();
+    let pct = (e.clientX - rect.left) / rect.width;
+    pct = Math.max(0, Math.min(1, pct));
+
+    const current = Math.round(pct * dragState.total);
+    const pctDisplay = Math.round(pct * 100);
+
+    fill.style.width = `${pctDisplay}%`;
+    countEl.textContent = `${current}/${dragState.total}`;
+    pctEl.textContent = `${pctDisplay}%`;
+
+    const idx = goals.findIndex((g) => (g._id || g.id) === dragState.id);
+    if (idx !== -1) goals[idx].current = current;
+  }
+
+  function openEditModal(goal) {
+    editingGoalId = getGoalId(goal);
+
+    openModal();
+
+    document.getElementById("modal-title").value = goal.title || "";
+    document.getElementById("modal-type").value = goal.type || "book";
+    document.getElementById("modal-target").value = goal.total ?? "";
+    document.getElementById("modal-current").value = goal.current ?? 0;
+  }
 
   function openModal() {
     const modal = document.getElementById("goal-modal");
     modal.classList.remove("hidden");
     modal.classList.add("flex");
+
+    if (!editingGoalId) {
+      document.getElementById("modal-title").value = "";
+      document.getElementById("modal-type").value = "book";
+      document.getElementById("modal-target").value = "";
+      document.getElementById("modal-current").value = "";
+    }
   }
 
   function closeModal() {
     const modal = document.getElementById("goal-modal");
     modal.classList.add("hidden");
     modal.classList.remove("flex");
+
+    editingGoalId = null;
 
     document.getElementById("modal-title").value = "";
     document.getElementById("modal-type").value = "book";
@@ -330,6 +384,30 @@ function wireSlider(slider, goal, fillEl, countEl, pctEl) {
     const current = Number(document.getElementById("modal-current").value || 0);
 
     if (!title || !total) return alert("Please fill in a title and target.");
+
+    if (editingGoalId) {
+      const res = await fetch(`${API_BASE}/api/goals/update/${editingGoalId}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, type, total, current }),
+      });
+
+      if (!res.ok) {
+        console.error("Failed to update goal:", await res.text());
+        return alert("Failed to update goal.");
+      }
+
+      const data = await res.json();
+      const updated = data.goal || data;
+
+      const idx = goals.findIndex((g) => (g._id || g.id) === editingGoalId);
+      if (idx !== -1) goals[idx] = updated;
+
+      closeModal();
+      render();
+      return;
+    }
 
     const res = await fetch(`${API_BASE}/api/goals/add`, {
       method: "POST",
@@ -350,6 +428,34 @@ function wireSlider(slider, goal, fillEl, countEl, pctEl) {
     render();
   }
 
+  async function deleteSelectedActiveGoal() {
+    if (!selectedGoalId) return alert("Select an active goal first.");
+
+    const goal = goals.find((g) => (g._id || g.id) === selectedGoalId);
+    if (!goal) return;
+
+    // ✅ compute completion instead of trusting status
+    const total = Number(goal.total || 0);
+    const current = Number(goal.current || 0);
+    const isCompleted = total > 0 && current >= total;
+    if (isCompleted) return alert("You can only delete active goals.");
+
+    const res = await fetch(`${API_BASE}/api/goals/delete/${selectedGoalId}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      console.error("Failed to delete goal:", await res.text());
+      return alert("Failed to delete goal.");
+    }
+
+    goals = goals.filter((g) => (g._id || g.id) !== selectedGoalId);
+    selectedGoalId = null;
+    render();
+  }
+
+  // ✅ render() removed from here to avoid double-renders
   async function updateGoalProgress(id, current) {
     const res = await fetch(`${API_BASE}/api/goals/update/${id}`, {
       method: "PUT",
@@ -364,9 +470,9 @@ function wireSlider(slider, goal, fillEl, countEl, pctEl) {
     }
 
     const data = await res.json();
-    const idx = goals.findIndex((g) => g._id === id || g.id === id);
+    const idx = goals.findIndex((g) => (g._id || g.id) === id);
     if (idx !== -1 && data.goal) goals[idx] = data.goal;
-    render();
+
     return true;
   }
 
@@ -391,6 +497,7 @@ function wireSlider(slider, goal, fillEl, countEl, pctEl) {
 
   loadGoals();
 </script>
+
 
 
 </body>

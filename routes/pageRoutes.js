@@ -1,3 +1,4 @@
+//routes/pageRoutes.js
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
@@ -40,6 +41,9 @@ router.use((req, res, next) => {
 
   next();
 });
+
+router.use("/api/goals", require("../api/goals"));
+
 
 router.get("/", (req, res) => {
   //done
@@ -165,4 +169,5 @@ router.post("/logout", (req, res) => {
 router.use((req, res) => {
   res.status(404).render("pages/404");
 });
+
 module.exports = router;

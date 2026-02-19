@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Tab Elements
     const tabBooks = document.getElementById('tab-books');
     const tabMusic = document.getElementById('tab-music');
+    const tabMovies = document.getElementById('tab-movies'); // New
 
     // Modal Dynamic Elements
     const modalBookTitle = document.getElementById('modalBookTitle');
@@ -58,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Bind Click Events
     if(tabBooks) tabBooks.onclick = (e) => { e.preventDefault(); switchTab('books'); };
     if(tabMusic) tabMusic.onclick = (e) => { e.preventDefault(); switchTab('music'); };
+    if(tabMovies) tabMovies.onclick = (e) => { e.preventDefault(); switchTab('movies'); }; // New
 
     // --- 3. SEARCH LOGIC ---
     async function executeSearch(query, type) {
@@ -69,8 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('token');
             let endpoint = '';
             
+            // Choose endpoint based on active tab
             if (type === 'music') {
                 endpoint = `https://scriptorium-backend-six.vercel.app/api/music/search?q=${encodeURIComponent(query)}`;
+            } else if (type === 'movies') {
+                endpoint = `https://scriptorium-backend-six.vercel.app/api/movies/search?q=${encodeURIComponent(query)}`;
             } else {
                 endpoint = `https://scriptorium-backend-six.vercel.app/api/books/search?q=${encodeURIComponent(query)}`;
             }
@@ -80,7 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             loadingState.classList.add('hidden');
 
-            const items = type === 'music' ? data.tracks : data.books;
+            // Handle different data structures from the backend
+            let items = [];
+            if (type === 'music') items = data.tracks;
+            else if (type === 'movies') items = data.movies;
+            else items = data.books;
 
             if (items && items.length > 0) {
                 renderItems(items, type);
@@ -91,40 +100,38 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(error);
             loadingState.classList.add('hidden');
-            // showToast('Error', 'Failed to fetch results.', 'error');
+            showToast('Error', 'Failed to fetch results.', 'error');
         }
     }
 
     // --- 4. RENDER ITEMS ---
     function renderItems(items, type) {
         items.forEach(item => {
-            let title, subtitle, image, id, year;
+            let title, subtitle, image, year;
             
             if (type === 'music') {
                 title = item.title;
                 subtitle = item.artist?.name || 'Unknown Artist';
                 year = item.release?.date ? item.release.date.substring(0, 4) : '';
-                // Placeholder Logic for Music
-                if (item.coverUrl) {
-                    image = `<img src="${item.coverUrl}" alt="${title}" class="h-48 w-48 shadow-2xl rounded-full animate-spin-slow object-cover border-4 border-[#1a1a1a]">`;
-                } else {
-                    // Fallback to Vinyl Icon
-                    image = `
-                    <div class="h-48 w-48 rounded-full bg-[#1a1a1a] flex items-center justify-center shadow-2xl border-4 border-[#333] relative">
-                        <div class="absolute inset-0 rounded-full border-2 border-white/10" style="margin: 10px;"></div>
-                        <div class="absolute inset-0 rounded-full border-2 border-white/10" style="margin: 25px;"></div>
-                        <div class="absolute inset-0 rounded-full border-2 border-white/10" style="margin: 40px;"></div>
+                image = item.coverUrl 
+                    ? `<img src="${item.coverUrl}" alt="${title}" class="h-48 w-48 shadow-2xl rounded-full animate-spin-slow object-cover border-4 border-[#1a1a1a]">`
+                    : `<div class="h-48 w-48 rounded-full bg-[#1a1a1a] flex items-center justify-center shadow-2xl border-4 border-[#333] relative">
                         <div class="w-16 h-16 bg-[#00C49A] rounded-full flex items-center justify-center">
-                            <svg class="w-8 h-8 text-[#05181c]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
+                            <svg class="w-8 h-8 text-[#05181c]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
                         </div>
-                    </div>`;
-                }
+                       </div>`;
+            } else if (type === 'movies') {
+                title = item.title;
+                subtitle = item.type ? item.type.toUpperCase() : 'Movie';
+                year = item.year || 'N/A';
+                const poster = (item.poster && item.poster !== "N/A") ? item.poster : 'https://via.placeholder.com/300x450?text=No+Poster';
+                image = `<img src="${poster}" alt="${title}" class="h-48 w-auto shadow-2xl rounded-md group-hover:scale-105 transition-transform duration-300 object-cover">`;
             } else {
                 title = item.title;
                 subtitle = item.authors ? item.authors[0] : 'Unknown';
                 year = item.publishedDate ? item.publishedDate.substring(0, 4) : 'N/A';
                 const thumb = item.imageLinks?.thumbnail || 'https://via.placeholder.com/150x220?text=No+Cover';
-                image = `<img src="${thumb}" alt="${title}" class="h-48 w-auto shadow-2xl rounded-md group-hover:scale-105 transition-transform duration-300">`;
+                image = `<img src="${thumb}" alt="${title}" class="h-48 w-auto shadow-2xl rounded-md group-hover:scale-105 transition-transform duration-300 object-cover">`;
             }
 
             const itemJson = encodeURIComponent(JSON.stringify(item));
@@ -167,13 +174,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function openModal() {
         shelfModal.classList.remove('hidden');
         
-        // Dynamically update the 3rd button based on type
+        // Dynamically update labels based on current search type
         if (currentType === 'music') {
-            btnReading.dataset.shelf = 'listening'; // Change ID
+            btnReading.dataset.shelf = 'listening';
             btnReadingText.textContent = 'Currently Listening';
             btnReadingIcon.textContent = '🎧';
+        } else if (currentType === 'movies') {
+            btnReading.dataset.shelf = 'watching';
+            btnReadingText.textContent = 'Currently Watching';
+            btnReadingIcon.textContent = '🎬';
         } else {
-            btnReading.dataset.shelf = 'reading'; // Change ID
+            btnReading.dataset.shelf = 'reading';
             btnReadingText.textContent = 'Currently Reading';
             btnReadingIcon.textContent = '📖';
         }
@@ -181,7 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.shelf-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
-            // Use currentTarget to ensure we get the button, not the icon/text inside
             const shelf = e.currentTarget.dataset.shelf;
             if (!currentItemData || !shelf) return;
             
@@ -195,9 +205,11 @@ document.addEventListener('DOMContentLoaded', () => {
     async function addToShelf(data, shelf, type) {
         try {
             const token = localStorage.getItem('token');
-            const endpoint = type === 'music' 
-                ? 'https://scriptorium-backend-six.vercel.app/api/music/shelf/add'
-                : 'https://scriptorium-backend-six.vercel.app/api/books/shelf/add';
+            let endpoint = '';
+            
+            if (type === 'music') endpoint = 'https://scriptorium-backend-six.vercel.app/api/music/shelf/add';
+            else if (type === 'movies') endpoint = 'https://scriptorium-backend-six.vercel.app/api/movies/shelf/add';
+            else endpoint = 'https://scriptorium-backend-six.vercel.app/api/books/shelf/add';
 
             const payload = { ...data, shelf: shelf };
 
@@ -224,20 +236,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeClass = "bg-[#00C49A]/20 text-[#00C49A] border-[#00C49A] shadow-[0_0_10px_rgba(0,196,154,0.2)]";
         const inactiveClass = "text-white/50 hover:text-white border-transparent";
 
-        if (type === 'music') {
-            if(tabMusic) tabMusic.className = `px-6 py-1.5 rounded-full border font-medium text-sm transition-all ${activeClass}`;
-            if(tabBooks) tabBooks.className = `px-6 py-1.5 rounded-full border font-medium text-sm transition-all ${inactiveClass}`;
-        } else {
-            if(tabBooks) tabBooks.className = `px-6 py-1.5 rounded-full border font-medium text-sm transition-all ${activeClass}`;
-            if(tabMusic) tabMusic.className = `px-6 py-1.5 rounded-full border font-medium text-sm transition-all ${inactiveClass}`;
-        }
+        const tabs = {
+            'books': tabBooks,
+            'music': tabMusic,
+            'movies': tabMovies
+        };
+
+        Object.keys(tabs).forEach(key => {
+            if (tabs[key]) {
+                tabs[key].className = `px-6 py-1.5 rounded-full border font-medium text-sm transition-all ${key === type ? activeClass : inactiveClass}`;
+            }
+        });
     }
 
-    // This ensures that if you search again from the top bar, it keeps the current mode
     function updateSearchContext(type) {
         const searchForm = document.querySelector('form[action="/search"]');
         if (searchForm) {
-            // Check if input exists, if not create it
             let typeInput = searchForm.querySelector('input[name="type"]');
             if (!typeInput) {
                 typeInput = document.createElement('input');
@@ -249,7 +263,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Toast & Close Modal
     function showToast(title, msg, type) {
         const toast = document.getElementById('toast');
         document.getElementById('toastTitle').textContent = title;

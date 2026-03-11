@@ -30,14 +30,34 @@
                             <input type="email" id="email" required class="w-full h-14 px-6 bg-transparent border border-[#118AB2] rounded-[50px] text-white placeholder-white/50 focus:outline-none focus:border-[#06D6A0] transition-colors shadow-sm" />
                         </div>
 
-                        <div>
+                        <div class="relative">
                             <label class="font-roboto text-lg font-bold text-white block mb-1">Password</label>
-                            <input type="password" id="password" required class="w-full h-14 px-6 bg-transparent border border-[#118AB2] rounded-[50px] text-white placeholder-white/50 focus:outline-none focus:border-[#06D6A0] transition-colors shadow-sm" />
+
+                            <input type="password"
+                                id="password"
+                                required
+                                class="w-full h-14 px-6 pr-14 bg-transparent border border-[#118AB2] rounded-[50px] text-white placeholder-white/50 focus:outline-none focus:border-[#06D6A0] transition-colors shadow-sm" />
+
+                            <button type="button"
+                                id="togglePassword"
+                                class="absolute right-5 top-[45px] text-white/70 hover:text-white">
+                                👁
+                            </button>
                         </div>
 
-                        <div>
+                        <div class="relative">
                             <label class="font-roboto text-lg font-bold text-white block mb-1">Confirm Password</label>
-                            <input type="password" id="confirmPassword" required class="w-full h-14 px-6 bg-transparent border border-[#118AB2] rounded-[50px] text-white placeholder-white/50 focus:outline-none focus:border-[#06D6A0] transition-colors shadow-sm" />
+
+                            <input type="password"
+                                id="confirmPassword"
+                                required
+                                class="w-full h-14 px-6 pr-14 bg-transparent border border-[#118AB2] rounded-[50px] text-white placeholder-white/50 focus:outline-none focus:border-[#06D6A0] transition-colors shadow-sm" />
+
+                            <button type="button"
+                                id="toggleConfirmPassword"
+                                class="absolute right-5 top-[45px] text-white/70 hover:text-white">
+                                👁
+                            </button>
                         </div>
 
                         <div id="formMessage" class="hidden mt-3 px-5 py-4 rounded-2xl border text-lg font-medium transition-all"></div>

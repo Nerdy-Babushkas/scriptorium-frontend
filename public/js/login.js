@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
       passwordInput.getAttribute("type") === "password" ? "text" : "password";
     passwordInput.setAttribute("type", type);
 
-    toggle.textContent = type === "password" ? "👁" : "🙈";
+    toggle.textContent = type === "password" ? "👁" : "⌣";
   });
 
   // 1. Create Message Box (Matches your original logic)

@@ -108,10 +108,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         showSuccess("Login successful! Redirecting...");
 
-        // Wait 4 seconds then redirect (Matches your original code)
-        setTimeout(() => {
-          window.location.href = "/room";
-        }, 4000);
+        // Wait 4 seconds then redirect
+        // setTimeout(() => {
+        //   window.location.href = "/room";
+        // }, 4000);
       } else {
         showError(
           data.message || "Login failed. Please check your credentials.",

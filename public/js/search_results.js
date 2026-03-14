@@ -89,7 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       loadingState.classList.add("hidden");
 
-      const items = [];
+      let items = [];
+
       switch (type) {
         case "music":
           items = data.tracks;

@@ -107,10 +107,11 @@ document.addEventListener("DOMContentLoaded", () => {
         document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Strict`;
 
         showSuccess("Login successful! Redirecting...");
+        window.location.href = "/room";
 
         // Wait 4 seconds then redirect
         // setTimeout(() => {
-        //   window.location.href = "/room";
+        //
         // }, 4000);
       } else {
         showError(

@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
       type = type.toLowerCase();
 
       if (type === "books" && /^\d+$/.test(query)) {
-        query = `"${query}"`;
+        query = `intitle:${query}`;
       }
 
       let endpoint = `https://scriptorium-backend-six.vercel.app/api/${type}/search?q=${encodeURIComponent(query)}`;

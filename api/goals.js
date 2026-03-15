@@ -9,83 +9,87 @@ function getToken(req) {
   return req.cookies?.token || null;
 }
 
-// GET goals
-router.get("/user", async (req, res) => {
+// Helper: Standardized Proxy Fetch to handle non-JSON or error responses safely
+async function proxyRequest(res, url, options) {
   try {
-    const token = getToken(req);
-    if (!token) return res.status(401).json({ message: "Not logged in" });
+    const r = await fetch(url, options);
+    const contentType = r.headers.get("content-type");
 
-    const r = await fetch(`${BACKEND_BASE}/api/goals/user`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    let data;
+    if (contentType && contentType.includes("application/json")) {
+      data = await r.json();
+    } else {
+      data = { message: await r.text() };
+    }
 
-    const data = await r.json();
-    res.status(r.status).json(data);
+    return res.status(r.status).json(data);
   } catch (e) {
-    res.status(500).json({ message: "Proxy error", error: String(e) });
+    console.error(`Proxy error at ${url}:`, e);
+    return res.status(500).json({ message: "Proxy error", error: String(e) });
   }
+}
+
+// GET all goals for logged-in user
+// Used by search results to check if any results are already "Currently Reading"
+router.get("/user", async (req, res) => {
+  const token = getToken(req);
+  if (!token) return res.status(401).json({ message: "Not logged in" });
+
+  await proxyRequest(res, `${BACKEND_BASE}/api/goals/user`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 });
 
-// ADD goal
+// GET specific goal by ID
+// Useful if the UI needs to refresh data for a single item after an update
+router.get("/:id", async (req, res) => {
+  const token = getToken(req);
+  if (!token) return res.status(401).json({ message: "Not logged in" });
+
+  await proxyRequest(res, `${BACKEND_BASE}/api/goals/${req.params.id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+});
+
+// ADD goal (e.g., when clicking "Currently Reading" in the search results)
 router.post("/add", async (req, res) => {
-  try {
-    const token = getToken(req);
-    if (!token) return res.status(401).json({ message: "Not logged in" });
+  const token = getToken(req);
+  if (!token) return res.status(401).json({ message: "Not logged in" });
 
-    const r = await fetch(`${BACKEND_BASE}/api/goals/add`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(req.body),
-    });
-
-    const data = await r.json();
-    res.status(r.status).json(data);
-  } catch (e) {
-    res.status(500).json({ message: "Proxy error", error: String(e) });
-  }
+  await proxyRequest(res, `${BACKEND_BASE}/api/goals/add`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(req.body),
+  });
 });
 
 // UPDATE goal progress
 router.put("/update/:id", async (req, res) => {
-  try {
-    const token = getToken(req);
-    if (!token) return res.status(401).json({ message: "Not logged in" });
+  const token = getToken(req);
+  if (!token) return res.status(401).json({ message: "Not logged in" });
 
-    const r = await fetch(`${BACKEND_BASE}/api/goals/update/${req.params.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(req.body),
-    });
-
-    const data = await r.json();
-    res.status(r.status).json(data);
-  } catch (e) {
-    res.status(500).json({ message: "Proxy error", error: String(e) });
-  }
+  await proxyRequest(res, `${BACKEND_BASE}/api/goals/update/${req.params.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(req.body),
+  });
 });
 
-// DELETE goal
+// DELETE goal (e.g., removing a book from "Currently Reading")
 router.delete("/delete/:id", async (req, res) => {
-  try {
-    const token = getToken(req);
-    if (!token) return res.status(401).json({ message: "Not logged in" });
+  const token = getToken(req);
+  if (!token) return res.status(401).json({ message: "Not logged in" });
 
-    const r = await fetch(`${BACKEND_BASE}/api/goals/delete/${req.params.id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    const data = await r.json();
-    res.status(r.status).json(data);
-  } catch (e) {
-    res.status(500).json({ message: "Proxy error", error: String(e) });
-  }
+  await proxyRequest(res, `${BACKEND_BASE}/api/goals/delete/${req.params.id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
 });
 
 module.exports = router;

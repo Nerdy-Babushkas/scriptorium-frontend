@@ -2,219 +2,307 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Progress - Scriptorium</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'scriptorium-brown': '#3E2723',
-                        'scriptorium-gold': '#FFDA6D',
-                        'card-bg': 'rgba(20, 30, 35, 0.95)', 
-                        'teal-neon': '#00C49A', 
-                        'teal-dark': '#1B4B43',
-                        'danger': '#D90429',
-                        'input-bg': 'rgba(0, 0, 0, 0.4)',
-                    },
-                    fontFamily: {
-                        'dancing': ['"Dancing Script"', 'cursive'],
-                        'outfit': ['"Outfit"', 'sans-serif'],
-                        'roboto': ['"Roboto"', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <style>
-        /* Custom Scrollbar */
-        .custom-scroll::-webkit-scrollbar { width: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #00C49A; border-radius: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #00A07D; }
-    </style>
-</head>
-<body class="min-h-screen relative font-outfit text-white overflow-hidden flex flex-col">
 
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "scriptorium-brown": "#3E2723",
+              "scriptorium-gold": "#FFDA6D",
+              "card-bg": "rgba(20, 30, 35, 0.95)",
+              "teal-neon": "#00C49A",
+              "teal-dark": "#1B4B43",
+              danger: "#D90429",
+              "input-bg": "rgba(0, 0, 0, 0.4)",
+            },
+            fontFamily: {
+              dancing: ['"Dancing Script"', "cursive"],
+              outfit: ['"Outfit"', "sans-serif"],
+              roboto: ['"Roboto"', "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      /* Custom Scrollbar */
+      .custom-scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scroll::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+      }
+      .custom-scroll::-webkit-scrollbar-thumb {
+        background: #00c49a;
+        border-radius: 4px;
+      }
+      .custom-scroll::-webkit-scrollbar-thumb:hover {
+        background: #00a07d;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen relative font-outfit text-white overflow-hidden flex flex-col"
+  >
     <div class="fixed inset-0 z-0">
-        <img src="/assets/room2.png" alt="Room Background" class="w-full h-full object-cover">
+      <img
+        src="/assets/room2.png"
+        alt="Room Background"
+        class="w-full h-full object-cover"
+      />
     </div>
 
     <div class="fixed inset-0 z-0 bg-black/75 backdrop-blur-[6px]"></div>
     <%- include('../partials/navbar_app') %>
- <a href="/room" class="absolute top-36 left-4 z-20 flex items-center gap-2 px-4 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full hover:bg-black/80 hover:border-scriptorium-gold transition-all group">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="text-white group-hover:text-scriptorium-gold transition-colors"><path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span class="font-outfit text-sm font-medium text-white group-hover:text-scriptorium-gold transition-colors">Back to Room</span>
-            </a>
+    <a
+      href="/room"
+      class="absolute top-36 left-4 z-20 flex items-center gap-2 px-4 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full hover:bg-black/80 hover:border-scriptorium-gold transition-all group"
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        class="text-white group-hover:text-scriptorium-gold transition-colors"
+      >
+        <path
+          d="M19 12H5M12 19L5 12L12 5"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <span
+        class="font-outfit text-sm font-medium text-white group-hover:text-scriptorium-gold transition-colors"
+        >Back to Room</span
+      >
+    </a>
     <main class="relative z-10 flex-grow flex items-center justify-center p-4">
-    
-        
-       <div class="w-full max-w-2xl h-[80vh] bg-card-bg rounded-[30px] border border-teal-neon/30 shadow-[0_0_50px_rgba(0,196,154,0.15)] p-8 backdrop-blur-xl flex flex-col relative overflow-visible">
+      <div
+        class="w-full max-w-2xl h-[80vh] bg-card-bg rounded-[30px] border border-teal-neon/30 shadow-[0_0_50px_rgba(0,196,154,0.15)] p-8 backdrop-blur-xl flex flex-col relative overflow-visible"
+      >
+        <div
+          class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1 bg-teal-neon blur-md shadow-[0_0_20px_#00C49A]"
+        ></div>
 
-            
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1 bg-teal-neon blur-md shadow-[0_0_20px_#00C49A]"></div>
+        <h1
+          class="font-dancing text-5xl text-white text-center mb-6 drop-shadow-md shrink-0"
+        >
+          Progress
+        </h1>
 
-            <h1 class="font-dancing text-5xl text-white text-center mb-6 drop-shadow-md shrink-0">
-                Progress
-            </h1>
-
-            <div class="flex bg-black/30 rounded-full p-1 w-max mx-auto mb-6 border border-white/10 shrink-0">
-                <button onclick="filterGoals('active')" id="btn-active" class="px-6 py-1.5 rounded-full bg-teal-neon/20 text-teal-neon border border-teal-neon font-medium text-sm transition-all">
-                    Active Goals
-                </button>
-                <button onclick="filterGoals('completed')" id="btn-completed" class="px-6 py-1.5 rounded-full text-white/50 hover:text-white font-medium text-sm transition-all">
-                    Completed
-                </button>
-            </div>
-
-            <div id="goals-container" class="flex-1 flex flex-col gap-3 overflow-y-auto custom-scroll pr-2 mb-6">
-                </div>
-
-            <div class="flex justify-center gap-4 mt-auto shrink-0">
-                <button onclick="openModal()" class="bg-teal-neon text-black font-outfit font-bold text-sm px-8 py-3 rounded-full uppercase tracking-wider hover:bg-white hover:scale-105 transition-all shadow-lg shadow-teal-neon/20">
-                    Add a Goal
-                </button>
-                <button type="button" onclick="deleteSelectedActiveGoal(event)" class="bg-danger text-white font-outfit font-bold text-sm px-8 py-3 rounded-full uppercase tracking-wider hover:bg-red-600 hover:scale-105 transition-all shadow-lg">
-                    Delete a Goal </button>
-
-            </div>
-
+        <div
+          class="flex bg-black/30 rounded-full p-1 w-max mx-auto mb-6 border border-white/10 shrink-0"
+        >
+          <button
+            onclick="filterGoals('active')"
+            id="btn-active"
+            class="px-6 py-1.5 rounded-full bg-teal-neon/20 text-teal-neon border border-teal-neon font-medium text-sm transition-all"
+          >
+            Active Goals
+          </button>
+          <button
+            onclick="filterGoals('completed')"
+            id="btn-completed"
+            class="px-6 py-1.5 rounded-full text-white/50 hover:text-white font-medium text-sm transition-all"
+          >
+            Completed
+          </button>
         </div>
 
+        <div
+          id="goals-container"
+          class="flex-1 flex flex-col gap-3 overflow-y-auto custom-scroll pr-2 mb-6"
+        ></div>
+
+        <div class="flex justify-center gap-4 mt-auto shrink-0">
+          <button
+            onclick="openModal()"
+            class="bg-teal-neon text-black font-outfit font-bold text-sm px-8 py-3 rounded-full uppercase tracking-wider hover:bg-white hover:scale-105 transition-all shadow-lg shadow-teal-neon/20"
+          >
+            Add a Goal
+          </button>
+          <button
+            type="button"
+            onclick="deleteSelectedActiveGoal(event)"
+            class="bg-danger text-white font-outfit font-bold text-sm px-8 py-3 rounded-full uppercase tracking-wider hover:bg-red-600 hover:scale-105 transition-all shadow-lg"
+          >
+            Delete a Goal
+          </button>
+        </div>
+      </div>
     </main>
 
-    <div id="goal-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-        <div class="w-full max-w-md bg-card-bg border border-teal-neon/30 rounded-2xl p-6 shadow-2xl relative">
-            
-            <h2 class="font-outfit text-2xl font-bold text-white mb-6">Create a new goal</h2>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-white/70 text-sm mb-1 font-medium">Goal Name/Description</label>
-                    <input type="text" id="modal-title" class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors" placeholder="e.g. Read 5 chapters">
-                </div>
+    <div
+      id="goal-modal"
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in"
+    >
+      <div
+        class="w-full max-w-md bg-card-bg border border-teal-neon/30 rounded-2xl p-6 shadow-2xl relative"
+      >
+        <h2 class="font-outfit text-2xl font-bold text-white mb-6">
+          Create a new goal
+        </h2>
 
-                <div>
-                    <label class="block text-white/70 text-sm mb-1 font-medium">Goal Type</label>
-                    <select id="modal-type" class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors">
-                        <option value="book">Book</option>
-                        <option value="music">Music</option>
-                        <option value="podcast">Podcast</option>
-                    </select>
-                </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-white/70 text-sm mb-1 font-medium"
+              >Goal Name/Description</label
+            >
+            <input
+              type="text"
+              id="modal-title"
+              class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
+              placeholder="e.g. Read 5 chapters"
+            />
+          </div>
 
-                <div>
-                    <label class="block text-white/70 text-sm mb-1 font-medium">Target Value</label>
-                    <input type="number" id="modal-target" min="0" step="1"
-  class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
-  placeholder="e.g. 10">
-                </div>
+          <div>
+            <label class="block text-white/70 text-sm mb-1 font-medium"
+              >Goal Type</label
+            >
+            <select
+              id="modal-type"
+              class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
+            >
+              <option value="book">Book</option>
+              <option value="music">Music</option>
+              <option value="podcast">Podcast</option>
+            </select>
+          </div>
 
-                <div>
-                    <label class="block text-white/70 text-sm mb-1 font-medium">Current Progress</label>
-                    <input type="number" id="modal-current" min="0" step="1"
-  class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
-  placeholder="e.g. 0">
-                </div>
-            </div>
+          <div>
+            <label class="block text-white/70 text-sm mb-1 font-medium"
+              >Target Value</label
+            >
+            <input
+              type="number"
+              id="modal-target"
+              min="0"
+              step="1"
+              class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
+              placeholder="e.g. 10"
+            />
+          </div>
 
-            <div class="flex justify-end gap-3 mt-8">
-                <button onclick="closeModal()" class="text-white/70 hover:text-white font-medium px-4 py-2 transition-colors">CANCEL</button>
-                <button onclick="saveGoalFromModal()" class="bg-teal-neon text-black font-bold px-6 py-2 rounded-lg hover:bg-white transition-colors">SAVE</button>
-            </div>
-
+          <div>
+            <label class="block text-white/70 text-sm mb-1 font-medium"
+              >Current Progress</label
+            >
+            <input
+              type="number"
+              id="modal-current"
+              min="0"
+              step="1"
+              class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
+              placeholder="e.g. 0"
+            />
+          </div>
         </div>
+
+        <div class="flex justify-end gap-3 mt-8">
+          <button
+            onclick="closeModal()"
+            class="text-white/70 hover:text-white font-medium px-4 py-2 transition-colors"
+          >
+            CANCEL
+          </button>
+          <button
+            onclick="saveGoalFromModal()"
+            class="bg-teal-neon text-black font-bold px-6 py-2 rounded-lg hover:bg-white transition-colors"
+          >
+            SAVE
+          </button>
+        </div>
+      </div>
     </div>
 
- <script>
-  let goals = [];
-  let currentFilter = "active";
-  let selectedGoalId = null;
-  let editingGoalId = null;
+    <script>
+      let goals = [];
+      let currentFilter = "active";
+      let selectedGoalId = null;
+      let editingGoalId = null;
 
-  const API_BASE = "";
+      const API_BASE = ""; // Hits your local frontend Express proxy routes
 
-  const icons = {
-    book: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>`,
-    music: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>`,
-    podcast: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>`,
-  };
+      const icons = {
+        book: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>`,
+        music: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>`,
+        podcast: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>`,
+      };
 
-  function getUserIdFromCookie() {
-  const match = document.cookie.match(/(?:^|;\s*)token=([^;]+)/);
-  if (!match) return null;
+      // REMOVED getUserIdFromCookie() - The frontend no longer cares about the JWT!
 
-  try {
-    const jwt = match[1].split(".")[1];
-    const payload = JSON.parse(atob(jwt.replace(/-/g, "+").replace(/_/g, "/")));
-    return payload._id || payload.id || payload.userId || null;
-  } catch {
-    return null;
-  }
-}
+      function getGoalId(goal) {
+        return goal._id || goal.id;
+      }
 
-  function getGoalId(goal) {
-    return goal._id || goal.id;
-  }
+      async function loadGoals() {
+        const res = await fetch(`${API_BASE}/api/goals/user`, {
+          method: "GET",
+          credentials: "include",
+        });
 
-  async function loadGoals() {
-    const res = await fetch(`${API_BASE}/api/goals/user`, {
-      method: "GET",
-      credentials: "include",
-    });
+        if (!res.ok) {
+          console.error("Failed to load goals:", await res.text());
+          goals = [];
+          render();
+          return;
+        }
 
-    if (!res.ok) {
-      console.error("Failed to load goals:", await res.text());
-      goals = [];
-      render();
-      return;
-    }
+        goals = await res.json();
+        render();
+      }
 
-    goals = await res.json();
-    render();
-  }
+      function render() {
+        const container = document.getElementById("goals-container");
+        container.innerHTML = "";
 
-  function render() {
-    const container = document.getElementById("goals-container");
-    container.innerHTML = "";
+        goals = goals.map((g) => {
+          const total = Number(g.total || 0);
+          const current = Number(g.current || 0);
+          const done = total > 0 && current >= total;
+          const status = g.status ? g.status : done ? "completed" : "active";
+          return { ...g, total, current, status };
+        });
 
-    // ✅ Persist normalized status back into goals (keeps delete/edit consistent)
-    goals = goals.map((g) => {
-      const total = Number(g.total || 0);
-      const current = Number(g.current || 0);
-      const done = total > 0 && current >= total;
-      const status = g.status ? g.status : done ? "completed" : "active";
-      return { ...g, total, current, status };
-    });
+        const filtered = goals.filter((g) => g.status === currentFilter);
 
-    const filtered = goals.filter((g) => g.status === currentFilter);
+        filtered.forEach((goal) => {
+          const id = getGoalId(goal);
+          const pct =
+            goal.total > 0 ? Math.round((goal.current / goal.total) * 100) : 0;
 
-    filtered.forEach((goal) => {
-      const id = getGoalId(goal);
-      const pct = goal.total > 0 ? Math.round((goal.current / goal.total) * 100) : 0;
+          const item = document.createElement("div");
+          item.dataset.id = id;
 
-      const item = document.createElement("div");
-      item.dataset.id = id;
+          const isSelected = selectedGoalId === id;
 
-      const isSelected = selectedGoalId === id;
+          item.className =
+            `group flex items-center gap-3 border rounded-xl p-3 transition-colors shrink-0 ` +
+            (goal.status === "completed"
+              ? "bg-white/5 border-white/5 opacity-80"
+              : "bg-teal-dark/30 hover:bg-teal-dark/50 border-white/5 ") +
+            (isSelected
+              ? " outline outline-1 outline-teal-neon/80 outline-offset-[-2px]"
+              : "");
 
-      item.className =
-        `group flex items-center gap-3 border rounded-xl p-3 transition-colors shrink-0 ` +
-        (goal.status === "completed"
-          ? "bg-white/5 border-white/5 opacity-80"
-          : "bg-teal-dark/30 hover:bg-teal-dark/50 border-white/5 ") +
-        (isSelected ? " outline outline-1 outline-teal-neon/80 outline-offset-[-2px]" : "");
-
-
-      item.innerHTML = `
+          item.innerHTML = `
         <div class="w-10 h-10 rounded-full bg-teal-neon flex items-center justify-center text-teal-dark shadow-sm shrink-0">
           ${icons[goal.type] || icons.book}
         </div>
@@ -242,290 +330,285 @@
         </div>
       `;
 
-      // Click to select + edit (active only)
-  // Single click = select only
-item.addEventListener("click", (e) => {
-  if (e.target.closest(".goal-bar")) return; // bar interactions shouldn't select/open modal
+          item.addEventListener("click", (e) => {
+            if (e.target.closest(".goal-bar")) return;
+            selectedGoalId = id;
+            render();
+          });
 
-  selectedGoalId = id;
-  render();
-});
+          item.addEventListener("dblclick", (e) => {
+            if (e.target.closest(".goal-bar")) return;
+            selectedGoalId = id;
+            render();
 
-// Double click = edit (active only)
-item.addEventListener("dblclick", (e) => {
-  if (e.target.closest(".goal-bar")) return;
+            if (goal.status === "active") {
+              openEditModal(goal);
+            }
+          });
 
-  // ensure it's selected too
-  selectedGoalId = id;
-  render();
+          const bar = item.querySelector(".goal-bar");
+          if (goal.status === "active") {
+            attachBarDrag(bar, item);
+          }
 
-  if (goal.status === "active") {
-    openEditModal(goal);
-  }
-});
-
-
-
-      // Enable drag editing only for active goals (on the bar)
-      const bar = item.querySelector(".goal-bar");
-      if (goal.status === "active") {
-        attachBarDrag(bar, item);
+          container.appendChild(item);
+        });
       }
 
-      container.appendChild(item);
-    });
-  }
+      let dragState = {
+        active: false,
+        id: null,
+        total: 0,
+        item: null,
+      };
 
-  let dragState = {
-    active: false,
-    id: null,
-    total: 0,
-    item: null,
-  };
+      function attachBarDrag(bar, item) {
+        bar.addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
 
-  function attachBarDrag(bar, item) {
-    bar.addEventListener("pointerdown", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
+          const id = bar.dataset.id;
+          const total = Number(bar.dataset.total);
 
-  const id = bar.dataset.id;
-  const total = Number(bar.dataset.total);
+          dragState.active = true;
+          dragState.id = id;
+          dragState.total = total;
+          dragState.item = item;
 
-  dragState.active = true;
-  dragState.id = id;
-  dragState.total = total;
-  dragState.item = item;
+          bar.setPointerCapture(e.pointerId);
+          updateBarFromPointer(e);
+        });
 
-  bar.setPointerCapture(e.pointerId);
-  updateBarFromPointer(e);
-});
+        bar.addEventListener("pointermove", (e) => {
+          if (!dragState.active) return;
+          updateBarFromPointer(e);
+        });
 
+        bar.addEventListener("pointerup", async () => {
+          if (!dragState.active) return;
+          dragState.active = false;
 
-    bar.addEventListener("pointermove", (e) => {
-      if (!dragState.active) return;
-      updateBarFromPointer(e);
-    });
+          const id = dragState.id;
+          const goal = goals.find((g) => (g._id || g.id) === id);
+          if (!goal) return;
 
-    bar.addEventListener("pointerup", async () => {
-      if (!dragState.active) return;
-      dragState.active = false;
+          const newCurrent = Number(goal.current);
+          await updateGoalProgress(id, newCurrent);
 
-      const id = dragState.id;
-      const goal = goals.find((g) => (g._id || g.id) === id);
-      if (!goal) return;
+          const idx = goals.findIndex((g) => (g._id || g.id) === id);
+          if (idx !== -1) {
+            const total = Number(goals[idx].total || 0);
+            const current = Number(goals[idx].current || 0);
+            goals[idx].status =
+              total > 0 && current >= total ? "completed" : "active";
+          }
 
-      const newCurrent = Number(goal.current);
-      await updateGoalProgress(id, newCurrent);
-
-      // ensure local status matches completion
-      const idx = goals.findIndex((g) => (g._id || g.id) === id);
-      if (idx !== -1) {
-        const total = Number(goals[idx].total || 0);
-        const current = Number(goals[idx].current || 0);
-        goals[idx].status = total > 0 && current >= total ? "completed" : "active";
+          render();
+        });
       }
 
-      render();
-    });
-  }
+      function updateBarFromPointer(e) {
+        const item = dragState.item;
+        if (!item) return;
 
-  function updateBarFromPointer(e) {
-    const item = dragState.item;
-    if (!item) return;
+        const bar = item.querySelector(".goal-bar");
+        const fill = item.querySelector(".goal-fill");
+        const countEl = item.querySelector(".goal-count");
+        const pctEl = item.querySelector(".goal-pct");
 
-    const bar = item.querySelector(".goal-bar");
-    const fill = item.querySelector(".goal-fill");
-    const countEl = item.querySelector(".goal-count");
-    const pctEl = item.querySelector(".goal-pct");
+        const rect = bar.getBoundingClientRect();
+        let pct = (e.clientX - rect.left) / rect.width;
+        pct = Math.max(0, Math.min(1, pct));
 
-    const rect = bar.getBoundingClientRect();
-    let pct = (e.clientX - rect.left) / rect.width;
-    pct = Math.max(0, Math.min(1, pct));
+        const current = Math.round(pct * dragState.total);
+        const pctDisplay = Math.round(pct * 100);
 
-    const current = Math.round(pct * dragState.total);
-    const pctDisplay = Math.round(pct * 100);
+        fill.style.width = `${pctDisplay}%`;
+        countEl.textContent = `${current}/${dragState.total}`;
+        pctEl.textContent = `${pctDisplay}%`;
 
-    fill.style.width = `${pctDisplay}%`;
-    countEl.textContent = `${current}/${dragState.total}`;
-    pctEl.textContent = `${pctDisplay}%`;
+        const idx = goals.findIndex((g) => (g._id || g.id) === dragState.id);
+        if (idx !== -1) goals[idx].current = current;
+      }
 
-    const idx = goals.findIndex((g) => (g._id || g.id) === dragState.id);
-    if (idx !== -1) goals[idx].current = current;
-  }
+      function openEditModal(goal) {
+        editingGoalId = getGoalId(goal);
 
-  function openEditModal(goal) {
-    editingGoalId = getGoalId(goal);
+        openModal();
 
-    openModal();
+        document.getElementById("modal-title").value = goal.title || "";
+        document.getElementById("modal-type").value = goal.type || "book";
+        document.getElementById("modal-target").value = goal.total ?? "";
+        document.getElementById("modal-current").value = goal.current ?? 0;
+      }
 
-    document.getElementById("modal-title").value = goal.title || "";
-    document.getElementById("modal-type").value = goal.type || "book";
-    document.getElementById("modal-target").value = goal.total ?? "";
-    document.getElementById("modal-current").value = goal.current ?? 0;
-  }
+      function openModal() {
+        const modal = document.getElementById("goal-modal");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
 
-  function openModal() {
-    const modal = document.getElementById("goal-modal");
-    modal.classList.remove("hidden");
-    modal.classList.add("flex");
+        if (!editingGoalId) {
+          document.getElementById("modal-title").value = "";
+          document.getElementById("modal-type").value = "book";
+          document.getElementById("modal-target").value = "";
+          document.getElementById("modal-current").value = "";
+        }
+      }
 
-    if (!editingGoalId) {
-      document.getElementById("modal-title").value = "";
-      document.getElementById("modal-type").value = "book";
-      document.getElementById("modal-target").value = "";
-      document.getElementById("modal-current").value = "";
-    }
-  }
+      function closeModal() {
+        const modal = document.getElementById("goal-modal");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
 
-  function closeModal() {
-    const modal = document.getElementById("goal-modal");
-    modal.classList.add("hidden");
-    modal.classList.remove("flex");
+        editingGoalId = null;
 
-    editingGoalId = null;
+        document.getElementById("modal-title").value = "";
+        document.getElementById("modal-type").value = "book";
+        document.getElementById("modal-target").value = "";
+        document.getElementById("modal-current").value = "";
+      }
 
-    document.getElementById("modal-title").value = "";
-    document.getElementById("modal-type").value = "book";
-    document.getElementById("modal-target").value = "";
-    document.getElementById("modal-current").value = "";
-  }
+      async function saveGoalFromModal() {
+        const title = document.getElementById("modal-title").value.trim();
+        const type = document.getElementById("modal-type").value;
 
-  async function saveGoalFromModal() {
-  const title = document.getElementById("modal-title").value.trim();
-  const type = document.getElementById("modal-type").value;
+        let total = Number(document.getElementById("modal-target").value);
+        let current = Number(
+          document.getElementById("modal-current").value || 0,
+        );
 
-  let total = Number(document.getElementById("modal-target").value);
-  let current = Number(document.getElementById("modal-current").value || 0);
+        if (!title) return alert("Please fill in a title.");
+        if (!Number.isFinite(total) || total <= 0)
+          return alert("Target value must be a positive number.");
+        if (!Number.isFinite(current) || current < 0)
+          return alert("Current progress cannot be negative.");
 
-  if (!title) return alert("Please fill in a title.");
-  if (!Number.isFinite(total) || total <= 0) return alert("Target value must be a positive number.");
-  if (!Number.isFinite(current) || current < 0) return alert("Current progress cannot be negative.");
+        if (current > total) current = total;
 
-  if (current > total) current = total; // clamp
+        if (editingGoalId) {
+          const res = await fetch(
+            `${API_BASE}/api/goals/update/${editingGoalId}`,
+            {
+              method: "PUT",
+              credentials: "include",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ title, type, total, current }),
+            },
+          );
 
-  if (editingGoalId) {
-    const res = await fetch(`${API_BASE}/api/goals/update/${editingGoalId}`, {
-      method: "PUT",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, type, total, current }),
-    });
+          if (!res.ok) {
+            console.error("Failed to update goal:", await res.text());
+            return alert("Failed to update goal.");
+          }
 
-    if (!res.ok) {
-      console.error("Failed to update goal:", await res.text());
-      return alert("Failed to update goal.");
-    }
+          const data = await res.json();
+          const updated = data.goal || data;
 
-    const data = await res.json();
-    const updated = data.goal || data;
+          const idx = goals.findIndex((g) => (g._id || g.id) === editingGoalId);
+          if (idx !== -1) goals[idx] = updated;
 
-    const idx = goals.findIndex((g) => (g._id || g.id) === editingGoalId);
-    if (idx !== -1) goals[idx] = updated;
+          closeModal();
+          render();
+          return;
+        }
 
-    closeModal();
-    render();
-    return;
-  }
+        const res = await fetch(`${API_BASE}/api/goals/add`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, type, current, total }),
+        });
 
-  const res = await fetch(`${API_BASE}/api/goals/add`, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, type, current, total }),
-  });
+        if (!res.ok) {
+          console.error("Failed to save goal:", await res.text());
+          return alert("Failed to save goal.");
+        }
 
-  if (!res.ok) {
-    console.error("Failed to save goal:", await res.text());
-    return alert("Failed to save goal.");
-  }
+        const data = await res.json();
+        goals.unshift(data.goal);
 
-  const data = await res.json();
-  goals.unshift(data.goal);
+        closeModal();
+        render();
+      }
 
-  closeModal();
-  render();
-}
+      async function deleteSelectedActiveGoal(e) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
 
+        if (!selectedGoalId) return alert("Select an active goal first.");
 
-  async function deleteSelectedActiveGoal(e) {
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
+        const goal = goals.find((g) => (g._id || g.id) === selectedGoalId);
+        if (!goal) return;
 
-  if (!selectedGoalId) return alert("Select an active goal first.");
+        const total = Number(goal.total || 0);
+        const current = Number(goal.current || 0);
+        const isCompleted = total > 0 && current >= total;
+        if (isCompleted) return alert("You can only delete active goals.");
 
-  const goal = goals.find(g => (g._id || g.id) === selectedGoalId);
-  if (!goal) return;
+        // CHANGED: We simply call /delete/:id on the proxy. The proxy attaches the token,
+        // and the backend extracts the user._id from that token.
+        const res = await fetch(
+          `${API_BASE}/api/goals/delete/${selectedGoalId}`,
+          {
+            method: "DELETE",
+            credentials: "include", // Ensures the token cookie is sent to the proxy
+          },
+        );
 
-  const total = Number(goal.total || 0);
-  const current = Number(goal.current || 0);
-  const isCompleted = total > 0 && current >= total;
-  if (isCompleted) return alert("You can only delete active goals.");
+        if (!res.ok) {
+          console.error("Failed to delete goal:", await res.text());
+          return alert("Failed to delete goal.");
+        }
 
-  const userId = getUserIdFromCookie();
-  if (!userId) return alert("Not logged in (missing token).");
+        goals = goals.filter((g) => (g._id || g.id) !== selectedGoalId);
+        selectedGoalId = null;
+        render();
+      }
 
-  const res = await fetch(`${API_BASE}/api/goals/delete/${selectedGoalId}/${userId}`, {
-    method: "DELETE",
-    credentials: "include",
-  });
+      async function updateGoalProgress(id, current) {
+        const res = await fetch(`${API_BASE}/api/goals/update/${id}`, {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ current }),
+        });
 
-  if (!res.ok) {
-    console.error("Failed to delete goal:", await res.text());
-    return alert("Failed to delete goal.");
-  }
+        if (!res.ok) {
+          console.error("Failed to update goal:", await res.text());
+          return false;
+        }
 
-  goals = goals.filter(g => (g._id || g.id) !== selectedGoalId);
-  selectedGoalId = null;
-  render();
-}
+        const data = await res.json();
+        const idx = goals.findIndex((g) => (g._id || g.id) === id);
+        if (idx !== -1 && data.goal) goals[idx] = data.goal;
 
+        return true;
+      }
 
-  // ✅ render() removed from here to avoid double-renders
-  async function updateGoalProgress(id, current) {
-    const res = await fetch(`${API_BASE}/api/goals/update/${id}`, {
-      method: "PUT",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ current }),
-    });
+      function filterGoals(status) {
+        currentFilter = status;
 
-    if (!res.ok) {
-      console.error("Failed to update goal:", await res.text());
-      return false;
-    }
+        const activeBtn = document.getElementById("btn-active");
+        const completedBtn = document.getElementById("btn-completed");
+        const activeClass =
+          "bg-teal-neon/20 text-teal-neon border border-teal-neon";
+        const inactiveClass =
+          "text-white/50 hover:text-white border-transparent";
 
-    const data = await res.json();
-    const idx = goals.findIndex((g) => (g._id || g.id) === id);
-    if (idx !== -1 && data.goal) goals[idx] = data.goal;
+        if (status === "active") {
+          activeBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${activeClass}`;
+          completedBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${inactiveClass}`;
+        } else {
+          completedBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${activeClass}`;
+          activeBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${inactiveClass}`;
+        }
 
-    return true;
-  }
+        render();
+      }
 
-  function filterGoals(status) {
-    currentFilter = status;
-
-    const activeBtn = document.getElementById("btn-active");
-    const completedBtn = document.getElementById("btn-completed");
-    const activeClass = "bg-teal-neon/20 text-teal-neon border border-teal-neon";
-    const inactiveClass = "text-white/50 hover:text-white border-transparent";
-
-    if (status === "active") {
-      activeBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${activeClass}`;
-      completedBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${inactiveClass}`;
-    } else {
-      completedBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${activeClass}`;
-      activeBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${inactiveClass}`;
-    }
-
-    render();
-  }
-
-  loadGoals();
-</script>
-
-
-
-</body>
+      loadGoals();
+    </script>
+  </body>
 </html>

@@ -30,12 +30,18 @@
                             <input type="email" id="email" required class="w-full h-[56px] px-6 rounded-[50px] border border-[#118AB2] bg-transparent text-white placeholder-white/60 focus:outline-none focus:border-[#06D6A0] transition-colors" />
                         </div>
 
-                        <div class="space-y-1">
-                            <label for="password" class="font-roboto text-white text-[18px] font-bold leading-[27.5px]">Password</label>
-                            <input type="password" id="password" required class="w-full h-[56px] px-6 rounded-[50px] border border-[#118AB2] bg-transparent text-white placeholder-white/60 focus:outline-none focus:border-[#06D6A0] transition-colors" />
-                            <div class="flex justify-end pt-2">
-                                <a href="/forgot-password" class="font-roboto text-white text-[18px] font-bold leading-[27.5px] underline hover:text-scriptorium-green">Forgot password?</a>
-                            </div>
+                        <div class="space-y-1 relative">
+                            <label for="password" class="font-roboto text-white text-[18px] font-bold leading-[27.5px]">
+                                Password
+                            </label>
+
+                            <input type="password" id="password"
+                                class="w-full h-[56px] px-6 pr-14 rounded-[50px] border border-[#118AB2] bg-transparent text-white focus:outline-none focus:border-[#06D6A0]" />
+
+                            <button type="button" id="togglePassword"
+                                class="absolute right-5 top-[44px] text-white/70 hover:text-white">
+                                👁
+                            </button>
                         </div>
 
                         <button type="submit" class="w-full h-[56px] rounded-[50px] bg-[#009A72] text-white font-outfit text-[20px] font-semibold leading-[27.5px] tracking-[2px] uppercase hover:bg-[#008060] transition-colors shadow-lg mt-4">Login</button>

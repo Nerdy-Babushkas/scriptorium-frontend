@@ -1,3 +1,4 @@
+//routes/pageRoutes.js
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
@@ -40,6 +41,8 @@ router.use((req, res, next) => {
 
   next();
 });
+
+router.use("/api/goals", require("../api/goals"));
 
 router.get("/", (req, res) => {
   //done
@@ -106,9 +109,9 @@ router.get("/ai-recommendations", requireAuth, (req, res) => {
   res.render("pages/placeholder", { pageName: "AI Recommendations" });
 });
 
-router.get('/search', (req, res) => {
-    const query = req.query.q; // Capture query from URL
-    res.render('pages/search-results', { query }); // Pass it to view (optional, used in Navbar)
+router.get("/search", requireAuth, (req, res) => {
+  const query = req.query.q; // Capture query from URL
+  res.render("pages/search-results", { query }); // Pass it to view (optional, used in Navbar)
 });
 
 router.get("/currently-reading", requireAuth, (req, res) => {
@@ -135,8 +138,8 @@ router.get("/add-music", requireAuth, (req, res) => {
   res.render("pages/placeholder", { pageName: "Add Music" });
 });
 
-router.get('/add-reflection', (req, res) => {
-    res.render('pages/add-reflection');
+router.get("/add-reflection", requireAuth, (req, res) => {
+  res.render("pages/add-reflection");
 });
 
 router.get("/verify-email", (req, res) => {
@@ -165,4 +168,5 @@ router.post("/logout", (req, res) => {
 router.use((req, res) => {
   res.status(404).render("pages/404");
 });
+
 module.exports = router;

@@ -46,6 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (items.length > 0) renderItems(items, type); else empty.classList.remove('hidden');
         } catch (e) { loading.classList.add('hidden'); }
     }
+  }
+
+  // --- 4. RENDER ITEMS ---
+  function renderItems(items, type) {
+    items.forEach((item) => {
+      let title, subtitle, image, id, year;
 
     function renderItems(items, type) {
         items.forEach(item => {
@@ -91,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tabs = { 'books': tabBooks, 'music': tabMusic, 'movies': tabMovies };
         Object.keys(tabs).forEach(key => { if(tabs[key]) tabs[key].className = `px-6 py-1.5 rounded-full border font-medium text-sm transition-all ${key === type ? active : inactive}`; });
     }
+  }
 
     function showToast(title, msg, type) {
         const t = document.getElementById('toast');

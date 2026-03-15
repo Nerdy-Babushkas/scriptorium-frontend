@@ -1,110 +1,133 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById("signupForm");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const confirmInput = document.getElementById("confirmPassword");
-    const message = document.getElementById("formMessage");
-    const submitBtn = document.getElementById("submitBtn");
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("signupForm");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const confirmInput = document.getElementById("confirmPassword");
+  const message = document.getElementById("formMessage");
+  const submitBtn = document.getElementById("submitBtn");
+  const togglePassword = document.getElementById("togglePassword");
+  const toggleConfirmPassword = document.getElementById(
+    "toggleConfirmPassword",
+  );
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    // 1. Hide error messages when user types
-    [emailInput, passwordInput, confirmInput].forEach((input) => {
-        input.addEventListener("input", () => message.classList.add("hidden"));
-    });
+  // Show/Hide Password Logic
+  togglePassword.addEventListener("click", () => {
+    const type = passwordInput.type === "password" ? "text" : "password";
+    passwordInput.type = type;
+    togglePassword.textContent = type === "password" ? "👁" : "⌣";
+  });
 
-    // 2. Helper Functions
-    function showError(text) {
-        message.textContent = text;
-        message.className = "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-red-500/10 border-red-400 text-red-300";
-        message.classList.remove("hidden");
+  toggleConfirmPassword.addEventListener("click", () => {
+    const type = confirmInput.type === "password" ? "text" : "password";
+    confirmInput.type = type;
+    toggleConfirmPassword.textContent = type === "password" ? "👁" : "⌣";
+  });
+
+  // 1. Hide error messages when user types
+  [emailInput, passwordInput, confirmInput].forEach((input) => {
+    input.addEventListener("input", () => message.classList.add("hidden"));
+  });
+
+  // 2. Helper Functions
+  function showError(text) {
+    message.textContent = text;
+    message.className =
+      "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-red-500/10 border-red-400 text-red-300";
+    message.classList.remove("hidden");
+  }
+
+  function showSuccess(text) {
+    message.textContent = text;
+    message.className =
+      "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-green-500/10 border-green-400 text-green-300";
+    message.classList.remove("hidden");
+  }
+
+  // 3. Main Submit Logic
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // Reset message
+    message.classList.add("hidden");
+
+    const email = emailInput.value.trim().toLowerCase();
+    const password = passwordInput.value;
+    const confirm = confirmInput.value;
+
+    // --- USERNAME GENERATION (Matches your original code) ---
+    const generatedUserName = email.split("@")[0];
+
+    // --- VALIDATION ---
+
+    // Email Check
+    if (!emailRegex.test(email)) {
+      return showError("Please enter a valid email address.");
     }
 
-    function showSuccess(text) {
-        message.textContent = text;
-        message.className = "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-green-500/10 border-green-400 text-green-300";
-        message.classList.remove("hidden");
+    // Password Length
+    if (password.length < 8) {
+      return showError("Password must be at least 8 characters long.");
     }
 
-    // 3. Main Submit Logic
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        
-        // Reset message
-        message.classList.add("hidden");
+    // Password Complexity Checks
+    if (!/[A-Z]/.test(password)) {
+      return showError("Password must contain at least one uppercase letter.");
+    }
+    if (!/[a-z]/.test(password)) {
+      return showError("Password must contain at least one lowercase letter.");
+    }
+    if (!/\d/.test(password)) {
+      return showError("Password must contain at least one number.");
+    }
+    if (!/[!_@#$%^&*(),.?":{}|<>]/.test(password)) {
+      return showError(
+        "Password must include at least one special character (!@#$...).",
+      );
+    }
 
-        const email = emailInput.value.trim().toLowerCase();
-        const password = passwordInput.value;
-        const confirm = confirmInput.value;
+    // Confirm Password Match
+    if (password !== confirm) {
+      return showError("Passwords do not match.");
+    }
 
-        // --- USERNAME GENERATION (Matches your original code) ---
-        const generatedUserName = email.split('@')[0]; 
+    // --- BACKEND CALL ---
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Creating Account...";
 
-        // --- VALIDATION ---
-        
-        // Email Check
-        if (!emailRegex.test(email)) { 
-            return showError("Please enter a valid email address."); 
-        }
+    try {
+      const response = await fetch(
+        "https://scriptorium-backend-six.vercel.app/api/user/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userName: generatedUserName, // Sending the extracted name
+            email: email,
+            password: password,
+            password2: confirm,
+          }),
+        },
+      );
 
-        // Password Length
-        if (password.length < 8) { 
-            return showError("Password must be at least 8 characters long."); 
-        }
+      const data = await response.json();
 
-        // Password Complexity Checks
-        if (!/[A-Z]/.test(password)) {
-            return showError("Password must contain at least one uppercase letter.");
-        }
-        if (!/[a-z]/.test(password)) {
-            return showError("Password must contain at least one lowercase letter.");
-        }
-        if (!/\d/.test(password)) {
-            return showError("Password must contain at least one number.");
-        }
-        if (!/[!_@#$%^&*(),.?":{}|<>]/.test(password)) {
-            return showError("Password must include at least one special character (!@#$...).");
-        }
-
-        // Confirm Password Match
-        if (password !== confirm) { 
-            return showError("Passwords do not match."); 
-        }
-
-        // --- BACKEND CALL ---
-        const originalText = submitBtn.textContent;
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Creating Account...";
-
-        try {
-            const response = await fetch('https://scriptorium-backend-six.vercel.app/api/user/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userName: generatedUserName, // Sending the extracted name
-                    email: email,
-                    password: password,
-                    password2: confirm 
-                })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                showSuccess("Account created! Redirecting to login...");
-                setTimeout(() => {
-                    window.location.href = '/login';
-                }, 1500);
-            } else {
-                showError(data.message || "Signup failed.");
-            }
-
-        } catch (err) {
-            console.error(err);
-            showError("Could not connect to the server.");
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalText;
-        }
-    });
+      if (response.ok) {
+        showSuccess("Account created! Redirecting to login...");
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1500);
+      } else {
+        showError(data.message || "Signup failed.");
+      }
+    } catch (err) {
+      console.error(err);
+      showError("Could not connect to the server.");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
 });

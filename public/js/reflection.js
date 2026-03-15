@@ -280,30 +280,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const div = document.createElement("div");
     div.className =
-      "bg-white/5 border border-white/5 rounded-xl p-4 hover:border-[#00C49A]/50 transition-all group flex gap-4";
+      "bg-white/5 border border-white/5 rounded-xl p-4 hover:border-[#00C49A]/50 transition-all group flex gap-4 cursor-pointer";
+
     div.innerHTML = `
-            <div class="w-16 h-20 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-black/40">
-                <img src="${ref.metadata?.image || "https://via.placeholder.com/50"}" class="w-full h-full object-cover">
+        <div class="w-16 h-20 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-black/40">
+            <img src="${ref.metadata?.image || "https://via.placeholder.com/50"}" class="w-full h-full object-cover">
+        </div>
+        <div class="flex-grow min-w-0">
+            <div class="flex justify-between items-start mb-1">
+                <h4 class="text-[#00C49A] text-sm font-bold truncate pr-2">${title}</h4>
+                <span class="text-white/30 text-xs whitespace-nowrap">${date}</span>
             </div>
-            <div class="flex-grow min-w-0">
-                <div class="flex justify-between items-start mb-1">
-                    <h4 class="text-[#00C49A] text-sm font-bold truncate pr-2">${title}</h4>
-                    <span class="text-white/30 text-xs whitespace-nowrap">${date}</span>
+            <p class="text-white/80 text-sm line-clamp-2 mb-2 font-light">"${ref.text}"</p>
+            <div class="flex justify-between items-center mt-2">
+                <div class="flex flex-wrap gap-2">
+                    <span class="text-xs">${typeIcon}</span>
+                    ${ref.moodTags.map((m) => `<span class="px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-white/60">${m}</span>`).join("")}
                 </div>
-                <p class="text-white/80 text-sm line-clamp-2 mb-2 font-light">"${ref.text}"</p>
-                <div class="flex justify-between items-center mt-2">
-                    <div class="flex flex-wrap gap-2">
-                        <span class="text-xs">${typeIcon}</span>
-                        ${ref.moodTags.map((m) => `<span class="px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-white/60">${m}</span>`).join("")}
-                    </div>
-                    <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button class="text-white/50 hover:text-white" onclick='editRef(${JSON.stringify(ref)})'>✏️</button>
-                        <button class="text-red-500/50 hover:text-red-500" onclick="deleteRef('${ref._id}')">🗑️</button>
-                    </div>
+                <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button class="text-white/50 hover:text-white" onclick='editRef(${JSON.stringify(ref)})'>✏️</button>
+                    <button class="text-red-500/50 hover:text-red-500" onclick="deleteRef('${ref._id}')">🗑️</button>
+                    <button class="text-[#00C49A]/80 hover:text-[#00C49A] text-xs font-bold" onclick="viewRef('${ref._id}')">View Reflection</button>
                 </div>
-            </div>`;
+            </div>
+        </div>
+    `;
+
+    // Clicking anywhere on the card except the edit/delete/view buttons goes to history
+    div.addEventListener("click", (e) => {
+      const targetClasses = e.target.classList;
+      if (
+        !e.target.closest("button") // ignore clicks on buttons
+      ) {
+        window.location.href = "/reflections-history";
+      }
+    });
+
     historyList.appendChild(div);
   }
+
+  window.viewRef = (id) => {
+    window.location.href = `/reflections-history?ref=${id}`;
+  };
 
   window.deleteRef = async (id) => {
     if (!confirm("Delete this entry?")) return;

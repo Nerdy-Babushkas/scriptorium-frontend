@@ -1,32 +1,26 @@
-//api/goals.js
 const express = require("express");
-const jwt = require("jsonwebtoken");
-
 const router = express.Router();
 
 const BACKEND_BASE =
-  process.env.BACKEND_BASE_URL ||
-  "https://scriptorium-backend-git-dylan-nerdy-babushkas-projects.vercel.app";
+  process.env.BACKEND_BASE_URL || "https://scriptorium-backend-six.vercel.app";
 
-// helper: cookie token -> userId (NO verify)
-function getUserIdFromCookie(req) {
-  const token = req.cookies?.token;
-  if (!token) return null;
-
-  const decoded = jwt.decode(token); // no signature check
-  return decoded?._id || null;
+// Helper: Get raw token from cookie
+function getToken(req) {
+  return req.cookies?.token || null;
 }
 
-// GET goals for logged-in user
+// GET goals
 router.get("/user", async (req, res) => {
   try {
-    const userId = getUserIdFromCookie(req);
-    if (!userId) return res.status(401).json({ message: "Not logged in" });
+    const token = getToken(req);
+    if (!token) return res.status(401).json({ message: "Not logged in" });
 
-    // NOTE: no /noauth needed if you added the :userId routes to routes/goals.js
-    const r = await fetch(`${BACKEND_BASE}/api/goals/user/${userId}`);
-    const text = await r.text();
-    res.status(r.status).send(text);
+    const r = await fetch(`${BACKEND_BASE}/api/goals/user`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = await r.json();
+    res.status(r.status).json(data);
   } catch (e) {
     res.status(500).json({ message: "Proxy error", error: String(e) });
   }
@@ -35,17 +29,20 @@ router.get("/user", async (req, res) => {
 // ADD goal
 router.post("/add", async (req, res) => {
   try {
-    const userId = getUserIdFromCookie(req);
-    if (!userId) return res.status(401).json({ message: "Not logged in" });
+    const token = getToken(req);
+    if (!token) return res.status(401).json({ message: "Not logged in" });
 
-    const r = await fetch(`${BACKEND_BASE}/api/goals/add/${userId}`, {
+    const r = await fetch(`${BACKEND_BASE}/api/goals/add`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(req.body), // DO NOT add userId here
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(req.body),
     });
 
-    const text = await r.text();
-    res.status(r.status).send(text);
+    const data = await r.json();
+    res.status(r.status).json(data);
   } catch (e) {
     res.status(500).json({ message: "Proxy error", error: String(e) });
   }
@@ -54,42 +51,41 @@ router.post("/add", async (req, res) => {
 // UPDATE goal progress
 router.put("/update/:id", async (req, res) => {
   try {
-    const userId = getUserIdFromCookie(req);
-    if (!userId) return res.status(401).json({ message: "Not logged in" });
+    const token = getToken(req);
+    if (!token) return res.status(401).json({ message: "Not logged in" });
 
-    const r = await fetch(
-      `${BACKEND_BASE}/api/goals/update/${req.params.id}/${userId}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(req.body), // DO NOT add userId here
+    const r = await fetch(`${BACKEND_BASE}/api/goals/update/${req.params.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-    );
+      body: JSON.stringify(req.body),
+    });
 
-    const text = await r.text();
-    res.status(r.status).send(text);
+    const data = await r.json();
+    res.status(r.status).json(data);
   } catch (e) {
     res.status(500).json({ message: "Proxy error", error: String(e) });
   }
 });
 
 // DELETE goal
-router.delete("/delete/:id/:userId", async (req, res) => {
+router.delete("/delete/:id", async (req, res) => {
   try {
-    const { id, userId } = req.params;
-    if (!userId) return res.status(401).json({ message: "Not logged in" });
+    const token = getToken(req);
+    if (!token) return res.status(401).json({ message: "Not logged in" });
 
-    const r = await fetch(`${BACKEND_BASE}/api/goals/delete/${id}/${userId}`, {
+    const r = await fetch(`${BACKEND_BASE}/api/goals/delete/${req.params.id}`, {
       method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
     });
 
-    const text = await r.text();
-    res.status(r.status).send(text);
+    const data = await r.json();
+    res.status(r.status).json(data);
   } catch (e) {
     res.status(500).json({ message: "Proxy error", error: String(e) });
   }
 });
-
-
 
 module.exports = router;

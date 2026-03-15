@@ -2,13 +2,21 @@
 <html lang="en">
 <head>
     <%- include('../partials/head', { title: 'Theatre - Scriptorium' }) %>
+    <style>
+        .shelf-dot { position: absolute; width: 24px; height: 24px; background-color: rgba(255, 218, 109, 0.6); border: 2px solid #FFDA6D; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 15px #FFDA6D; z-index: 30; }
+        .shelf-dot::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; border: 1px solid #FFDA6D; border-radius: 50%; animation: pulse-ring 2s infinite; }
+        .dot-label { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #FFDA6D; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; opacity: 0; transition: opacity 0.3s; pointer-events: none; border: 1px solid #FFDA6D; white-space: nowrap; }
+        .shelf-dot:hover .dot-label { opacity: 1; }
+        @keyframes pulse-ring { 0% { width: 100%; height: 100%; opacity: 1; } 100% { width: 300%; height: 300%; opacity: 0; } }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .animate-zoom-in { animation: zoomIn 0.3s ease-out forwards; }
+    </style>
 </head>
 <body class="bg-[#2C1810] min-h-screen relative overflow-x-hidden font-outfit text-white">
-
     <%- include('../partials/navbar_app') %>
 
     <main class="relative z-0 mt-6 px-4 md:px-8 max-w-[1400px] mx-auto pb-12">
-        <div class="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+        <div class="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
             <img src="/assets/room1.png" alt="Theatre" class="w-full h-auto object-cover block">
 
             <a href="/room" class="absolute top-4 left-4 z-20 flex items-center gap-2 px-4 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full hover:bg-black/80 hover:border-scriptorium-gold transition-all group">
@@ -26,10 +34,38 @@
                 <%- include('../partials/ai_button') %>
             </div>
 
-            <%- include('../partials/dot', { link: '/add-media', pos: 'top-[32%] left-[30%]', label: 'Add Media' }) %>
-            <%- include('../partials/dot', { link: '/add-reflection', pos: 'top-[85%] left-[58%]', label: 'Add Reflection' }) %>
-            <%- include('../partials/dot', { link: '/currently-watching', pos: 'top-[50%] left-[67%]', label: 'Currently Watching' }) %>
+            <div class="shelf-dot" style="top: 48%; left: 50%;" onclick="openShelf('watching', 'Currently Watching')"><div class="dot-label">Watching</div></div>
+            <div class="shelf-dot" style="top: 25%; left: 22%;" onclick="openShelf('watchlist', 'Watchlist')"><div class="dot-label">Watchlist</div></div>
+            <div class="shelf-dot" style="top: 40%; left: 85%;" onclick="openShelf('favorites', 'My Favorites')"><div class="dot-label">Favorites</div></div>
+            <div class="shelf-dot" style="top: 75%; left: 35%;" onclick="openShelf('watched', 'Watched History')"><div class="dot-label">Watched</div></div>
+            <a href="/add-reflection" class="shelf-dot" style="top: 85%; left: 58%;"><div class="dot-label">Add Reflection</div></a>
         </div>
     </main>
+
+    <div id="shelfViewModal" class="hidden fixed inset-0 z-50 bg-[#0f191e]/95 backdrop-blur-xl p-6 flex flex-col animate-zoom-in">
+        <div class="flex justify-between items-center max-w-7xl mx-auto w-full border-b border-white/10 pb-6 shrink-0">
+            <h2 id="shelfTitle" class="text-4xl font-dancing">Shelf Name</h2>
+            <button onclick="closeShelf()" class="px-6 py-2 rounded-full border border-red-500 text-red-500">Close</button>
+        </div>
+        <div class="flex-grow overflow-y-auto w-full max-w-7xl mx-auto pt-8">
+            <div id="shelfLoading" class="hidden text-center text-[#00C49A]">Loading...</div>
+            <div id="shelfGrid" class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8 pb-20"></div>
+            <div id="shelfEmpty" class="hidden text-center text-white/50">This shelf is empty.</div>
+        </div>
+    </div>
+
+    <script>
+        const searchForm = document.querySelector('form[action="/search"]');
+        if (searchForm) {
+            let typeInput = searchForm.querySelector('input[name="type"]');
+            if (!typeInput) {
+                typeInput = document.createElement('input');
+                typeInput.type = 'hidden'; typeInput.name = 'type';
+                searchForm.appendChild(typeInput);
+            }
+            typeInput.value = 'movies';
+        }
+    </script>
+    <script src="/js/library.js"></script>
 </body>
 </html>

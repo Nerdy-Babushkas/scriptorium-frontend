@@ -1,0 +1,87 @@
+<!-- views/pages/reflection-detail.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { title: 'Reflection Detail - Scriptorium' }) %>
+</head>
+<body class="bg-[#2C1810] min-h-screen font-outfit text-white">
+    <%- include('../partials/navbar_app') %>
+
+    <main class="container mx-auto px-4 py-8 max-w-4xl">
+        <div id="loading" class="flex flex-col items-center justify-center text-white/30">
+            <div class="w-8 h-8 border-2 border-[#00C49A] border-t-transparent rounded-full animate-spin mb-2"></div>
+            Loading reflection...
+        </div>
+
+        <div id="reflectionContainer" class="hidden bg-[#0f191e]/80 backdrop-blur-md border border-white/5 rounded-3xl p-6 flex flex-col gap-4 shadow-2xl">
+            <div class="flex justify-between items-start gap-4">
+                <div class="w-24 h-28 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-black/40">
+                    <img id="itemImage" src="" class="w-full h-full object-cover rounded-lg">
+                </div>
+                <div class="flex-grow">
+                    <h2 id="itemTitle" class="text-2xl font-bold text-[#00C49A] truncate"></h2>
+                    <span id="itemDate" class="text-white/30 text-sm"></span>
+                    <div id="moodTags" class="flex flex-wrap gap-2 mt-2"></div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <p id="reflectionText" class="text-white/80 text-base font-light whitespace-pre-line"></p>
+            </div>
+
+            <div class="mt-6">
+                <button id="backBtn" class="px-6 py-2 rounded-full border border-white/10 text-white/80 hover:text-white hover:bg-white/5 transition-all">← Back</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const token = localStorage.getItem("token");
+            if (!token) return window.location.href = "/login";
+
+            const reflectionId = "<%= reflectionId %>";
+            const loading = document.getElementById("loading");
+            const container = document.getElementById("reflectionContainer");
+            const itemTitle = document.getElementById("itemTitle");
+            const itemImage = document.getElementById("itemImage");
+            const itemDate = document.getElementById("itemDate");
+            const reflectionText = document.getElementById("reflectionText");
+            const moodTags = document.getElementById("moodTags");
+            const backBtn = document.getElementById("backBtn");
+
+            backBtn.addEventListener("click", () => window.history.back());
+
+            try {
+                const res = await fetch(`https://scriptorium-backend-six.vercel.app/api/reflection/${reflectionId}`, {
+                    headers: { Authorization: `jwt ${token}` }
+                });
+
+                if (!res.ok) throw new Error("Failed to fetch reflection");
+
+                const reflection = await res.json();
+
+                loading.classList.add("hidden");
+                container.classList.remove("hidden");
+
+                itemTitle.textContent = reflection.metadata?.title || "Unknown Item";
+                itemImage.src = reflection.metadata?.image || "https://via.placeholder.com/100";
+                itemDate.textContent = new Date(reflection.date).toLocaleDateString("en-US", {
+                    month: "short", day: "numeric", year: "numeric"
+                });
+                reflectionText.textContent = reflection.text || "";
+
+                reflection.moodTags?.forEach(m => {
+                    const span = document.createElement("span");
+                    span.className = "mood-tag px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-white/60";
+                    span.textContent = m;
+                    moodTags.appendChild(span);
+                });
+            } catch (e) {
+                console.error(e);
+                loading.textContent = "Failed to load reflection";
+            }
+        });
+    </script>
+</body>
+</html>

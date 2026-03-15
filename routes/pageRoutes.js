@@ -169,6 +169,10 @@ router.get("/reflections-history", requireAuth, (req, res) => {
   res.render("pages/reflections-history");
 });
 
+router.get("/reflection/:id", requireAuth, (req, res) => {
+  res.render("pages/reflection-detail", { reflectionId: req.params.id });
+});
+
 router.use((req, res) => {
   res.status(404).render("pages/404");
 });

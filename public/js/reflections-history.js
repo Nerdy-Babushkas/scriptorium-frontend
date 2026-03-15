@@ -53,29 +53,29 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       div.innerHTML = `
-                <div class="w-16 h-20 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-black/40">
-                    <img src="${image}" class="w-full h-full object-cover">
-                </div>
-                <div class="flex-grow min-w-0">
-                    <div class="flex justify-between items-start mb-1">
-                        <h4 class="text-[#00C49A] text-sm font-bold truncate pr-2">${title}</h4>
-                        <span class="text-white/30 text-xs whitespace-nowrap">${dateStr}</span>
-                    </div>
-                    <p class="text-white/80 text-sm line-clamp-3 mb-2 font-light">"${ref.text}"</p>
-                    <div class="flex flex-wrap gap-2 mb-2">
-                        ${ref.moodTags?.map((m) => `<span class="px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-white/60">${m}</span>`).join("") || ""}
-                    </div>
-                    <button class="px-3 py-1 text-xs rounded-full border border-white/10 hover:bg-white/10 text-white/80 transition-all"
-                        onclick="window.location.href='/reflection-view?ref=${ref._id}'">
-                        View Reflection
-                    </button>
-                </div>
-            `;
+        <div class="w-16 h-20 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-black/40">
+          <img src="${image}" class="w-full h-full object-cover">
+        </div>
+        <div class="flex-grow min-w-0">
+          <div class="flex justify-between items-start mb-1">
+            <h4 class="text-[#00C49A] text-sm font-bold truncate pr-2">${title}</h4>
+            <span class="text-white/30 text-xs whitespace-nowrap">${dateStr}</span>
+          </div>
+          <p class="text-white/80 text-sm line-clamp-3 mb-2 font-light">"${ref.text}"</p>
+          <div class="flex flex-wrap gap-2 mb-2">
+            ${ref.moodTags?.map((m) => `<span class="px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-white/60">${m}</span>`).join("") || ""}
+          </div>
+          <button class="px-3 py-1 text-xs rounded-full border border-white/10 hover:bg-white/10 text-white/80 transition-all"
+              onclick="window.location.href='/reflection/${ref._id}'">
+              View Reflection
+          </button>
+        </div>
+      `;
 
       // Clicking anywhere except the button navigates
       div.addEventListener("click", (e) => {
         if (e.target.tagName.toLowerCase() !== "button") {
-          window.location.href = `/reflection-view?ref=${ref._id}`;
+          window.location.href = `/reflection/${ref._id}`;
         }
       });
 

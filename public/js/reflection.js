@@ -27,29 +27,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 2. DROPDOWN POPULATION ---
     async function loadDropdownItems() {
         try {
-            // Fetching all three media types from your live Vercel backend
-            const [booksRes, musicRes, moviesRes] = await Promise.all([
+            const [booksRes, musicRes] = await Promise.all([
                 fetch('https://scriptorium-backend-six.vercel.app/api/books/shelf', { headers: { 'Authorization': `jwt ${token}` } }),
-                fetch('https://scriptorium-backend-six.vercel.app/api/music/shelf', { headers: { 'Authorization': `jwt ${token}` } }),
-                fetch('https://scriptorium-backend-six.vercel.app/api/movies/shelf', { headers: { 'Authorization': `jwt ${token}` } })
+                fetch('https://scriptorium-backend-six.vercel.app/api/music/shelf', { headers: { 'Authorization': `jwt ${token}` } })
             ]);
 
             const booksData = await booksRes.json();
             const musicData = await musicRes.json();
-            const moviesData = await moviesRes.json();
 
-            // Flatten lists for the dropdown
-            const rawBooks = [...(booksData.favorites || []), ...(booksData.reading || []), ...(booksData.finished || [])];
-            const rawTracks = [...(musicData.favorites || []), ...(musicData.listening || []), ...(musicData.finished || [])];
-            // Standard movie shelves based on your interactive Theatre dots
-            const rawMovies = [...(moviesData.favorites || []), ...(moviesData.watching || []), ...(moviesData.watched || [])];
+            // Combine all relevant shelves including Favorites
+            const rawBooks = [
+                ...(booksData.favorites || []), 
+                ...(booksData.reading || []), 
+                ...(booksData.finished || [])
+            ];
+            const rawTracks = [
+                ...(musicData.favorites || []), 
+                ...(musicData.listening || []), 
+                ...(musicData.finished || [])
+            ];
 
-            // Remove duplicates
+            // Remove duplicates (e.g. item in both 'reading' and 'favorites')
             const uniqueBooks = Array.from(new Map(rawBooks.map(item => [item._id, item])).values());
             const uniqueTracks = Array.from(new Map(rawTracks.map(item => [item._id, item])).values());
-            const uniqueMovies = Array.from(new Map(rawMovies.map(item => [item._id, item])).values());
 
-            if (uniqueBooks.length === 0 && uniqueTracks.length === 0 && uniqueMovies.length === 0) {
+            if (uniqueBooks.length === 0 && uniqueTracks.length === 0) {
                 const opt = document.createElement('option');
                 opt.text = "No items in your active shelves";
                 itemSelect.add(opt);
@@ -57,39 +59,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            itemSelect.innerHTML = '<option value="">Select a memory...</option>';
-
-            // POPULATE DROPDOWN GROUPS
-            if (uniqueMovies.length > 0) {
-                const group = document.createElement('optgroup');
-                group.label = "Movies";
-                uniqueMovies.forEach(m => {
-                    const opt = document.createElement('option');
-                    opt.value = JSON.stringify({ id: m._id, type: 'movie', title: m.title, image: m.poster });
-                    opt.text = m.title;
-                    group.appendChild(opt);
-                });
-                itemSelect.appendChild(group);
-            }
-
+            // Populate Books Group
             if (uniqueBooks.length > 0) {
                 const group = document.createElement('optgroup');
                 group.label = "Books";
                 uniqueBooks.forEach(b => {
                     const opt = document.createElement('option');
-                    opt.value = JSON.stringify({ id: b._id, type: 'book', title: b.title, image: b.imageLinks?.thumbnail });
+                    opt.value = JSON.stringify({ 
+                        id: b._id, 
+                        type: 'book', 
+                        title: b.title, 
+                        image: b.imageLinks?.thumbnail 
+                    });
                     opt.text = b.title;
                     group.appendChild(opt);
                 });
                 itemSelect.appendChild(group);
             }
 
+            // Populate Music Group
             if (uniqueTracks.length > 0) {
                 const group = document.createElement('optgroup');
                 group.label = "Music";
                 uniqueTracks.forEach(t => {
                     const opt = document.createElement('option');
-                    opt.value = JSON.stringify({ id: t._id, type: 'track', title: t.title, image: t.coverUrl });
+                    opt.value = JSON.stringify({ 
+                        id: t._id, 
+                        type: 'track', 
+                        title: t.title, 
+                        image: t.coverUrl 
+                    });
                     opt.text = `${t.title} - ${t.artist?.name || 'Unknown'}`;
                     group.appendChild(opt);
                 });
@@ -97,12 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
         } catch (error) {
-            console.error("Dropdown error:", error);
+            console.error(error);
             showToast('Error', 'Failed to load shelf items', 'error');
         }
     }
 
     // --- 3. UI INTERACTIONS ---
+    
     moodBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const mood = btn.dataset.mood;
@@ -128,19 +128,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const text = textArea.value.trim();
         const itemVal = itemSelect.value;
 
-        if (!itemVal) return showToast('Warning', 'Please select an item', 'error');
+        if (!itemVal) return showToast('Warning', 'Please select a book or track', 'error');
         if (text.length < 30) return showToast('Warning', 'Reflection must be at least 30 characters', 'error');
 
         const itemData = JSON.parse(itemVal);
         const payload = {
-            text: text, moodTags: selectedMoods, itemId: itemData.id, itemType: itemData.type,
-            metadata: { title: itemData.title, image: itemData.image }
+            text: text,
+            moodTags: selectedMoods,
+            itemId: itemData.id,
+            itemType: itemData.type,
+            metadata: {
+                title: itemData.title,
+                image: itemData.image
+            }
         };
 
         saveBtn.disabled = true;
         saveBtn.textContent = 'Processing...';
 
         try {
+            // Updated to use the singular path 'reflection'
             let url = 'https://scriptorium-backend-six.vercel.app/api/reflection/add';
             let method = 'POST';
 
@@ -173,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- 4. HISTORY ---
+    
     async function loadHistory() {
         loadingHistory.classList.remove('hidden');
         historyList.innerHTML = '';
@@ -184,6 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Authorization': `jwt ${token}` }
             });
             const reflections = await res.json();
+
             loadingHistory.classList.add('hidden');
 
             if (reflections.length === 0) {
@@ -201,44 +210,50 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderCard(ref) {
         const date = new Date(ref.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         const title = ref.metadata?.title || "Unknown Item";
+        const image = ref.metadata?.image || (ref.itemType === 'book' ? 'https://via.placeholder.com/50?text=Book' : 'https://via.placeholder.com/50?text=Music');
         
-        let typeIcon = '📖';
-        if (ref.itemType === 'track') typeIcon = '🎵';
-        else if (ref.itemType === 'movie') typeIcon = '🎬';
-
         const div = document.createElement('div');
         div.className = "bg-white/5 border border-white/5 rounded-xl p-4 hover:border-[#00C49A]/50 transition-all group flex gap-4";
+        
         div.innerHTML = `
             <div class="w-16 h-20 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-black/40">
-                <img src="${ref.metadata?.image || 'https://via.placeholder.com/50'}" class="w-full h-full object-cover">
+                <img src="${image}" class="w-full h-full object-cover">
             </div>
+
             <div class="flex-grow min-w-0">
                 <div class="flex justify-between items-start mb-1">
                     <h4 class="text-[#00C49A] text-sm font-bold truncate pr-2">${title}</h4>
                     <span class="text-white/30 text-xs whitespace-nowrap">${date}</span>
                 </div>
+                
                 <p class="text-white/80 text-sm line-clamp-2 mb-2 font-light">"${ref.text}"</p>
+                
                 <div class="flex justify-between items-center mt-2">
                     <div class="flex flex-wrap gap-2">
-                        <span class="text-xs">${typeIcon}</span>
                         ${ref.moodTags.map(m => `<span class="px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-white/60">${m}</span>`).join('')}
                     </div>
+                    
                     <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button class="text-white/50 hover:text-white" onclick='editRef(${JSON.stringify(ref)})'>✏️</button>
                         <button class="text-red-500/50 hover:text-red-500" onclick="deleteRef('${ref._id}')">🗑️</button>
                     </div>
                 </div>
-            </div>`;
+            </div>
+        `;
         historyList.appendChild(div);
     }
 
     window.deleteRef = async (id) => {
-        if(!confirm("Delete this entry?")) return;
+        if(!confirm("Delete this reflection?")) return;
         try {
             const res = await fetch(`https://scriptorium-backend-six.vercel.app/api/reflection/remove/${id}`, {
-                method: 'DELETE', headers: { 'Authorization': `jwt ${token}` }
+                method: 'DELETE',
+                headers: { 'Authorization': `jwt ${token}` }
             });
-            if(res.ok) { showToast('Success', 'Deleted', 'success'); loadHistory(); }
+            if(res.ok) {
+                showToast('Success', 'Deleted', 'success');
+                loadHistory();
+            }
         } catch(e) { console.error(e); }
     };
 
@@ -246,18 +261,22 @@ document.addEventListener('DOMContentLoaded', () => {
         editingId = ref._id;
         textArea.value = ref.text;
         selectedMoods = ref.moodTags || [];
-        moodBtns.forEach(btn => { btn.classList.toggle('selected', selectedMoods.includes(btn.dataset.mood)); });
+        
+        moodBtns.forEach(btn => {
+            btn.classList.toggle('selected', selectedMoods.includes(btn.dataset.mood));
+        });
 
+        // Match the dropdown item
         for (let i = 0; i < itemSelect.options.length; i++) {
             try {
                 const optVal = JSON.parse(itemSelect.options[i].value);
-                const currentId = ref.itemId || ref.item;
-                if (optVal.id === currentId) {
+                if (optVal.id === ref.item) {
                     itemSelect.selectedIndex = i;
                     break;
                 }
             } catch(e) {}
         }
+
         editModeIndicator.classList.remove('hidden');
         cancelEditBtn.classList.remove('hidden');
         saveBtn.textContent = 'Update Reflection';
@@ -265,9 +284,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     function resetForm() {
-        editingId = null; textArea.value = ''; itemSelect.selectedIndex = 0;
-        selectedMoods = []; moodBtns.forEach(btn => btn.classList.remove('selected'));
+        editingId = null;
+        textArea.value = '';
+        itemSelect.selectedIndex = 0;
+        selectedMoods = [];
+        moodBtns.forEach(btn => btn.classList.remove('selected'));
         charCount.textContent = '0 chars';
+        charCount.className = "absolute bottom-3 right-4 text-xs text-white/30";
+        
         editModeIndicator.classList.add('hidden');
         cancelEditBtn.classList.add('hidden');
         saveBtn.textContent = 'Save Reflection';
@@ -277,8 +301,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const toast = document.getElementById('toast');
         document.getElementById('toastTitle').textContent = title;
         document.getElementById('toastMessage').textContent = msg;
-        const color = type === 'success' ? 'bg-[#064e3b] border-[#00C49A]' : 'bg-[#450a0a] border-red-500';
-        toast.className = `fixed bottom-8 right-8 flex items-center gap-4 px-6 py-4 ${color} border-l-4 rounded-xl shadow-2xl text-white transform transition-all duration-500 z-[100]`;
+
+        if (type === 'success') {
+            toast.className = `fixed bottom-8 right-8 flex items-center gap-4 px-6 py-4 bg-[#064e3b] border-l-4 border-[#00C49A] rounded-xl shadow-2xl text-white transform transition-transform duration-500 z-[100]`;
+        } else {
+            toast.className = `fixed bottom-8 right-8 flex items-center gap-4 px-6 py-4 bg-[#450a0a] border-l-4 border-red-500 rounded-xl shadow-2xl text-white transform transition-transform duration-500 z-[100]`;
+        }
+
         toast.classList.remove('translate-y-40');
         setTimeout(() => toast.classList.add('translate-y-40'), 3500);
     }

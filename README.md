@@ -2,8 +2,7 @@
 
 Welcome to the *Scriptorium Frontend* repository.
 
-Scriptorium is a digital personal space where users can explore music, books, reflections, and goals inside a creative room-based experience.  
-This frontend application handles all user interaction, UI rendering, and communication with the backend API.
+Scriptorium is designed as a personal digital space where users can collect and organize different types of media they discover online, such as books, music, movies, and podcasts. The platform does not allow users to read or watch the content directly; instead, it focuses on helping users keep track of what they find interesting. Users can save items they discover into their personal space and use the application as a place to record their thoughts, ideas, and learning from that content. By combining media tracking with personal reflection and goal setting, Scriptorium encourages users to think more deeply about the content they engage with and how it connects to their personal interests and growth.
 
 ---
 
@@ -15,15 +14,23 @@ This frontend application handles all user interaction, UI rendering, and commun
 
 ##  Project Overview
 
-Scriptorium provides users with a personalized digital “room” where they can:
+Scriptorium is a personalized digital space where users can discover and organize content such as books, music, movies, and podcasts inside a themed virtual “room”.
 
--  Search and explore music
--  Search and browse books
--  Add reflections
--  Track personal goals
--  Navigate through different themed rooms
--  Register, login, and manage authentication
+Once content is saved, users can:
 
+-  Save books to their personal library
+-  Save music they like
+-  Add movies
+-  Add podcasts
+-  Write personal reflections about the content
+-  Edit or delete reflections
+-  Set goals related to the content they are exploring
+-  Track progress toward those goals
+-  Navigate through different themed rooms such as the library, music room, or theatre
+
+The goal of Scriptorium is to help users reflect on the content they consume and connect it with personal growth through notes, reflections, and goal tracking.
+
+---
 The frontend is built using:
 
 - *Node.js*
@@ -60,12 +67,15 @@ The frontend is built using:
 
 ###  Reflections
 - Add reflections
-- Display stored reflections
+- Display stored reflectionS
+- Update the reflections
 
 ###  Goals Tracking
 - Create goals
 - View progress
 - Update goal completion
+
+---
 
 ###  UI / UX
 - Modular EJS layout with partials

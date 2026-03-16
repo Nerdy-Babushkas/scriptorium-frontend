@@ -553,6 +553,7 @@ function setupInlineMediaSearch() {
 
             if (goal.status === "active") {
               openEditModal(goal);
+              console.log("Opening goal for edit:", goal);
             }
             render();
           });
@@ -731,7 +732,7 @@ if (mediaInput && mediaInput !== "N/A" && !selectedMediaItem) {
     return alert("Current progress cannot be negative.");
 
   if (current > total) current = total;
-
+console.log("Saving media:", media);
   if (editingGoalId) {
     const res = await fetch(
       `${API_BASE}/api/goals/update/${editingGoalId}`,
@@ -749,6 +750,7 @@ if (mediaInput && mediaInput !== "N/A" && !selectedMediaItem) {
     }
 
     const data = await res.json();
+    console.log("Saved goal response:", data);
     const updated = data.goal || data;
 
     const idx = goals.findIndex((g) => (g._id || g.id) === editingGoalId);

@@ -69,7 +69,15 @@
                 itemDate.textContent = new Date(reflection.date).toLocaleDateString("en-US", {
                     month: "short", day: "numeric", year: "numeric"
                 });
-                reflectionText.textContent = reflection.text || "";
+                function linkify(text) {
+                    const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+                    return text.replace(urlRegex, (url) => {
+                        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-[#00C49A] underline hover:text-[#00E0B0]">${url}</a>`;
+                    });
+                }
+
+                reflectionText.innerHTML = linkify(reflection.text || "");
 
                 reflection.moodTags?.forEach(m => {
                     const span = document.createElement("span");

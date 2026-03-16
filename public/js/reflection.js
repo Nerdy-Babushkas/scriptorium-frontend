@@ -315,7 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (
         !e.target.closest("button") // ignore clicks on buttons
       ) {
-        window.location.href = "/reflections-history";
+        window.location.href = "/reflection/" + ref._id;
       }
     });
 
@@ -402,4 +402,26 @@ document.addEventListener("DOMContentLoaded", () => {
     ?.addEventListener("click", () => {
       window.location.href = "/reflections-history";
     });
+
+  // --- 5. HISTORY PANEL REDIRECT ON OUTSIDE CLICK ---
+  // Select the history panel
+  const historyPanel = document.querySelector(".lg\\:col-span-5");
+
+  // Make it feel interactive
+  if (historyPanel) {
+    historyPanel.style.cursor = "pointer"; // change cursor
+    historyPanel.addEventListener("mouseenter", () => {
+      historyPanel.style.opacity = "0.95"; // optional subtle effect
+    });
+    historyPanel.addEventListener("mouseleave", () => {
+      historyPanel.style.opacity = "1"; // back to normal
+    });
+  }
+
+  historyPanel?.addEventListener("click", (e) => {
+    // If the click is outside any card
+    if (!e.target.closest(".history-card")) {
+      window.location.href = "/reflections-history";
+    }
+  });
 });

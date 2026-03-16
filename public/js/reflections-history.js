@@ -4,11 +4,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   const emptyHistory = document.getElementById("emptyHistory");
   const itemSelect = document.getElementById("itemSelect");
 
+  const prevBtn = document.getElementById("prevPage");
+  const nextBtn = document.getElementById("nextPage");
+  const pageIndicator = document.getElementById("pageIndicator");
+  const pagination = document.getElementById("pagination");
+
   const token = localStorage.getItem("token");
+
   const params = new URLSearchParams(window.location.search);
   const highlightId = params.get("ref");
 
   if (!token) return (window.location.href = "/login");
+
+  let page = 1;
+  const limit = 5;
 
   // -----------------------------
   // RENDER REFLECTIONS
@@ -16,9 +25,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   function renderReflections(reflections) {
     historyContainer.innerHTML = "";
 
-    if (!reflections.length) {
-      emptyHistory.classList.remove("hidden");
+    if (!reflections || reflections.length === 0) {
       historyContainer.classList.add("hidden");
+      emptyHistory.classList.remove("hidden");
+      pagination.classList.add("hidden");
       return;
     }
 
@@ -33,10 +43,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (ref._id === highlightId) {
         div.classList.add("highlighted");
-        setTimeout(
-          () => div.scrollIntoView({ behavior: "smooth", block: "center" }),
-          100,
-        );
+
+        setTimeout(() => {
+          div.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 100);
       }
 
       const title = ref.metadata?.title || "Unknown Item";
@@ -96,37 +106,72 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // -----------------------------
-  // FETCH ALL REFLECTIONS
+  // UPDATE PAGINATION
+  // -----------------------------
+  function updatePagination(reflectionCount) {
+    pageIndicator.textContent = `Page ${page}`;
+
+    prevBtn.disabled = page === 1;
+    nextBtn.disabled = reflectionCount < limit;
+
+    pagination.classList.remove("hidden");
+  }
+
+  // -----------------------------
+  // LOAD ALL REFLECTIONS
   // -----------------------------
   async function loadAllReflections() {
-    const res = await fetch(
-      "https://scriptorium-backend-six.vercel.app/api/reflection/user?limit=20",
-      {
-        headers: { Authorization: `jwt ${token}` },
-      },
-    );
+    loading.classList.remove("hidden");
 
-    const data = await res.json();
-    renderReflections(data.reflections || []);
+    try {
+      const res = await fetch(
+        `https://scriptorium-backend-six.vercel.app/api/reflection/user?page=${page}&limit=${limit}`,
+        {
+          headers: { Authorization: `jwt ${token}` },
+        },
+      );
+
+      const data = await res.json();
+      const reflections = data.reflections || [];
+
+      renderReflections(reflections);
+      updatePagination(reflections.length);
+    } catch (err) {
+      console.error("Reflection fetch error:", err);
+    }
+
+    loading.classList.add("hidden");
   }
 
   // -----------------------------
   // FILTER BY ITEM
   // -----------------------------
   async function loadItemReflections(itemId, itemType) {
-    const res = await fetch(
-      `https://scriptorium-backend-six.vercel.app/api/reflection/item/${itemId}?itemType=${itemType}`,
-      {
-        headers: { Authorization: `jwt ${token}` },
-      },
-    );
+    loading.classList.remove("hidden");
 
-    const reflections = await res.json();
-    renderReflections(reflections);
+    try {
+      const res = await fetch(
+        `https://scriptorium-backend-six.vercel.app/api/reflection/item/${itemId}?itemType=${itemType}`,
+        {
+          headers: { Authorization: `jwt ${token}` },
+        },
+      );
+
+      const reflections = await res.json();
+
+      renderReflections(reflections);
+
+      // hide pagination for filtered results
+      pagination.classList.add("hidden");
+    } catch (err) {
+      console.error("Item reflection error:", err);
+    }
+
+    loading.classList.add("hidden");
   }
 
   // -----------------------------
-  // DROPDOWN POPULATION
+  // LOAD DROPDOWN ITEMS
   // -----------------------------
   async function loadDropdownItems() {
     try {
@@ -164,19 +209,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         ...(moviesData.watched || []),
       ];
 
-      const uniqueBooks = Array.from(
-        new Map(rawBooks.map((i) => [i._id, i])).values(),
-      );
-
-      const uniqueTracks = Array.from(
-        new Map(rawTracks.map((i) => [i._id, i])).values(),
-      );
-
-      const uniqueMovies = Array.from(
-        new Map(rawMovies.map((i) => [i._id, i])).values(),
-      );
-
-      itemSelect.innerHTML = `<option value="">All Reflections</option>`;
+      const uniqueBooks = [
+        ...new Map(rawBooks.map((i) => [i._id, i])).values(),
+      ];
+      const uniqueTracks = [
+        ...new Map(rawTracks.map((i) => [i._id, i])).values(),
+      ];
+      const uniqueMovies = [
+        ...new Map(rawMovies.map((i) => [i._id, i])).values(),
+      ];
 
       function appendGroup(label, items, type) {
         if (!items.length) return;
@@ -207,14 +248,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       appendGroup("Books", uniqueBooks, "book");
       appendGroup("Music", uniqueTracks, "track");
     } catch (err) {
-      console.error("Dropdown error:", err);
+      console.error("Dropdown load error:", err);
     }
   }
 
   // -----------------------------
-  // FILTER CHANGE
+  // FILTER EVENT
   // -----------------------------
   itemSelect.addEventListener("change", async () => {
+    page = 1;
+
     if (!itemSelect.value) {
       return loadAllReflections();
     }
@@ -224,9 +267,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   // -----------------------------
+  // PAGINATION EVENTS
+  // -----------------------------
+  prevBtn.addEventListener("click", async () => {
+    if (page > 1) {
+      page--;
+      await loadAllReflections();
+    }
+  });
+
+  nextBtn.addEventListener("click", async () => {
+    page++;
+    await loadAllReflections();
+  });
+
+  // -----------------------------
   // INIT
   // -----------------------------
   await loadDropdownItems();
   await loadAllReflections();
-  loading.classList.add("hidden");
 });

@@ -171,6 +171,13 @@ document.addEventListener("DOMContentLoaded", () => {
     empty.classList.add("hidden");
     loading.classList.remove("hidden");
 
+    type = type.toLowerCase();
+
+    if (type === "books" && /^\d+$/.test(query)) {
+      query = `"${query}"`;
+      query = `intitle:${query}`;
+    }
+
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(

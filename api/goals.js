@@ -1,4 +1,4 @@
-// api/goals.js
+//api/goals.js
 
 const express = require("express");
 const router = express.Router();

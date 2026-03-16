@@ -28,8 +28,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const url = new URL(window.location);
     url.searchParams.set("type", type);
     window.history.pushState({}, "", url);
+
     currentType = type;
     updateTabs(type);
+
+    // Update hidden input in the form
+    const typeInput = document.querySelector('input[name="type"]');
+    if (typeInput) typeInput.value = type;
+
     const query = new URLSearchParams(window.location.search).get("q");
     if (query) executeSearch(query, type);
   }

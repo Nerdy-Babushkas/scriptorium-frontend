@@ -111,7 +111,8 @@ router.get("/ai-recommendations", requireAuth, (req, res) => {
 
 router.get("/search", requireAuth, (req, res) => {
   const query = req.query.q; // Capture query from URL
-  res.render("pages/search-results", { query }); // Pass it to view (optional, used in Navbar)
+  const type = req.query.type || "movies"; // Capture type (default to movies)
+  res.render("pages/search-results", { query, type }); // Pass both to view (optional, used in Navbar)
 });
 
 router.get("/currently-reading", requireAuth, (req, res) => {

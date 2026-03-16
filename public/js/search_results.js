@@ -25,11 +25,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function switchTab(type) {
     if (currentType === type) return;
+
     const url = new URL(window.location);
     url.searchParams.set("type", type);
     window.history.pushState({}, "", url);
+
     currentType = type;
     updateTabs(type);
+
+    const typeInput = document.querySelector('input[name="type"]');
+    if (typeInput) typeInput.value = type;
+
     const query = new URLSearchParams(window.location.search).get("q");
     if (query) executeSearch(query, type);
   }

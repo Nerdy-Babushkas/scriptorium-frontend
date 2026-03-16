@@ -10,26 +10,81 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalTitle = document.getElementById("modalBookTitle");
   const btnSpecial = document.getElementById("btn-reading");
   const btnSpecialText = document.getElementById("btn-reading-text");
+  const titleInput = document.querySelector('input[name="title"]');
+
+  const advancedToggle = document.getElementById("advancedSearchToggle");
+  const advancedForm = document.getElementById("advancedSearch");
+  const accordionIcon = document.getElementById("accordionIcon");
+
+  advancedToggle.onclick = () => {
+    const isHidden = advancedForm.classList.toggle("hidden");
+    accordionIcon.style.transform = isHidden
+      ? "rotate(0deg)"
+      : "rotate(180deg)";
+  };
+
+  let currentPage = 1;
+  let totalPages = 1;
+  let currentQueryParams = {};
+
+  const advancedBtn = document.getElementById("advancedSearchBtn");
+  advancedBtn.onclick = () => {
+    const form = document.getElementById("advancedSearch");
+    const title = form.querySelector('input[name="title"]').value;
+    const actor = form.querySelector('input[name="actor"]').value;
+    const genre = form.querySelector('input[name="genre"]').value;
+    const year = form.querySelector('input[name="year"]').value;
+
+    currentQueryParams = { title, actor, genre, year };
+    currentPage = 1;
+
+    display.textContent = title || actor || genre || year || "...";
+    executeAdvancedSearch(currentQueryParams, currentType, currentPage);
+  };
 
   const API_BASE = "https://scriptorium-backend-six.vercel.app/api";
   let currentItemData = null;
   let currentType =
     new URLSearchParams(window.location.search).get("type") || "movies";
 
-  updateTabs(currentType);
   const initialQuery = new URLSearchParams(window.location.search).get("q");
+
+  advancedForm.classList.add("hidden");
+  accordionIcon.style.transform = "rotate(0deg)";
+
+  // Auto-fill the title input
+  if (initialQuery && titleInput) {
+    titleInput.value = initialQuery;
+  }
+
+  updateTabs(currentType);
+
   if (initialQuery) {
     display.textContent = initialQuery;
     executeSearch(initialQuery, currentType);
   }
 
   function switchTab(type) {
+    if (type === "movies") {
+      advancedForm.classList.remove("hidden");
+      accordionIcon.style.transform = "rotate(180deg)";
+    } else {
+      advancedForm.classList.add("hidden");
+      accordionIcon.style.transform = "rotate(0deg)";
+    }
+
     if (currentType === type) return;
     const url = new URL(window.location);
     url.searchParams.set("type", type);
     window.history.pushState({}, "", url);
+
     currentType = type;
     updateTabs(type);
+
+    // Update hidden input in the form
+    const typeInput = document.querySelector('input[name="type"]');
+    if (typeInput) typeInput.value = type;
+
     const query = new URLSearchParams(window.location.search).get("q");
     if (query) executeSearch(query, type);
   }
@@ -182,6 +237,34 @@ document.addEventListener("DOMContentLoaded", () => {
         tabs[key].className =
           `px-6 py-1.5 rounded-full border font-medium text-sm transition-all ${key === type ? active : inactive}`;
     });
+  }
+
+  async function executeAdvancedSearch(params, type) {
+    grid.innerHTML = "";
+    empty.classList.add("hidden");
+    loading.classList.remove("hidden");
+
+    try {
+      const token = localStorage.getItem("token");
+      const query = new URLSearchParams(params);
+      const res = await fetch(
+        `${API_BASE}/movies/advanced/search?${query.toString()}`,
+        {
+          headers: { Authorization: `jwt ${token}` },
+        },
+      );
+
+      const data = await res.json();
+      loading.classList.add("hidden");
+
+      const items = data.movies || [];
+      if (items.length > 0) {
+        renderItems(items, type);
+      } else empty.classList.remove("hidden");
+    } catch (err) {
+      console.error(err);
+      loading.classList.add("hidden");
+    }
   }
 
   function showToast(title, msg, type) {

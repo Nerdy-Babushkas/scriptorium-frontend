@@ -10,7 +10,7 @@
     </style>
 </head>
 <body class="bg-scriptorium-dark min-h-screen relative overflow-x-hidden font-outfit text-white">
-    <%- include('../partials/navbar_app') %>
+    <%- include('../partials/navbar_app', { query, type }) %>
     <main class="relative z-10 pt-8 pb-20 px-6">
         <div class="container mx-auto max-w-7xl">
             <div class="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-white/10 pb-6">
@@ -34,6 +34,32 @@
                 </div>
             </div>
 
+            <div class="mb-6" id="advancedSearchContainer">
+                <button id="advancedSearchToggle" class="flex justify-between items-center w-full px-4 py-2 rounded-md bg-[#0f191e] border border-white/10 text-white font-medium">
+                    <span>Advanced Search</span>
+                    <span id="accordionIcon" class="transition-transform transform">▼</span>
+                </button>
+
+            <div id="advancedSearch" class="hidden mt-4 flex flex-wrap gap-3 items-end">
+                <input type="text" name="title" placeholder="Title" 
+                    class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
+                <input type="text" name="actor" placeholder="Actor" 
+                    class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
+                <input type="text" name="genre" placeholder="Genre" 
+                    class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
+                <input type="number" name="year" min="1900" placeholder="Year" 
+                    class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
+                <select name="type" class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-40">
+                    <option value="">Any Type</option>
+                    <option value="movie">Movie</option>
+                    <option value="series">Series</option>
+                    <option value="episode">Episode</option>
+                </select>
+                <button id="advancedSearchBtn" 
+                        class="px-6 py-2.5 rounded-full bg-[#00C49A] text-[#05181c] font-bold">Search</button>
+            </div>
+                
+            </div>
             <div id="loadingState" class="hidden flex flex-col items-center justify-center py-24">
                 <div class="w-16 h-16 border-4 border-[#00C49A]/30 border-t-[#00C49A] rounded-full animate-spin mb-4"></div>
                 <p class="text-[#00C49A] animate-pulse">Searching the archives...</p>

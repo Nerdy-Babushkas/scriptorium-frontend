@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const historyList = document.getElementById("historyList");
   const loadingHistory = document.getElementById("loadingHistory");
   const emptyHistory = document.getElementById("emptyHistory");
+  const historyFooter = document.getElementById("historyFooter");
 
   // State
   let selectedMoods = [];
@@ -252,8 +253,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (reflections.length === 0) {
         emptyHistory.classList.remove("hidden");
+        historyFooter.classList.add("hidden"); // hide footer if empty
       } else {
         historyList.classList.remove("hidden");
+        historyFooter.classList.remove("hidden"); // SHOW the button
         reflections.forEach((ref) => renderCard(ref));
       }
 
@@ -320,7 +323,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   window.viewRef = (id) => {
-    window.location.href = `/reflections-history?ref=${id}`;
+    window.location.href = `/reflection/${id}`;
   };
 
   window.deleteRef = async (id) => {
@@ -393,4 +396,10 @@ document.addEventListener("DOMContentLoaded", () => {
     toast.classList.remove("translate-y-40");
     setTimeout(() => toast.classList.add("translate-y-40"), 3500);
   }
+
+  document
+    .getElementById("viewFullHistoryBtn")
+    ?.addEventListener("click", () => {
+      window.location.href = "/reflections-history";
+    });
 });

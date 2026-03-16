@@ -283,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const div = document.createElement("div");
     div.className =
-      "bg-white/5 border border-white/5 rounded-xl p-4 hover:border-[#00C49A]/50 transition-all group flex gap-4 cursor-pointer";
+      "history-card bg-white/5 border border-white/5 rounded-xl p-4 hover:border-[#00C49A]/50 transition-all group flex gap-4 cursor-pointer";
 
     div.innerHTML = `
         <div class="w-16 h-20 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-black/40">

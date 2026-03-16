@@ -257,7 +257,7 @@
       let selectedMediaItem = null;
       let mediaSearchTimeout = null;
 
-      const API_BASE = "https://scriptorium-backend-six.vercel.app";
+      const API_BASE = "";
 
       const icons = {
         book: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>`,
@@ -315,17 +315,20 @@ async function searchMediaInline(query) {
   }
 
   try {
+    const token = localStorage.getItem("token");
+
     const res = await fetch(
-      `${API_BASE}/api/${mediaType}/search?q=${encodeURIComponent(query.trim())}`,
+      `https://scriptorium-backend-six.vercel.app/api/${mediaType}/search?q=${encodeURIComponent(query.trim())}`,
       {
-        method: "GET",
-        credentials: "include",
+        headers: {
+          Authorization: `jwt ${token}`,
+        },
       },
     );
 
     if (!res.ok) {
-      results.innerHTML = "";
-      results.classList.add("hidden");
+      results.innerHTML = `<div class="px-4 py-3 text-sm text-red-400">Search failed (${res.status}).</div>`;
+      results.classList.remove("hidden");
       return;
     }
 
@@ -377,8 +380,8 @@ async function searchMediaInline(query) {
     results.classList.remove("hidden");
   } catch (err) {
     console.error("Inline media search failed:", err);
-    results.innerHTML = "";
-    results.classList.add("hidden");
+    results.innerHTML = `<div class="px-4 py-3 text-sm text-red-400">Unable to load search results.</div>`;
+    results.classList.remove("hidden");
   }
 }
 

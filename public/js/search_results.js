@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function toggleAdvancedFields(type) {
     const movieFields = ["actor", "genre", "movieType", "movieYear"];
     const musicFields = ["artist", "release", "musicYear"];
+    const bookFields = ["author", "category", "publisher"];
 
     movieFields.forEach((name) => {
       const el = advancedForm.querySelector(`[name="${name}"]`);
@@ -47,6 +48,11 @@ document.addEventListener("DOMContentLoaded", () => {
     musicFields.forEach((name) => {
       const el = advancedForm.querySelector(`[name="${name}"]`);
       if (el) el.classList.toggle("hidden", type !== "music");
+    });
+
+    bookFields.forEach((name) => {
+      const el = advancedForm.querySelector(`[name="${name}"]`);
+      if (el) el.classList.toggle("hidden", type !== "books");
     });
   }
 
@@ -101,6 +107,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const release = form.querySelector('input[name="release"]')?.value || "";
     const musicYear =
       form.querySelector('input[name="musicYear"]')?.value || "";
+    const author = form.querySelector('input[name="author"]')?.value || "";
+    const category = form.querySelector('input[name="category"]')?.value || "";
+    const publisher =
+      form.querySelector('input[name="publisher"]')?.value || "";
 
     if (currentType === "movies") {
       currentQueryParams = {
@@ -112,12 +122,20 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     } else if (currentType === "music") {
       currentQueryParams = { title, artist, release, year: musicYear };
-    } else {
-      currentQueryParams = { title };
+    } else if (currentType === "books") {
+      currentQueryParams = { title, author, category, publisher };
     }
 
     currentPage = 1;
-    display.textContent = title || actor || genre || artist || "...";
+    display.textContent =
+      title ||
+      actor ||
+      genre ||
+      artist ||
+      author ||
+      category ||
+      publisher ||
+      "...";
     executeAdvancedSearch(currentQueryParams, currentType);
   };
 

@@ -29,67 +29,204 @@
                 <p id="reflectionText" class="text-white/80 text-base font-light whitespace-pre-line"></p>
             </div>
 
-            <div class="mt-6">
-                <button id="backBtn" class="px-6 py-2 rounded-full border border-white/10 text-white/80 hover:text-white hover:bg-white/5 transition-all">← Back</button>
+            <div class="mt-6 flex items-center justify-between">
+                <!-- Back button on the left -->
+                <button id="backBtn" class="px-6 py-2 rounded-full border border-white/10 text-white/80 hover:text-white hover:bg-white/5 transition-all">
+                    ← Back
+                </button>
+
+                <!-- Edit/Delete buttons on the right -->
+                <div class="flex gap-4" id="reflectionActions">
+                    <button id="editBtn" class="px-4 py-2 rounded-full border border-white/10 text-white/80 hover:text-white hover:bg-white/5 transition-all">
+                        ✏️ Edit
+                    </button>
+                    <button id="deleteBtn" class="px-4 py-2 rounded-full border border-red-500 text-red-500/70 hover:text-red-500 hover:bg-red-500/10 transition-all">
+                        🗑️ Delete
+                    </button>
+                    <!-- Save/Cancel buttons for inline editing -->
+                    <button id="saveEditBtn" class="px-4 py-2 rounded-full border border-[#00C49A] text-[#00C49A] hover:bg-[#00C49A]/10 hidden transition-all">
+                        💾 Save
+                    </button>
+                    <button id="cancelEditBtn" class="px-4 py-2 rounded-full border border-white/10 text-white/60 hover:text-white hover:bg-white/5 hidden transition-all">
+                        ❌ Cancel
+                    </button>
+                </div>
             </div>
         </div>
-    </main>
+    </main> 
 
-    <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            const token = localStorage.getItem("token");
-            if (!token) return window.location.href = "/login";
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return window.location.href = "/login";
 
-            const reflectionId = "<%= reflectionId %>";
-            const loading = document.getElementById("loading");
-            const container = document.getElementById("reflectionContainer");
-            const itemTitle = document.getElementById("itemTitle");
-            const itemImage = document.getElementById("itemImage");
-            const itemDate = document.getElementById("itemDate");
-            const reflectionText = document.getElementById("reflectionText");
-            const moodTags = document.getElementById("moodTags");
-            const backBtn = document.getElementById("backBtn");
+    const reflectionId = "<%= reflectionId %>";
+    const loading = document.getElementById("loading");
+    const container = document.getElementById("reflectionContainer");
+    const itemTitle = document.getElementById("itemTitle");
+    const itemImage = document.getElementById("itemImage");
+    const itemDate = document.getElementById("itemDate");
+    const reflectionText = document.getElementById("reflectionText");
+    const moodTags = document.getElementById("moodTags");
+    const backBtn = document.getElementById("backBtn");
 
-            backBtn.addEventListener("click", () => window.history.back());
+    const editBtn = document.getElementById("editBtn");
+    const deleteBtn = document.getElementById("deleteBtn");
+    const saveEditBtn = document.getElementById("saveEditBtn");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
 
-            try {
-                const res = await fetch(`https://scriptorium-backend-six.vercel.app/api/reflection/${reflectionId}`, {
-                    headers: { Authorization: `jwt ${token}` }
-                });
+    let isEditing = false;
+    let originalText = "";
 
-                if (!res.ok) throw new Error("Failed to fetch reflection");
+    // Prevent browser "unsaved changes" popup when editing
+    window.onbeforeunload = null;
 
-                const reflection = await res.json();
+    backBtn.addEventListener("click", () => window.history.back());
 
-                loading.classList.add("hidden");
-                container.classList.remove("hidden");
+    // ----------------------
+    // Edit / Save / Cancel
+    // ----------------------
+    editBtn.addEventListener("click", () => {
+        if (isEditing) return;
+        isEditing = true;
 
-                itemTitle.textContent = reflection.metadata?.title || "Unknown Item";
-                itemImage.src = reflection.metadata?.image || "https://via.placeholder.com/100";
-                itemDate.textContent = new Date(reflection.date).toLocaleDateString("en-US", {
-                    month: "short", day: "numeric", year: "numeric"
-                });
-                function linkify(text) {
-                    const urlRegex = /(https?:\/\/[^\s]+)/g;
+        // No window.onbeforeunload here — browser popup removed
 
-                    return text.replace(urlRegex, (url) => {
-                        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-[#00C49A] underline hover:text-[#00E0B0]">${url}</a>`;
-                    });
-                }
+        originalText = reflectionText.textContent;
 
-                reflectionText.innerHTML = linkify(reflection.text || "");
+        const textarea = document.createElement("textarea");
+        textarea.id = "reflectionEditTextarea";
+        textarea.value = originalText;
+        textarea.className = "w-full p-3 rounded-lg bg-[#1f2a30] text-white/80 font-light whitespace-pre-line";
+        reflectionText.replaceWith(textarea);
 
-                reflection.moodTags?.forEach(m => {
-                    const span = document.createElement("span");
-                    span.className = "mood-tag px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-white/60";
-                    span.textContent = m;
-                    moodTags.appendChild(span);
-                });
-            } catch (e) {
-                console.error(e);
-                loading.textContent = "Failed to load reflection";
+        saveEditBtn.classList.remove("hidden");
+        cancelEditBtn.classList.remove("hidden");
+        editBtn.classList.add("hidden");
+        textarea.focus();
+    });
+
+    saveEditBtn.addEventListener("click", async () => {
+        const textarea = document.getElementById("reflectionEditTextarea");
+        const newText = textarea.value.trim();
+        if (newText.length < 30) return alert("Reflection must be at least 30 characters.");
+        if (!confirm("Save changes to this reflection?")) return;
+
+        try {
+            const res = await fetch(`https://scriptorium-backend-six.vercel.app/api/reflection/update/${reflectionId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `jwt ${token}`,
+                },
+                body: JSON.stringify({ text: newText })
+            });
+
+            if (res.ok) {
+                // Replace textarea immediately with a <p> to remove editable element
+                const p = document.createElement("p");
+                p.id = "reflectionText";
+                p.className = "text-white/80 text-base font-light whitespace-pre-line";
+                p.textContent = newText;
+
+                textarea.replaceWith(p);
+
+                saveEditBtn.classList.add("hidden");
+                cancelEditBtn.classList.add("hidden");
+                editBtn.classList.remove("hidden");
+                isEditing = false;
+
+                alert("Reflection updated!");
+            } else {
+                const data = await res.json();
+                alert(data.message || "Failed to update reflection");
             }
+        } catch (e) {
+            console.error(e);
+            alert("Network error");
+        }
+    });
+
+    // Cancel button does the same: replace textarea immediately
+    cancelEditBtn.addEventListener("click", () => {
+        if (!isEditing) return;
+        isEditing = false;
+
+        const p = document.createElement("p");
+        p.id = "reflectionText";
+        p.className = "text-white/80 text-base font-light whitespace-pre-line";
+        p.textContent = originalText;
+
+        document.getElementById("reflectionEditTextarea").replaceWith(p);
+
+        saveEditBtn.classList.add("hidden");
+        cancelEditBtn.classList.add("hidden");
+        editBtn.classList.remove("hidden");
+    });
+    // ----------------------
+    // Delete reflection
+    // ----------------------
+    deleteBtn.addEventListener("click", async () => {
+        if (!confirm("Delete this reflection?")) return;
+
+        try {
+            const res = await fetch(`https://scriptorium-backend-six.vercel.app/api/reflection/remove/${reflectionId}`, {
+                method: "DELETE",
+                headers: { Authorization: `jwt ${token}` },
+            });
+
+            if (res.ok) {
+                alert("Reflection deleted");
+                window.location.href = "/reflections-history";
+            } else {
+                const data = await res.json();
+                alert(data.message || "Failed to delete");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Network error");
+        }
+    });
+
+    // ----------------------
+    // Load reflection
+    // ----------------------
+    try {
+        const res = await fetch(`https://scriptorium-backend-six.vercel.app/api/reflection/${reflectionId}`, {
+            headers: { Authorization: `jwt ${token}` }
         });
-    </script>
+
+        if (!res.ok) throw new Error("Failed to fetch reflection");
+
+        const reflection = await res.json();
+
+        loading.classList.add("hidden");
+        container.classList.remove("hidden");
+
+        itemTitle.textContent = reflection.metadata?.title || "Unknown Item";
+        itemImage.src = reflection.metadata?.image || "https://via.placeholder.com/100";
+        itemDate.textContent = new Date(reflection.date).toLocaleDateString("en-US", {
+            month: "short", day: "numeric", year: "numeric"
+        });
+
+        function linkify(text) {
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return text.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-[#00C49A] underline hover:text-[#00E0B0]">${url}</a>`);
+        }
+
+        reflectionText.innerHTML = linkify(reflection.text || "");
+
+        reflection.moodTags?.forEach(m => {
+            const span = document.createElement("span");
+            span.className = "mood-tag px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-white/60";
+            span.textContent = m;
+            moodTags.appendChild(span);
+        });
+    } catch (e) {
+        console.error(e);
+        loading.textContent = "Failed to load reflection";
+    }
+});
+</script>
 </body>
 </html>

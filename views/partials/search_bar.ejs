@@ -1,38 +1,16 @@
 <!-- views/partials/search_bar.ejs -->
 
 <form action="/search" method="GET" class="w-full">
-  <div
-    class="w-full bg-[#A8A8A8] rounded-xl flex items-center px-4 py-2 shadow-inner transition-all focus-within:ring-2 focus-within:ring-scriptorium-gold/50 group"
-  >
-    <button
-      type="submit"
-      class="text-[#1E1E1E] hover:text-[#00DDA4] transition-colors"
-    >
-      <svg
-        class="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2.5"
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-        />
-      </svg>
-    </button>
-    <input
-      type="text"
-      name="q"
-      placeholder="Search..."
-      class="w-full bg-transparent border-none outline-none font-outfit font-medium text-lg text-[#1E1E1E] placeholder-[#1E1E1E]/70 ml-3"
-      value="<%= typeof query !== 'undefined' ? query : '' %>"
-    />
-    <input
-      type="hidden"
-      name="type"
-      value="<%= typeof type !== 'undefined' ? type : 'movies' %>"
-    />
-  </div>
+    <div class="w-full bg-[#A8A8A8] rounded-xl flex items-center px-4 py-2 shadow-inner transition-all focus-within:ring-2 focus-within:ring-scriptorium-gold/50 group">
+        <button type="submit" class="text-[#1E1E1E] hover:text-[#00DDA4] transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+        </button>
+        <input type="text" 
+               name="q" 
+               placeholder="Search..." 
+               class="w-full bg-transparent border-none outline-none font-outfit font-medium text-lg text-[#1E1E1E] placeholder-[#1E1E1E]/70 ml-3"
+               value="<%= typeof query !== 'undefined' ? query : '' %>">
+    </div>
 </form>

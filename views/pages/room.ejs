@@ -1,31 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <%- include('../partials/head', { title: 'My Room - Scriptorium' }) %>
-</head>
-<body class="bg-[#2C1810] min-h-screen relative overflow-x-hidden font-outfit text-white">
+    <%- include('../partials/head', { title: 'The Room - Scriptorium' }) %>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <style>
+        body { margin: 0; overflow: hidden; background: #1a0f0a; font-family: 'Outfit', sans-serif; }
+        #container3d { width: 100vw; height: 100vh; display: block; }
+        
+        /* Navigation Overlay - Moved lower into the page */
+        .room-nav {
+            position: fixed;
+            top: 120px; /* Lowered from original position */
+            right: 32px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column; /* Stacked vertically for a side-panel feel */
+            align-items: flex-end;
+            gap: 16px;
+            pointer-events: auto;
+        }
 
+        .nav-pill {
+            padding: 12px 28px;
+            background: rgba(15, 25, 30, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 99px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .nav-pill:hover {
+            border-color: #FFDA6D;
+            color: #FFDA6D;
+            transform: translateX(-8px); /* Subtle slide effect */
+            background: rgba(15, 25, 30, 0.95);
+        }
+
+        /* Adjust AI Button positioning within the stack */
+        .ai-btn-container {
+            margin-top: 8px;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
     <%- include('../partials/navbar_app') %>
 
-    <main class="relative z-0 mt-6 px-4 md:px-8 max-w-[1400px] mx-auto pb-12">
-        <div class="md:hidden mb-6">
-            <div class="w-full bg-[#A8A8A8] rounded-xl flex items-center px-4 py-2 shadow-inner">
-                <input type="text" placeholder="Search..." class="w-full bg-transparent border-none outline-none font-outfit font-medium text-lg text-[#1E1E1E]">
-            </div>
+    <div id="container3d"></div>
+
+    <div class="room-nav">
+        <a href="/library" class="nav-pill">Library</a>
+        <a href="/music" class="nav-pill">Music Room</a>
+        <a href="/theatre" class="nav-pill">Theatre</a>
+        <div class="ai-btn-container">
+            <%- include('../partials/ai_button') %>
         </div>
-      </div>
+    </div>
 
-        <div class="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
-            <img src="/assets/room.jpg" alt="Cozy Room" class="w-full h-auto object-cover block">
-
-            <%- include('../partials/dot', { link: '/library', pos: 'top-[34%] left-[21%]', label: 'Library' }) %>
-            <%- include('../partials/dot', { link: '/music', pos: 'top-[85%] left-[25%]', label: 'Music Room' }) %>
-            <%- include('../partials/dot', { link: '/theatre', pos: 'top-[72%] right-[8%]', label: 'Theatre' }) %>
-
-            <div class="absolute top-[5%] right-[3%]">
-                <%- include('../partials/ai_button') %>
-            </div>
-        </div>
-    </main>
-  </body>
+    <script type="module" src="/js/main-room-3d.js"></script>
+</body>
 </html>

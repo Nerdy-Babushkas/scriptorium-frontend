@@ -40,25 +40,33 @@
                     <span id="accordionIcon" class="transition-transform transform">▼</span>
                 </button>
 
-            <div id="advancedSearch" class="hidden mt-4 flex flex-wrap gap-3 items-end">
-                <input type="text" name="title" placeholder="Title" 
-                    class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
-                <input type="text" name="actor" placeholder="Actor" 
-                    class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
-                <input type="text" name="genre" placeholder="Genre" 
-                    class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
-                <input type="number" name="year" min="1900" placeholder="Year" 
-                    class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
-                <select name="type" class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-40">
-                    <option value="">Any Type</option>
-                    <option value="movie">Movie</option>
-                    <option value="series">Series</option>
-                    <option value="episode">Episode</option>
-                </select>
-                <button id="advancedSearchBtn" 
-                        class="px-6 py-2.5 rounded-full bg-[#00C49A] text-[#05181c] font-bold">Search</button>
-            </div>
-                
+                <div id="advancedSearch" class="hidden mt-4 flex flex-wrap gap-3 items-end">
+                    <!-- Title is universal -->
+                    <input type="text" name="title" placeholder="Title" 
+                        class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
+
+                    <!-- Movie-specific fields -->
+                    <input type="text" name="actor" placeholder="Actor" 
+                        class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
+                    <input type="text" name="genre" placeholder="Genre" 
+                        class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
+                    <input type="number" name="year" min="1900" placeholder="Year" 
+                        class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
+                    <select name="type" class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-40">
+                        <option value="">Any Type</option>
+                        <option value="movie">Movie</option>
+                        <option value="series">Series</option>
+                        <option value="episode">Episode</option>
+                    </select>
+
+                    <!-- Music-specific fields (hidden by default) -->
+                    <input type="text" name="artist" placeholder="Artist" class="music-field hidden px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
+                    <input type="text" name="release" placeholder="Release" class="music-field hidden px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
+                    <input type="number" name="year" min="1900" placeholder="Year" class="music-field hidden px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
+
+                    <button id="advancedSearchBtn" 
+                            class="px-6 py-2.5 rounded-full bg-[#00C49A] text-[#05181c] font-bold">Search</button>
+                </div>
             </div>
             <div id="loadingState" class="hidden flex flex-col items-center justify-center py-24">
                 <div class="w-16 h-16 border-4 border-[#00C49A]/30 border-t-[#00C49A] rounded-full animate-spin mb-4"></div>

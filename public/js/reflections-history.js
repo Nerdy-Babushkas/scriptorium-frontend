@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             <button
               class="px-3 py-1 text-xs rounded-full border border-white/10 hover:bg-white/10 text-white/80 transition-all"
-              onclick="window.location.href='/reflection-view?ref=${ref._id}'"
+              onclick="window.location.href='/reflection/${ref._id}'"
             >
               View Reflection
             </button>
@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       div.addEventListener("click", (e) => {
         if (e.target.tagName.toLowerCase() !== "button") {
-          window.location.href = `/reflection-view?ref=${ref._id}`;
+          window.location.href = `/reflection/${ref._id}`;
         }
       });
 

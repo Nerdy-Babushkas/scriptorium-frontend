@@ -400,7 +400,7 @@
           updateBarFromPointer(e);
         });
 
-        bar.addEventListener("pointerup", async () => {
+        bar.addEventListener("pointerup", async (e) => {
           if (!dragState.active) return;
 
           bar.releasePointerCapture(e.pointerId);

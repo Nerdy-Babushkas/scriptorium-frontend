@@ -121,6 +121,23 @@ router.put("/update/:id/progress", async (req, res) => {
   );
 });
 
+router.put("/update/:id", async (req, res) => {
+  const token = getToken(req);
+
+  if (!token) {
+    return res.status(401).json({ message: "Not logged in" });
+  }
+
+  await proxyRequest(res, `${BACKEND_BASE}/api/goals/update/${req.params.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `jwt ${token}`,
+    },
+    body: JSON.stringify(req.body),
+  });
+});
+
 /*
  DELETE goal
 */

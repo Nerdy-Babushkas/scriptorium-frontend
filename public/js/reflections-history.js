@@ -1,24 +1,80 @@
 document.addEventListener("DOMContentLoaded", async () => {
+  // -----------------------------
+  // CHECK TOKEN
+  // -----------------------------
+  const token = localStorage.getItem("token");
+  if (!token) return (window.location.href = "/login");
+
+  // -----------------------------
+  // GET URL PARAMETERS
+  // -----------------------------
+  const params = new URLSearchParams(window.location.search);
+  const itemId = params.get("itemId");
+  const itemType = params.get("itemType");
+  const highlightId = params.get("ref");
+
+  // -----------------------------
+  // ELEMENTS
+  // -----------------------------
   const historyContainer = document.getElementById("historyContainer");
   const loading = document.getElementById("loading");
   const emptyHistory = document.getElementById("emptyHistory");
   const itemSelect = document.getElementById("itemSelect");
-
   const prevBtn = document.getElementById("prevPage");
   const nextBtn = document.getElementById("nextPage");
   const pageIndicator = document.getElementById("pageIndicator");
   const pagination = document.getElementById("pagination");
+  const display = document.getElementById("queryDisplay");
 
-  const token = localStorage.getItem("token");
+  if (display && itemId) {
+    display.textContent = "Showing reflections for selected item";
+  }
 
-  const params = new URLSearchParams(window.location.search);
-  const highlightId = params.get("ref");
+  if (itemId && itemType) {
+    if (itemSelect) {
+      let itemTitle = "Selected Item"; // fallback
 
-  if (!token) return (window.location.href = "/login");
+      try {
+        let url = "";
+        switch (itemType) {
+          case "book":
+            url = `https://scriptorium-backend-six.vercel.app/api/books/${itemId}`;
+            break;
+          case "movie":
+            url = `https://scriptorium-backend-six.vercel.app/api/movies/${itemId}`;
+            break;
+          case "track":
+          case "music":
+            url = `https://scriptorium-backend-six.vercel.app/api/music/${itemId}`;
+            break;
+        }
 
-  let page = 1;
-  const limit = 5;
+        if (url) {
+          const res = await fetch(url, {
+            headers: { Authorization: `jwt ${token}` },
+          });
+          const data = await res.json();
+          if (data) {
+            itemTitle =
+              itemType === "track"
+                ? `${data.title} - ${data.artist?.name || "Unknown"}`
+                : data.title || itemTitle;
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching item title:", err);
+      }
 
+      const opt = document.createElement("option");
+      opt.value = JSON.stringify({ id: itemId, type: itemType });
+      opt.text = itemTitle; // now using actual fetched title
+      opt.selected = true;
+      itemSelect.appendChild(opt);
+    }
+
+    // Load reflections for that specific item
+    await loadItemReflections(itemId, itemType);
+  }
   // -----------------------------
   // RENDER REFLECTIONS
   // -----------------------------
@@ -285,5 +341,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // INIT
   // -----------------------------
   await loadDropdownItems();
-  await loadAllReflections();
+
+  if (!(itemId && itemType)) {
+    await loadAllReflections();
+  }
 });

@@ -30,7 +30,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     display.textContent = "Showing reflections for selected item";
   }
 
+  // -----------------------------
+  // PAGINATION DEFAULTS
+  // -----------------------------
+  let page = 1;
+  const limit = 10; // or whatever your default page size is
+
+  // -----------------------------
+  // INIT
+  // -----------------------------
+  await loadDropdownItems();
+
   if (itemId && itemType) {
+    // Prefill dropdown with actual title and load filtered reflections
     if (itemSelect) {
       let itemTitle = "Selected Item"; // fallback
 
@@ -67,13 +79,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const opt = document.createElement("option");
       opt.value = JSON.stringify({ id: itemId, type: itemType });
-      opt.text = itemTitle; // now using actual fetched title
+      opt.text = itemTitle; // actual fetched title
       opt.selected = true;
       itemSelect.appendChild(opt);
     }
 
-    // Load reflections for that specific item
     await loadItemReflections(itemId, itemType);
+  } else {
+    // No specific item: load all reflections
+    await loadAllReflections();
   }
   // -----------------------------
   // RENDER REFLECTIONS
@@ -336,13 +350,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     page++;
     await loadAllReflections();
   });
-
-  // -----------------------------
-  // INIT
-  // -----------------------------
-  await loadDropdownItems();
-
-  if (!(itemId && itemType)) {
-    await loadAllReflections();
-  }
 });

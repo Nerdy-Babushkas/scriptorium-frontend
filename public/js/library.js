@@ -1,109 +1,130 @@
 // --- STATE ---
-const modal = document.getElementById('shelfViewModal');
-const shelfTitle = document.getElementById('shelfTitle');
-const bookCount = document.getElementById('bookCount'); // Might be null on some pages
-const grid = document.getElementById('shelfGrid');
-const loading = document.getElementById('shelfLoading');
-const empty = document.getElementById('shelfEmpty');
+const modal = document.getElementById("shelfViewModal");
+const shelfTitle = document.getElementById("shelfTitle");
+const bookCount = document.getElementById("bookCount"); // Might be null on some pages
+const grid = document.getElementById("shelfGrid");
+const loading = document.getElementById("shelfLoading");
+const empty = document.getElementById("shelfEmpty");
 
 // --- OPEN SHELF ---
 async function openShelf(shelfKey, displayName) {
-    // 1. Show Modal & Reset UI
-    modal.classList.remove('hidden');
-    shelfTitle.textContent = displayName;
-    grid.innerHTML = '';
-    empty.classList.add('hidden');
-    loading.classList.remove('hidden');
-    
-    // Safety check: only update textContent if the element exists
+  // 1. Show Modal & Reset UI
+  modal.classList.remove("hidden");
+  shelfTitle.textContent = displayName;
+  grid.innerHTML = "";
+  empty.classList.add("hidden");
+  loading.classList.remove("hidden");
+
+  // Safety check: only update textContent if the element exists
+  if (bookCount) {
+    bookCount.textContent = "...";
+  }
+
+  // 2. INTELLIGENT CONTEXT SWITCHING
+  const path = window.location.pathname;
+  const isMusic = path.includes("music");
+  const isTheatre = path.includes("theatre");
+
+  let endpoint = `https://scriptorium-backend-six.vercel.app/api/books/shelf/${shelfKey}`;
+  if (isMusic)
+    endpoint = `https://scriptorium-backend-six.vercel.app/api/music/shelf/${shelfKey}`;
+  if (isTheatre)
+    endpoint = `https://scriptorium-backend-six.vercel.app/api/movies/shelf/${shelfKey}`;
+
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please log in to view your library.");
+      loading.classList.add("hidden");
+      return;
+    }
+
+    const res = await fetch(endpoint, {
+      headers: { Authorization: `jwt ${token}` },
+    });
+
+    const items = await res.json();
+
+    // 3. Update UI
+    loading.classList.add("hidden");
+
     if (bookCount) {
-        bookCount.textContent = '...';
+      bookCount.textContent = items.length;
     }
 
-    // 2. INTELLIGENT CONTEXT SWITCHING
-    const path = window.location.pathname;
-    const isMusic = path.includes('music');
-    const isTheatre = path.includes('theatre');
-
-    let endpoint = `https://scriptorium-backend-six.vercel.app/api/books/shelf/${shelfKey}`;
-    if (isMusic) endpoint = `https://scriptorium-backend-six.vercel.app/api/music/shelf/${shelfKey}`;
-    if (isTheatre) endpoint = `https://scriptorium-backend-six.vercel.app/api/movies/shelf/${shelfKey}`;
-
-    try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            alert("Please log in to view your library.");
-            loading.classList.add('hidden');
-            return;
-        }
-
-        const res = await fetch(endpoint, {
-            headers: { 'Authorization': `jwt ${token}` }
-        });
-        
-        const items = await res.json();
-        
-        // 3. Update UI
-        loading.classList.add('hidden');
-        
-        if (bookCount) {
-            bookCount.textContent = items.length;
-        }
-
-        if (items && items.length > 0) {
-            renderItems(items, shelfKey, isMusic, isTheatre);
-        } else {
-            empty.classList.remove('hidden');
-        }
-
-    } catch (error) {
-        console.error("Shelf error:", error);
-        if (loading) loading.classList.add('hidden');
-        grid.innerHTML = `<div class="col-span-full text-center text-red-400">Failed to load contents.</div>`;
+    if (items && items.length > 0) {
+      renderItems(items, shelfKey, isMusic, isTheatre);
+    } else {
+      empty.classList.remove("hidden");
     }
+  } catch (error) {
+    console.error("Shelf error:", error);
+    if (loading) loading.classList.add("hidden");
+    grid.innerHTML = `<div class="col-span-full text-center text-red-400">Failed to load contents.</div>`;
+  }
 }
 
 // --- CLOSE SHELF ---
 function closeShelf() {
-    modal.classList.add('hidden');
+  modal.classList.add("hidden");
 }
 
 // --- RENDER ITEMS ---
 function renderItems(items, currentShelf, isMusic, isTheatre) {
-    items.forEach(item => {
-        let title, subtitle, image, id;
+  items.forEach((item) => {
+    let title, subtitle, image, id;
 
-        if (isMusic) {
-            id = item._id;
-            title = item.title;
-            subtitle = item.artist?.name || 'Unknown Artist';
-            // FULL VINYL HTML RESTORED
-            image = item.coverUrl 
-                ? `<img src="${item.coverUrl}" class="h-48 w-48 shadow-2xl rounded-full animate-spin-slow object-cover border-4 border-[#1a1a1a]">`
-                : `<div class="h-48 w-48 rounded-full bg-[#1a1a1a] flex items-center justify-center shadow-2xl border-4 border-[#333] relative">
+    if (isMusic) {
+      id = item._id;
+      title = item.title;
+      subtitle = item.artist?.name || "Unknown Artist";
+      // FULL VINYL HTML RESTORED
+      image = item.coverUrl
+        ? `<img src="${item.coverUrl}" class="h-48 w-48 shadow-2xl rounded-full animate-spin-slow object-cover border-4 border-[#1a1a1a]">`
+        : `<div class="h-48 w-48 rounded-full bg-[#1a1a1a] flex items-center justify-center shadow-2xl border-4 border-[#333] relative">
                     <div class="absolute inset-0 rounded-full border-2 border-white/10" style="margin: 10px;"></div>
                     <div class="absolute inset-0 rounded-full border-2 border-white/10" style="margin: 25px;"></div>
                     <div class="absolute inset-0 rounded-full border-2 border-white/10" style="margin: 40px;"></div>
                     <div class="w-16 h-16 bg-[#00C49A] rounded-full flex items-center justify-center"><span class="text-2xl">🎵</span></div>
                    </div>`;
-        } else if (isTheatre) {
-            id = item._id;
-            title = item.title || 'Untitled Movie';
-            subtitle = item.year || 'Movie';
-            const poster = (item.poster && item.poster !== "N/A") ? item.poster : 'https://via.placeholder.com/300x450?text=No+Poster';
-            image = `<img src="${poster}" alt="${title}" class="h-48 w-auto shadow-2xl rounded-md group-hover:scale-105 transition-transform duration-300">`;
-        } else {
-            id = item._id;
-            title = item.title;
-            subtitle = item.authors ? item.authors[0] : 'Unknown';
-            const thumb = item.imageLinks?.thumbnail || 'https://via.placeholder.com/150x220?text=No+Cover';
-            image = `<img src="${thumb}" alt="${title}" class="h-48 w-auto shadow-2xl rounded-md group-hover:scale-105 transition-transform duration-300">`;
-        }
+    } else if (isTheatre) {
+      id = item._id;
+      title = item.title || "Untitled Movie";
+      subtitle = item.year || "Movie";
+      const poster =
+        item.poster && item.poster !== "N/A"
+          ? item.poster
+          : "https://via.placeholder.com/300x450?text=No+Poster";
+      image = `<img src="${poster}" alt="${title}" class="h-48 w-auto shadow-2xl rounded-md group-hover:scale-105 transition-transform duration-300">`;
+    } else {
+      id = item._id;
+      title = item.title;
+      subtitle = item.authors ? item.authors[0] : "Unknown";
+      const thumb =
+        item.imageLinks?.thumbnail ||
+        "https://via.placeholder.com/150x220?text=No+Cover";
+      image = `<img src="${thumb}" alt="${title}" class="h-48 w-auto shadow-2xl rounded-md group-hover:scale-105 transition-transform duration-300">`;
+    }
 
-        const card = document.createElement('div');
-        card.className = "group bg-[#0f191e] border border-white/10 rounded-2xl overflow-hidden hover:border-[#00C49A] transition-all duration-300 flex flex-col relative";
-        
-        card.innerHTML = `
+    const card = document.createElement("div");
+    card.addEventListener("click", (e) => {
+      // prevent click when pressing delete button
+      if (e.target.closest("button")) return;
+
+      let itemType = "book";
+      if (isMusic) itemType = "music";
+      if (isTheatre) itemType = "movie";
+
+      window.location.href = `/reflections-history?itemId=${id}&itemType=${itemType}`;
+    });
+
+    card.className =
+      "group bg-[#0f191e] border border-white/10 rounded-2xl overflow-hidden hover:border-[#00C49A] transition-all duration-300 flex flex-col relative";
+
+    card.classList.add("cursor-pointer");
+    card.classList.add("hover:scale-[1.02]");
+
+    card.innerHTML = `
             <div class="relative p-6 flex justify-center bg-black/20 overflow-hidden">
                 ${image}
                 <button onclick="removeItem('${id}', '${currentShelf}', this, ${isMusic}, ${isTheatre})" 
@@ -116,46 +137,54 @@ function renderItems(items, currentShelf, isMusic, isTheatre) {
                 <p class="text-[#00C49A] text-sm font-semibold">${subtitle}</p>
             </div>
         `;
-        grid.appendChild(card);
-    });
+    grid.appendChild(card);
+  });
 }
 
 // --- REMOVE ITEM LOGIC ---
 async function removeItem(id, shelf, btnElement, isMusic, isTheatre) {
-    if(!confirm("Are you sure you want to remove this item?")) return;
+  if (!confirm("Are you sure you want to remove this item?")) return;
 
-    let endpoint = 'https://scriptorium-backend-six.vercel.app/api/books/shelf/remove';
-    if (isMusic) endpoint = 'https://scriptorium-backend-six.vercel.app/api/music/shelf/remove';
-    if (isTheatre) endpoint = 'https://scriptorium-backend-six.vercel.app/api/movies/shelf/remove';
-    
-    const payload = { shelf };
-    if (isMusic) payload.trackId = id;
-    else if (isTheatre) payload.movieId = id;
-    else payload.bookId = id;
+  let endpoint =
+    "https://scriptorium-backend-six.vercel.app/api/books/shelf/remove";
+  if (isMusic)
+    endpoint =
+      "https://scriptorium-backend-six.vercel.app/api/music/shelf/remove";
+  if (isTheatre)
+    endpoint =
+      "https://scriptorium-backend-six.vercel.app/api/movies/shelf/remove";
 
-    try {
-        const token = localStorage.getItem('token');
-        const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `jwt ${token}` },
-            body: JSON.stringify(payload)
-        });
+  const payload = { shelf };
+  if (isMusic) payload.trackId = id;
+  else if (isTheatre) payload.movieId = id;
+  else payload.bookId = id;
 
-        if (res.ok) {
-            const card = btnElement.closest('.group');
-            card.style.opacity = "0";
-            setTimeout(() => {
-                card.remove();
-                if (bookCount) {
-                    const current = parseInt(bookCount.textContent);
-                    bookCount.textContent = Math.max(0, current - 1);
-                }
-                if (grid.children.length === 0) empty.classList.remove('hidden');
-            }, 300);
-        } else {
-            alert("Failed to remove item.");
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `jwt ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) {
+      const card = btnElement.closest(".group");
+      card.style.opacity = "0";
+      setTimeout(() => {
+        card.remove();
+        if (bookCount) {
+          const current = parseInt(bookCount.textContent);
+          bookCount.textContent = Math.max(0, current - 1);
         }
-    } catch (e) {
-        console.error(e);
+        if (grid.children.length === 0) empty.classList.remove("hidden");
+      }, 300);
+    } else {
+      alert("Failed to remove item.");
     }
+  } catch (e) {
+    console.error(e);
+  }
 }

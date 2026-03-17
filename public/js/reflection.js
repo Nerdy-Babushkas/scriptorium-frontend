@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // State
   let selectedMoods = [];
   let editingId = null;
+  let reflectionsMap = {};
   const token = localStorage.getItem("token");
 
   if (!token) window.location.href = "/login";
@@ -257,7 +258,10 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         historyList.classList.remove("hidden");
         historyFooter.classList.remove("hidden"); // SHOW the button
-        reflections.forEach((ref) => renderCard(ref));
+        reflections.forEach((ref) => {
+          reflectionsMap[ref._id] = ref;
+          renderCard(ref);
+        });
       }
 
       // Optional: pagination info
@@ -301,7 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     ${ref.moodTags.map((m) => `<span class="px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-white/60">${m}</span>`).join("")}
                 </div>
                 <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button class="text-white/50 hover:text-white" onclick='editRef(${JSON.stringify(ref)})'>✏️</button>
+                    <button class="text-white/50 hover:text-white" onclick="editRef('${ref._id}')">✏️</button>
                     <button class="text-red-500/50 hover:text-red-500" onclick="deleteRef('${ref._id}')">🗑️</button>
                     <button class="text-[#00C49A]/80 hover:text-[#00C49A] text-xs font-bold" onclick="viewRef('${ref._id}')">View Reflection</button>
                 </div>
@@ -345,10 +349,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  window.editRef = (ref) => {
+  window.editRef = (id) => {
+    const ref = reflectionsMap[id];
+    if (!ref) return;
+
     editingId = ref._id;
     textArea.value = ref.text;
     selectedMoods = ref.moodTags || [];
+
     moodBtns.forEach((btn) => {
       btn.classList.toggle(
         "selected",
@@ -360,15 +368,18 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const optVal = JSON.parse(itemSelect.options[i].value);
         const currentId = ref.itemId || ref.item;
+
         if (optVal.id === currentId) {
           itemSelect.selectedIndex = i;
           break;
         }
       } catch (e) {}
     }
+
     editModeIndicator.classList.remove("hidden");
     cancelEditBtn.classList.remove("hidden");
     saveBtn.textContent = "Update Reflection";
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 

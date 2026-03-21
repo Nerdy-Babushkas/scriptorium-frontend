@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "start": "node local.js",
-    "dev": "nodemon api/index.js",
-    "build:css": "tailwindcss -i ./src/input.css -o ./public/css/style.css --watch"
-  },
+"scripts": {
+  "start": "node local.js",
+  "dev": "nodemon api/index.js",
+  "build": "tailwindcss -i ./src/input.css -o ./public/css/style.css",
+  "test": "echo \"No tests yet\"",
+  "lint": "echo \"No lint configured\"",
+  "format:check": "echo \"No formatter configured\""
+},
   "keywords": [],
   "author": "",
   "license": "ISC",

@@ -494,21 +494,33 @@ function setupInlineMediaSearch() {
   </div>
 
   <div class="flex-grow min-w-0">
-    <div class="relative flex items-center mb-1 overflow-hidden">
+   <div class="flex items-center mb-1 min-w-0 gap-2">
 
-  <span class="text-sm font-medium text-white truncate pr-2 z-10">
+  <span class="text-sm font-medium text-white truncate">
     ${goal.title}
   </span>
 
   ${
     mediaLabel && mediaLabel !== "N/A"
       ? `
-      <span class="absolute left-1/2 -translate-x-1/2 text-[12px] text-scriptorium-gold truncate max-w-[60%] whitespace-nowrap text-center pointer-events-none font-semibold drop-shadow-[0_0_6px_rgba(255,218,109,1)]">
+      <span class="text-[12px] text-scriptorium-gold truncate max-w-[40%] whitespace-nowrap font-semibold">
         ${mediaLabel}
       </span>
       `
       : ""
   }
+
+  ${
+    goal.status === "active"
+      ? `
+      <button class="edit-goal text-white/50 hover:text-white ml-auto">
+        ✎
+      </button>
+      `
+      : ""
+  }
+
+</div>
 
   ${
     goal.status === "active"

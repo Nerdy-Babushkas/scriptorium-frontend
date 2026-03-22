@@ -6,9 +6,9 @@
   "scripts": {
     "start": "node local.js",
     "dev": "nodemon api/index.js",
-   "build": "tailwindcss -i ./src/input.css -o ./public/css/style.css",
-    "test": "echo \"No tests yet\"",
-    "lint": "echo \"No lint configured\"",
+    "build": "tailwindcss -i ./src/input.css -o ./public/css/style.css",
+    "test": "jest",
+    "lint": "eslint .",
     "format:check": "echo \"No formatter configured\""
   },
   "keywords": [],
@@ -18,12 +18,14 @@
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "ejs": "^4.0.1",
+    "eslint": "^10.1.0",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.2.2",
     "autoprefixer": "^10.4.23",
+    "jest": "^30.3.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.2.2"
   }

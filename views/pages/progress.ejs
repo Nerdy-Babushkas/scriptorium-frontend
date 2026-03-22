@@ -475,7 +475,7 @@ function setupInlineMediaSearch() {
           const isSelected = selectedGoalId === id;
 
           item.className =
-            `group flex items-center gap-3 border rounded-xl p-3 transition-colors shrink-0 ` +
+            `group flex items-center gap-3 border rounded-xl py-5 p-3 transition-colors shrink-0 ` +
             (goal.status === "completed"
               ? "bg-white/5 border-white/5 opacity-80"
               : "bg-teal-dark/30 hover:bg-teal-dark/50 border-white/5 ") +
@@ -493,8 +493,8 @@ function setupInlineMediaSearch() {
     ${icons[goal.type] || icons.book}
   </div>
 
-  <div class="flex-grow min-w-0">
-   <div class="flex items-center mb-1 min-w-0 gap-2">
+ <div class="flex-grow min-w-0 overflow-visible">
+   <div class="relative flex items-center mb-1 pt-4 min-w-0">
 
   <span class="text-sm font-medium text-white truncate">
     ${goal.title}
@@ -503,9 +503,9 @@ function setupInlineMediaSearch() {
   ${
     mediaLabel && mediaLabel !== "N/A"
       ? `
-      <span class="text-[12px] text-scriptorium-gold truncate max-w-[40%] whitespace-nowrap font-semibold">
-        ${mediaLabel}
-      </span>
+      <span class="absolute left-1/2 -translate-x-1/2 -top-2 text-[12px] text-scriptorium-gold truncate max-w-[60%] whitespace-nowrap text-center pointer-events-none font-semibold drop-shadow-[0_0_6px_rgba(255,218,109,1)]">
+  ${mediaLabel}
+</span>
       `
       : ""
   }
@@ -522,15 +522,7 @@ function setupInlineMediaSearch() {
 
 </div>
 
-  ${
-    goal.status === "active"
-      ? `
-      <button class="edit-goal text-white/50 hover:text-white ml-auto z-10">
-        ✎
-      </button>
-      `
-      : ""
-  }
+
 
 </div>
 

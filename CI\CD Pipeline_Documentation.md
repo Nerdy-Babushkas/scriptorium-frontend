@@ -53,3 +53,9 @@ The pipeline ensures:
 Automated testing and linting
 Reliable builds
 Safe, controlled deployments
+
+Failing test: 
+<img width="970" height="311" alt="image" src="https://github.com/user-attachments/assets/22be5cd7-e838-43b8-8558-a11a98f2809d" />
+<img width="681" height="286" alt="image" src="https://github.com/user-attachments/assets/27f411ce-f578-42f9-9d13-cf6840708c9b" />
+
+

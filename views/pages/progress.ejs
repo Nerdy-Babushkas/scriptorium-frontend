@@ -475,7 +475,7 @@ function setupInlineMediaSearch() {
           const isSelected = selectedGoalId === id;
 
           item.className =
-            `group flex items-center gap-3 border rounded-xl p-3 transition-colors shrink-0 ` +
+            `group flex items-center gap-3 border rounded-xl py-4 p-3 transition-colors shrink-0 ` +
             (goal.status === "completed"
               ? "bg-white/5 border-white/5 opacity-80"
               : "bg-teal-dark/30 hover:bg-teal-dark/50 border-white/5 ") +
@@ -488,39 +488,26 @@ function setupInlineMediaSearch() {
     ? getMediaDisplayText(goal.media, mapGoalTypeToSearchType(goal.type))
     : "";
 
-         item.innerHTML = `
+item.innerHTML = `
   <div class="w-10 h-10 rounded-full bg-teal-neon flex items-center justify-center text-teal-dark shadow-sm shrink-0">
     ${icons[goal.type] || icons.book}
   </div>
 
-  <div class="flex-grow min-w-0">
-    <div class="relative flex items-center mb-1 overflow-hidden">
+  <div class="flex-grow flex flex-col justify-center overflow-visible">
 
-  <span class="text-sm font-medium text-white truncate pr-2 z-10">
-    ${goal.title}
-  </span>
+    ${
+      mediaLabel && mediaLabel !== "N/A"
+        ? `
+        <div class="text-[12px] text-scriptorium-gold text-center font-semibold mb-1 drop-shadow-[0_0_6px_rgba(255,218,109,1)]">
+          ${mediaLabel}
+        </div>
+        `
+        : ""
+    }
 
-  ${
-    mediaLabel && mediaLabel !== "N/A"
-      ? `
-      <span class="absolute left-1/2 -translate-x-1/2 text-[12px] text-scriptorium-gold truncate max-w-[60%] whitespace-nowrap text-center pointer-events-none font-semibold drop-shadow-[0_0_6px_rgba(255,218,109,1)]">
-        ${mediaLabel}
-      </span>
-      `
-      : ""
-  }
-
-  ${
-    goal.status === "active"
-      ? `
-      <button class="edit-goal text-white/50 hover:text-white ml-auto z-10">
-        ✎
-      </button>
-      `
-      : ""
-  }
-
-</div>
+    <div class="text-sm font-medium text-white mb-2 break-words">
+      ${goal.title}
+    </div>
 
     <div 
       class="goal-bar w-full h-2 bg-black/40 rounded-full overflow-hidden ${
@@ -532,9 +519,10 @@ function setupInlineMediaSearch() {
     >
       <div class="goal-fill h-full bg-teal-neon rounded-full" style="width:${pct}%"></div>
     </div>
+
   </div>
 
-  <div class="text-right shrink-0 min-w-[70px]">
+  <div class="text-right shrink-0 min-w-[70px] ml-2">
     <div class="goal-count text-sm font-bold text-white">${goal.current}/${goal.total}</div>
     <div class="goal-pct text-xs text-teal-neon/80">${pct}%</div>
   </div>

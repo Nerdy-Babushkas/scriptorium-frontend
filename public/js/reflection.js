@@ -13,6 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const emptyHistory = document.getElementById("emptyHistory");
   const historyFooter = document.getElementById("historyFooter");
 
+  const params = new URLSearchParams(window.location.search);
+  const itemId = params.get("itemId");
+  const itemType = params.get("itemType");
+
   // State
   let selectedMoods = [];
   let editingId = null;
@@ -28,7 +32,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- 2. DROPDOWN POPULATION ---
   async function loadDropdownItems() {
     try {
-      // Fetching all three media types from your live Vercel backend
+      // -----------------------------
+      // FETCH ALL DATA
+      // -----------------------------
       const [booksRes, musicRes, moviesRes] = await Promise.all([
         fetch("https://scriptorium-backend-six.vercel.app/api/books/shelf", {
           headers: { Authorization: `jwt ${token}` },
@@ -45,99 +51,118 @@ document.addEventListener("DOMContentLoaded", () => {
       const musicData = await musicRes.json();
       const moviesData = await moviesRes.json();
 
-      // Flatten lists for the dropdown
+      // -----------------------------
+      // NORMALIZE DATA
+      // -----------------------------
       const rawBooks = [
         ...(booksData.favorites || []),
         ...(booksData.reading || []),
         ...(booksData.finished || []),
       ];
+
       const rawTracks = [
         ...(musicData.favorites || []),
         ...(musicData.listening || []),
         ...(musicData.finished || []),
       ];
-      // Standard movie shelves based on your interactive Theatre dots
+
       const rawMovies = [
         ...(moviesData.favorites || []),
         ...(moviesData.watching || []),
         ...(moviesData.watched || []),
       ];
 
-      // Remove duplicates
-      const uniqueBooks = Array.from(
-        new Map(rawBooks.map((item) => [item._id, item])).values(),
-      );
-      const uniqueTracks = Array.from(
-        new Map(rawTracks.map((item) => [item._id, item])).values(),
-      );
-      const uniqueMovies = Array.from(
-        new Map(rawMovies.map((item) => [item._id, item])).values(),
-      );
+      // -----------------------------
+      // REMOVE DUPLICATES
+      // -----------------------------
+      const uniqueBooks = [
+        ...new Map(rawBooks.map((i) => [i._id, i])).values(),
+      ];
+      const uniqueTracks = [
+        ...new Map(rawTracks.map((i) => [i._id, i])).values(),
+      ];
+      const uniqueMovies = [
+        ...new Map(rawMovies.map((i) => [i._id, i])).values(),
+      ];
 
-      if (
-        uniqueBooks.length === 0 &&
-        uniqueTracks.length === 0 &&
-        uniqueMovies.length === 0
-      ) {
+      // -----------------------------
+      // HANDLE EMPTY STATE
+      // -----------------------------
+      if (!uniqueBooks.length && !uniqueTracks.length && !uniqueMovies.length) {
+        itemSelect.innerHTML = "";
         const opt = document.createElement("option");
         opt.text = "No items in your active shelves";
-        itemSelect.add(opt);
+        itemSelect.appendChild(opt);
         itemSelect.disabled = true;
         return;
       }
 
+      // -----------------------------
+      // RESET DROPDOWN
+      // -----------------------------
       itemSelect.innerHTML = '<option value="">Select a memory...</option>';
 
-      // POPULATE DROPDOWN GROUPS
-      if (uniqueMovies.length > 0) {
+      // -----------------------------
+      // HELPER: APPEND GROUP
+      // -----------------------------
+      function appendGroup(label, items, type) {
+        if (!items.length) return;
+
         const group = document.createElement("optgroup");
-        group.label = "Movies";
-        uniqueMovies.forEach((m) => {
+        group.label = label;
+
+        items.forEach((item) => {
           const opt = document.createElement("option");
+
           opt.value = JSON.stringify({
-            id: m._id,
-            type: "movie",
-            title: m.title,
-            image: m.poster,
+            id: item._id,
+            type,
+            title: item.title,
+            image:
+              type === "movie"
+                ? item.poster
+                : type === "book"
+                  ? item.imageLinks?.thumbnail
+                  : item.coverUrl,
           });
-          opt.text = m.title;
+
+          opt.text =
+            type === "track"
+              ? `${item.title} - ${item.artist?.name || "Unknown"}`
+              : item.title;
+
           group.appendChild(opt);
         });
+
         itemSelect.appendChild(group);
       }
 
-      if (uniqueBooks.length > 0) {
-        const group = document.createElement("optgroup");
-        group.label = "Books";
-        uniqueBooks.forEach((b) => {
-          const opt = document.createElement("option");
-          opt.value = JSON.stringify({
-            id: b._id,
-            type: "book",
-            title: b.title,
-            image: b.imageLinks?.thumbnail,
-          });
-          opt.text = b.title;
-          group.appendChild(opt);
-        });
-        itemSelect.appendChild(group);
-      }
+      // -----------------------------
+      // BUILD DROPDOWN
+      // -----------------------------
+      appendGroup("Movies", uniqueMovies, "movie");
+      appendGroup("Books", uniqueBooks, "book");
+      appendGroup("Music", uniqueTracks, "track");
 
-      if (uniqueTracks.length > 0) {
-        const group = document.createElement("optgroup");
-        group.label = "Music";
-        uniqueTracks.forEach((t) => {
-          const opt = document.createElement("option");
-          opt.value = JSON.stringify({
-            id: t._id,
-            type: "track",
-            title: t.title,
-            image: t.coverUrl,
-          });
-          opt.text = `${t.title} - ${t.artist?.name || "Unknown"}`;
-          group.appendChild(opt);
+      // -----------------------------
+      // AUTO-SELECT FROM URL
+      // -----------------------------
+      if (itemId && itemType) {
+        const option = [...itemSelect.options].find((opt) => {
+          try {
+            const val = JSON.parse(opt.value);
+            return val.id === itemId && val.type === itemType;
+          } catch {
+            return false;
+          }
         });
-        itemSelect.appendChild(group);
+
+        if (option) {
+          option.selected = true;
+
+          // optional UX improvement
+          itemSelect.disabled = true;
+        }
       }
     } catch (error) {
       console.error("Dropdown error:", error);
@@ -290,28 +315,28 @@ document.addEventListener("DOMContentLoaded", () => {
       "history-card bg-white/5 border border-white/5 rounded-xl p-4 hover:border-[#00C49A]/50 transition-all group flex gap-4 cursor-pointer";
 
     div.innerHTML = `
-        <div class="w-16 h-20 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-black/40">
-            <img src="${ref.metadata?.image || "https://via.placeholder.com/50"}" class="w-full h-full object-cover">
-        </div>
-        <div class="flex-grow min-w-0">
-            <div class="flex justify-between items-start mb-1">
-                <h4 class="text-[#00C49A] text-sm font-bold truncate pr-2">${title}</h4>
-                <span class="text-white/30 text-xs whitespace-nowrap">${date}</span>
-            </div>
-            <p class="text-white/80 text-sm line-clamp-2 mb-2 font-light">"${ref.text}"</p>
-            <div class="flex justify-between items-center mt-2">
-                <div class="flex flex-wrap gap-2">
-                    <span class="text-xs">${typeIcon}</span>
-                    ${ref.moodTags.map((m) => `<span class="px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-white/60">${m}</span>`).join("")}
-                </div>
-                <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button class="text-white/50 hover:text-white" onclick="editRef('${ref._id}')">✏️</button>
-                    <button class="text-red-500/50 hover:text-red-500" onclick="deleteRef('${ref._id}')">🗑️</button>
-                    <button class="text-[#00C49A]/80 hover:text-[#00C49A] text-xs font-bold" onclick="viewRef('${ref._id}')">View Reflection</button>
-                </div>
-            </div>
-        </div>
-    `;
+          <div class="w-16 h-20 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-black/40">
+              <img src="${ref.metadata?.image || "https://via.placeholder.com/50"}" class="w-full h-full object-cover">
+          </div>
+          <div class="flex-grow min-w-0">
+              <div class="flex justify-between items-start mb-1">
+                  <h4 class="text-[#00C49A] text-sm font-bold truncate pr-2">${title}</h4>
+                  <span class="text-white/30 text-xs whitespace-nowrap">${date}</span>
+              </div>
+              <p class="text-white/80 text-sm line-clamp-2 mb-2 font-light">"${ref.text}"</p>
+              <div class="flex justify-between items-center mt-2">
+                  <div class="flex flex-wrap gap-2">
+                      <span class="text-xs">${typeIcon}</span>
+                      ${ref.moodTags.map((m) => `<span class="px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-white/60">${m}</span>`).join("")}
+                  </div>
+                  <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button class="text-white/50 hover:text-white" onclick="editRef('${ref._id}')">✏️</button>
+                      <button class="text-red-500/50 hover:text-red-500" onclick="deleteRef('${ref._id}')">🗑️</button>
+                      <button class="text-[#00C49A]/80 hover:text-[#00C49A] text-xs font-bold" onclick="viewRef('${ref._id}')">View Reflection</button>
+                  </div>
+              </div>
+          </div>
+      `;
 
     // Clicking anywhere on the card except the edit/delete/view buttons goes to history
     div.addEventListener("click", (e) => {

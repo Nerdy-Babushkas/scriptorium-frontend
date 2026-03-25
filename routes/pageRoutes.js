@@ -106,7 +106,7 @@ router.get("/theatre", requireAuth, (req, res) => {
 });
 
 router.get("/ai-recommendations", requireAuth, (req, res) => {
-  res.render("pages/placeholder", { pageName: "AI Recommendations" });
+  res.render("pages/recommendations");
 });
 
 router.get("/search", requireAuth, (req, res) => {

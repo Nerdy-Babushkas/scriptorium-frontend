@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { title: 'Movie Recommendations - Scriptorium' }) %>
+    <style>
+        /* existing shelf-dot and modal styles here… */
+        .movie-card { 
+            background: #1f1f1f; 
+            border: 1px solid #FFDA6D50; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            transition: transform 0.2s ease; 
+        }
+        .movie-card:hover { transform: scale(1.03); }
+        .movie-poster { width: 100%; height: 300px; object-fit: cover; }
+        .movie-info { padding: 8px; }
+        .movie-title { font-weight: bold; font-size: 16px; color: #FFDA6D; }
+        .movie-year { font-size: 12px; color: #fff; opacity: 0.7; }
+        .movie-reason { font-size: 13px; color: #fff; margin-top: 4px; }
+        .movie-tags { font-size: 11px; color: #FFD700AA; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px; }
+        .movie-tag { background: #FFDA6D20; padding: 2px 6px; border-radius: 6px; }
+    </style>
+</head>
+<body class="bg-[#2C1810] min-h-screen relative overflow-x-hidden font-outfit text-white">
+    <%- include('../partials/navbar_app') %>
+
+    <main class="relative z-0 mt-6 px-4 md:px-8 max-w-[1400px] mx-auto pb-12">
+        <h1 class="text-4xl font-dancing text-white mb-6">AI Movie Recommendations</h1>
+        <div id="recommendationsGrid" class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8"></div>
+        <div id="recommendationsEmpty" class="text-center text-white/50 hidden mt-8">No recommendations found.</div>
+        <div id="recommendationsLoading" class="text-center text-[#00C49A] mt-8">Loading recommendations...</div>
+    </main>
+
+    <script>
+   async function fetchRecommendations() {
+    console.log("🚀 FETCH STARTED");
+
+    const grid = document.getElementById('recommendationsGrid');
+    const empty = document.getElementById('recommendationsEmpty');
+    const loading = document.getElementById('recommendationsLoading');
+
+    try {
+        // -----------------------------
+        // TOKEN
+        // -----------------------------
+        const token = localStorage.getItem("token");
+        console.log("🔑 TOKEN:", token);
+
+        if (!token) {
+            console.warn("⚠️ No token found in localStorage");
+        }
+
+        // -----------------------------
+        // REQUEST
+        // -----------------------------
+        console.log("📡 Sending request...");
+
+        const res = await fetch('https://scriptorium-backend-six.vercel.app/api/recommendations/movies', {
+            method: 'GET',
+            headers: { 
+                'Authorization': `jwt ${token}` 
+            }
+        });
+
+        console.log("📥 STATUS:", res.status);
+        console.log("📥 HEADERS:", [...res.headers.entries()]);
+
+        // -----------------------------
+        // RAW RESPONSE (IMPORTANT)
+        // -----------------------------
+        const rawText = await res.text();
+        console.log("🧾 RAW RESPONSE:", rawText);
+
+        let data;
+        try {
+            data = JSON.parse(rawText);
+        } catch (parseErr) {
+            console.error("❌ JSON PARSE FAILED:", parseErr);
+            throw new Error("Invalid JSON response");
+        }
+
+        console.log("📦 PARSED DATA:", data);
+        console.log("📦 DATA TYPE:", typeof data);
+
+        // -----------------------------
+        // STRUCTURE CHECK
+        // -----------------------------
+        console.log("🔍 data.recommendations:", data.recommendations);
+        console.log("🔍 isArray?:", Array.isArray(data.recommendations));
+
+        const movies = data.recommendations || [];
+
+        console.log("🎬 MOVIES:", movies);
+        console.log("🎬 MOVIES LENGTH:", movies.length);
+        console.log("🎬 IS ARRAY:", Array.isArray(movies));
+
+        loading.style.display = 'none';
+        grid.innerHTML = '';
+
+        // -----------------------------
+        // EMPTY STATE
+        // -----------------------------
+        if (!Array.isArray(movies)) {
+            console.error("❌ movies is NOT an array:", movies);
+            empty.style.display = 'block';
+            empty.textContent = 'Invalid data format.';
+            return;
+        }
+
+        if (!movies.length) {
+            console.warn("⚠️ No movies returned from backend");
+            empty.style.display = 'block';
+            empty.textContent = data.message || 'No recommendations found.';
+            return;
+        }
+
+        // -----------------------------
+        // RENDER LOOP
+        // -----------------------------
+        movies.forEach((movie, index) => {
+            console.log(`🎥 [${index}] FULL MOVIE:`, movie);
+
+            if (!movie || typeof movie !== "object") {
+                console.warn(`⚠️ Skipping invalid movie at index ${index}`, movie);
+                return;
+            }
+
+            console.log(`🎥 Rendering: ${movie.title}`);
+
+            const card = document.createElement('div');
+            card.className = 'movie-card';
+
+            try {
+                card.innerHTML = `
+                    <div style="padding:10px;">
+                        <img src="${movie.poster || 'https://via.placeholder.com/300x450?text=No+Image'}" alt="${movie.title || 'No title'} poster" class="movie-poster"/>
+                        <strong>${movie.title || "No title"}</strong><br/>
+                        <small>${movie.year || "?"} • ${movie.director || "Unknown"}</small><br/>
+                        <em>${movie.reason || "No reason provided"}</em>
+                    </div>
+                `;
+            } catch (renderErr) {
+                console.error("❌ RENDER ERROR:", renderErr, movie);
+                return;
+            }
+
+            grid.appendChild(card);
+        });
+
+        console.log("✅ RENDER COMPLETE");
+
+    } catch (err) {
+        console.error("💥 ERROR CAUGHT:", err);
+
+        loading.style.display = 'none';
+        empty.style.display = 'block';
+        empty.textContent = 'Failed to load recommendations.';
+    }
+}
+
+        document.addEventListener('DOMContentLoaded', fetchRecommendations);
+    </script>
+</body>
+</html>

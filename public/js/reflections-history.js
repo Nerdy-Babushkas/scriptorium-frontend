@@ -99,6 +99,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       historyContainer.classList.add("hidden");
       emptyHistory.classList.remove("hidden");
       pagination.classList.add("hidden");
+
+      const message = document.getElementById("emptyMessage");
+      if (message) {
+        message.textContent = itemSelect.value
+          ? "No reflections for this item yet"
+          : "No reflections yet.";
+      }
+
+      const addReflectionBtn = document.getElementById("addReflectionBtn");
+
+      if (addReflectionBtn) {
+        addReflectionBtn.onclick = () => {
+          if (itemSelect.value) {
+            const { id, type } = JSON.parse(itemSelect.value);
+            window.location.href = `/add-reflection?itemId=${id}&itemType=${type}`;
+          } else {
+            window.location.href = "/add-reflection";
+          }
+        };
+      }
+
       return;
     }
 

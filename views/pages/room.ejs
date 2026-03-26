@@ -230,7 +230,7 @@
                 try {
                     const res = await fetch("https://scriptorium-backend-six.vercel.app/user/tips", {
                         headers: {
-                            Authorization: "jwt " + token
+                            Authorization: "Bearer " + token
                         }
                     });
 
@@ -263,11 +263,11 @@
 
                 disableBtn.onclick = async () => {
                     try {
-                        await fetch("https://scriptorium-backend-six.vercel.app/api/user/tips", {
+                        await fetch("https://scriptorium-backend-six.vercel.app/user/tips", {
                             method: "PATCH",
                             headers: {
                                 "Content-Type": "application/json",
-                                Authorization: "jwt " + token
+                                Authorization: "Bearer" + token
                             },
                             body: JSON.stringify({ showTips: false })
                         });

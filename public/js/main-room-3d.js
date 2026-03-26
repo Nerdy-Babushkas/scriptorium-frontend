@@ -69,3 +69,16 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+//This ensures tip UI is triggered AFTER scene loads
+window.addEventListener("load", () => {
+  console.log("Room loaded - Tip system ready");
+
+  // OPTIONAL: small delay so UI feels smooth
+  setTimeout(() => {
+    const tipBox = document.getElementById("tipBox");
+    if (tipBox) {
+      console.log("Tip system connected with 3D scene");
+    }
+  }, 1000);
+});

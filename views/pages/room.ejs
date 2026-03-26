@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <%- include('../partials/head', { title: 'The Room - Scriptorium' }) %>
-    <script type="importmap">
+        <script type="importmap">
         {
             "imports": {
                 "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
@@ -10,67 +11,278 @@
             }
         }
     </script>
-    <style>
-        body { margin: 0; overflow: hidden; background: #1a0f0a; font-family: 'Outfit', sans-serif; }
-        #container3d { width: 100vw; height: 100vh; display: block; }
-        
-        /* Navigation Overlay - Moved lower into the page */
-        .room-nav {
-            position: fixed;
-            top: 120px; /* Lowered from original position */
-            right: 32px;
-            z-index: 100;
-            display: flex;
-            flex-direction: column; /* Stacked vertically for a side-panel feel */
-            align-items: flex-end;
-            gap: 16px;
-            pointer-events: auto;
-        }
+        <style>
+            body {
+                margin: 0;
+                overflow: hidden;
+                background: #1a0f0a;
+                font-family: 'Outfit', sans-serif;
+            }
 
-        .nav-pill {
-            padding: 12px 28px;
-            background: rgba(15, 25, 30, 0.85);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 99px;
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            min-width: 120px;
-        }
+            #container3d {
+                width: 100vw;
+                height: 100vh;
+                display: block;
+            }
 
-        .nav-pill:hover {
-            border-color: #FFDA6D;
-            color: #FFDA6D;
-            transform: translateX(-8px); /* Subtle slide effect */
-            background: rgba(15, 25, 30, 0.95);
-        }
+            /* Navigation Overlay - Moved lower into the page */
+            .room-nav {
+                position: fixed;
+                top: 120px;
+                /* Lowered from original position */
+                right: 32px;
+                z-index: 100;
+                display: flex;
+                flex-direction: column;
+                /* Stacked vertically for a side-panel feel */
+                align-items: flex-end;
+                gap: 16px;
+                pointer-events: auto;
+            }
 
-        /* Adjust AI Button positioning within the stack */
-        .ai-btn-container {
-            margin-top: 8px;
-            pointer-events: auto;
-        }
-    </style>
+            .nav-pill {
+                padding: 12px 28px;
+                background: rgba(15, 25, 30, 0.85);
+                backdrop-filter: blur(16px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 99px;
+                color: white;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 600;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                text-align: center;
+                min-width: 120px;
+            }
+
+            .nav-pill:hover {
+                border-color: #FFDA6D;
+                color: #FFDA6D;
+                transform: translateX(-8px);
+                /* Subtle slide effect */
+                background: rgba(15, 25, 30, 0.95);
+            }
+
+            /* Adjust AI Button positioning within the stack */
+            .ai-btn-container {
+                margin-top: 8px;
+                pointer-events: auto;
+            }
+        </style>
 </head>
+
 <body>
     <%- include('../partials/navbar_app') %>
 
-    <div id="container3d"></div>
+        <div id="container3d"></div>
 
-    <div class="room-nav">
-        <a href="/library" class="nav-pill">Library</a>
-        <a href="/music" class="nav-pill">Music Room</a>
-        <a href="/theatre" class="nav-pill">Theatre</a>
-        <div class="ai-btn-container">
-            <%- include('../partials/ai_button') %>
+        <div id="tipOverlay" style="
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(6px);
+  z-index: 998;
+  display: none;
+"></div>
+
+        <div id="tipBox" style="
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  width: 340px;
+  background: rgba(20, 30, 35, 0.85);
+  backdrop-filter: blur(18px);
+  color: white;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  z-index: 999;
+  display: none;
+  transform: translateY(40px);
+  opacity: 0;
+  transition: all 0.4s ease;
+">
+
+            <div id="tipContent" style="min-height: 120px; transition: opacity 0.3s;"></div>
+
+            <!-- DOTS -->
+            <div id="tipDots" style="
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin: 10px 0;
+  "></div>
+
+            <!-- NAV -->
+            <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                <button id="prevTip">⬅</button>
+                <button id="nextTip">➡</button>
+            </div>
+
+            <!-- ACTIONS -->
+            <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                <button id="closeTip">Close</button>
+                <button id="disableTips">Don't show</button>
+            </div>
+
         </div>
-    </div>
 
-    <script type="module" src="/js/main-room-3d.js"></script>
+        <div class="room-nav">
+            <a href="/library" class="nav-pill">Library</a>
+            <a href="/music" class="nav-pill">Music Room</a>
+            <a href="/theatre" class="nav-pill">Theatre</a>
+            <div class="ai-btn-container">
+                <%- include('../partials/ai_button') %>
+            </div>
+        </div>
+
+        <!-- ===== UPDATED TIP SCRIPT ===== -->
+        <script>
+            document.addEventListener("DOMContentLoaded", async () => {
+
+                console.log("script running...")
+
+                const tipBox = document.getElementById("tipBox");
+                const overlay = document.getElementById("tipOverlay");
+                const tipContent = document.getElementById("tipContent");
+                const dotsContainer = document.getElementById("tipDots");
+
+                const nextBtn = document.getElementById("nextTip");
+                const prevBtn = document.getElementById("prevTip");
+                const closeBtn = document.getElementById("closeTip");
+                const disableBtn = document.getElementById("disableTips");
+
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    console.log("No token → showing tips anyway");
+                    openModal();
+                    showTip(current);
+                    return;
+                }
+
+                const tips = [
+                    `<strong>👋 Welcome to scriptorium </strong><br><br>
+     Explore your 3D study room.<br>
+     Drag → Rotate<br>
+     Scroll → Zoom`,
+
+                    `<strong>Navigation</strong><br><br>
+     Library → Study<br>
+     Music → Chill<br>
+     Theatre → Watch`,
+
+                    `<strong>⚡ Features</strong><br><br>
+     Search - You can find items<br>
+     Progress - You can Track the progress<br>
+     Rewards - You also earn reward<br>
+     Customise - You can customise Your rooms`
+                ];
+
+                let current = 0;
+
+                function renderDots() {
+                    dotsContainer.innerHTML = "";
+                    tips.forEach((_, i) => {
+                        const dot = document.createElement("div");
+                        dot.style.width = "8px";
+                        dot.style.height = "8px";
+                        dot.style.borderRadius = "50%";
+                        dot.style.background = i === current ? "#FFDA6D" : "rgba(255,255,255,0.3)";
+                        dotsContainer.appendChild(dot);
+                    });
+                }
+
+                function showTip(index) {
+                    tipContent.style.opacity = 0;
+
+                    setTimeout(() => {
+                        tipContent.innerHTML = tips[index];
+                        tipContent.style.opacity = 1;
+                        renderDots();
+                    }, 150);
+
+                    prevBtn.style.opacity = index === 0 ? 0.3 : 1;
+                    nextBtn.style.opacity = index === tips.length - 1 ? 0.3 : 1;
+                }
+
+                function openModal() {
+                    overlay.style.display = "block";
+                    tipBox.style.display = "block";
+
+                    setTimeout(() => {
+                        tipBox.style.transform = "translateY(0)";
+                        tipBox.style.opacity = 1;
+                    }, 10);
+                }
+
+                function closeModal() {
+                    tipBox.style.transform = "translateY(40px)";
+                    tipBox.style.opacity = 0;
+
+                    setTimeout(() => {
+                        tipBox.style.display = "none";
+                        overlay.style.display = "none";
+                    }, 300);
+                }
+
+                try {
+                    const res = await fetch("http://localhost:3001/api/user/tips", {
+                        headers: {
+                            Authorization: "jwt " + token
+                        }
+                    });
+
+                    const data = await res.json();
+
+                    if (data.showTips !== false) {
+                        openModal();
+                        showTip(current);
+                    }
+
+                } catch (err) {
+                    console.error("Tip fetch error:", err);
+                }
+
+                nextBtn.onclick = () => {
+                    if (current < tips.length - 1) {
+                        current++;
+                        showTip(current);
+                    }
+                };
+
+                prevBtn.onclick = () => {
+                    if (current > 0) {
+                        current--;
+                        showTip(current);
+                    }
+                };
+
+                closeBtn.onclick = closeModal;
+
+                disableBtn.onclick = async () => {
+                    try {
+                        await fetch("http://localhost:3001/api/user/tips", {
+                            method: "PATCH",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: "jwt " + token
+                            },
+                            body: JSON.stringify({ showTips: false })
+                        });
+
+                        closeModal();
+
+                    } catch (err) {
+                        console.error("Update error:", err);
+                    }
+                };
+
+            });
+        </script>
+
+        <script type="module" src="/js/main-room-3d.js"></script>
 </body>
+
 </html>

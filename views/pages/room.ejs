@@ -228,7 +228,7 @@
                 }
 
                 try {
-                    const res = await fetch("http://localhost:3001/api/user/tips", {
+                    const res = await fetch("http://scriptorium-backend-six.vercel.app/api/user/tips", {
                         headers: {
                             Authorization: "jwt " + token
                         }
@@ -263,7 +263,7 @@
 
                 disableBtn.onclick = async () => {
                     try {
-                        await fetch("http://localhost:3001/api/user/tips", {
+                        await fetch("http://scriptorium-backend-six.vercel.app/api/user/tips", {
                             method: "PATCH",
                             headers: {
                                 "Content-Type": "application/json",

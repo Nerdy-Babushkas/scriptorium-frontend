@@ -230,7 +230,7 @@
                 try {
                     const res = await fetch("https://scriptorium-backend-six.vercel.app/api/user/tips", {
                         headers: {
-                            Authorization: "Bearer " + token
+                            Authorization: "jwt " + token
                         }
                     });
 
@@ -267,7 +267,7 @@
                             method: "PATCH",
                             headers: {
                                 "Content-Type": "application/json",
-                                Authorization: "Bearer" + token
+                                Authorization: "jwt " + token
                             },
                             body: JSON.stringify({ showTips: false })
                         });

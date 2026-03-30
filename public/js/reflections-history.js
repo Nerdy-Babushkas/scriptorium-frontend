@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // PAGINATION DEFAULTS
   // -----------------------------
   let page = 1;
-  const limit = 10; // or whatever your default page size is
+  const limit = 5;
 
   // -----------------------------
   // INIT

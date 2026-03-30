@@ -1,155 +1,515 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <%- include('../partials/head', { title: 'Movie Recommendations - Scriptorium' }) %>
+    <%- include('../partials/head', { title: 'AI Recommendations - Scriptorium' }) %>
     <style>
-    /* ---------------- MOVIE CARDS ---------------- */
-    .movie-card { 
-        background: #1f1f1f; 
-        border: 1px solid #FFDA6D50; 
-        border-radius: 12px; 
-        overflow: hidden; 
-        transition: transform 0.2s ease, opacity 0.3s ease; 
+
+    /* ============================================================
+       RECOMMENDATIONS PAGE — tabbed: movies / music / books
+    ============================================================ */
+
+    /* ---------- AMBIENT ORBS ---------- */
+    .bg-orb {
+        position: fixed; border-radius: 50%;
+        filter: blur(90px); pointer-events: none;
+        z-index: 0; opacity: 0.18;
+        animation: orbDrift 12s ease-in-out infinite alternate;
+    }
+    .bg-orb-1 { width:520px; height:520px; background:#0f4c75; top:-120px; left:-100px; animation-delay:0s; }
+    .bg-orb-2 { width:400px; height:400px; background:#00C49A; bottom:10%; right:-80px; animation-delay:-4s; }
+    .bg-orb-3 { width:300px; height:300px; background:#0f4c75; bottom:30%; left:30%; animation-delay:-8s; }
+
+    @keyframes orbDrift {
+        from { transform: translateY(0px) scale(1); }
+        to   { transform: translateY(30px) scale(1.08); }
     }
 
-    .movie-card:hover { 
-        transform: scale(1.03); 
+    /* ---------- PAGE CONTROLS ---------- */
+    .page-controls {
+        display: flex; align-items: center;
+        justify-content: space-between; flex-wrap: wrap;
+        gap: 12px; margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
     }
 
-    .movie-poster { 
-        width: 100%; 
-        height: 300px; 
-        object-fit: cover; 
+    .page-controls-left { display: flex; align-items: center; gap: 14px; }
+
+    .btn-back {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 8px 16px; border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.7);
+        font-size: 0.82rem; font-weight: 500; cursor: pointer;
+        transition: background 0.2s, color 0.2s, transform 0.15s;
+        text-decoration: none;
+    }
+    .btn-back:hover { background: rgba(255,255,255,0.1); color:#fff; transform: translateX(-2px); }
+    .btn-back svg { width:14px; height:14px; flex-shrink:0; }
+
+    .btn-refresh {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 9px 20px; border-radius: 999px;
+        border: 1px solid rgba(0,196,154,0.45);
+        background: rgba(0,196,154,0.08); color: #00C49A;
+        font-size: 0.85rem; font-weight: 600; cursor: pointer;
+        transition: all 0.2s; letter-spacing: 0.01em;
+    }
+    .btn-refresh:hover { background: rgba(0,196,154,0.15); border-color:#00C49A; box-shadow: 0 0 18px rgba(0,196,154,0.2); }
+    .btn-refresh svg { width:14px; height:14px; flex-shrink:0; transition: transform 0.35s ease; }
+    .btn-refresh:hover svg { transform: rotate(180deg); }
+
+    /* ---------- AI BADGE ---------- */
+    .ai-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 4px 12px; border-radius: 999px;
+        border: 1px solid rgba(0,196,154,0.35);
+        background: rgba(0,196,154,0.08);
+        font-size: 0.68rem; font-weight: 700;
+        letter-spacing: 0.1em; text-transform: uppercase;
+        color: #00C49A; width: fit-content;
+    }
+    .ai-badge-dot {
+        width:6px; height:6px; border-radius:50%; background:#00C49A;
+        animation: badgePulse 1.8s ease-in-out infinite;
+    }
+    @keyframes badgePulse {
+        0%,100% { opacity:1; transform:scale(1); }
+        50%      { opacity:0.4; transform:scale(0.7); }
     }
 
-    /* ---------------- LOADING UI ---------------- */
-    #recommendationsLoading {
+    /* ---------- TABS ---------- */
+    .tabs-bar {
+        display: flex;
+        gap: 4px;
+        background: rgba(0,0,0,0.25);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 999px;
+        padding: 4px;
+        width: fit-content;
+        margin-bottom: 2rem;
+    }
+
+    .tab-btn {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 8px 20px; border-radius: 999px;
+        border: none; background: transparent;
+        color: rgba(255,255,255,0.45);
+        font-size: 0.85rem; font-weight: 600;
+        cursor: pointer; transition: all 0.2s;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
+    }
+
+    .tab-btn:hover { color: rgba(255,255,255,0.8); }
+
+    .tab-btn.active {
+        background: rgba(0,196,154,0.15);
+        color: #00C49A;
+        box-shadow: 0 0 0 1px rgba(0,196,154,0.3);
+    }
+
+    .tab-btn .tab-icon { font-size: 0.9rem; }
+
+    /* ---------- TAB PANELS ---------- */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ---------- CARDS (shared) ---------- */
+    .rec-card {
+        background: rgba(15,25,30,0.65);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 16px; overflow: hidden;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        display: flex; flex-direction: column;
         position: relative;
     }
 
-    /* subtle glowing aura behind sheep */
-    #recommendationsLoading::before {
-        content: "";
-        position: absolute;
-        width: 240px;
-        height: 240px;
-        background: radial-gradient(circle, rgba(255,218,109,0.15), transparent 70%);
-        border-radius: 50%;
-        z-index: -1;
-        animation: auraPulse 4s ease-in-out infinite;
+    .rec-card::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: linear-gradient(105deg, transparent 35%, rgba(0,196,154,0.07) 50%, transparent 65%);
+        background-size: 200% 100%; background-position: -200% 0;
+        z-index: 1; pointer-events: none; border-radius: 16px;
+    }
+
+    .rec-card:hover::before { animation: scanSweep 0.65s ease forwards; }
+
+    @keyframes scanSweep {
+        from { background-position: -200% 0; }
+        to   { background-position: 220% 0; }
+    }
+
+    .rec-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(0,196,154,0.28);
+        box-shadow: 0 18px 50px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,196,154,0.08), 0 0 32px rgba(0,196,154,0.06);
+    }
+
+    /* Poster / Cover image area */
+    .rec-img-wrap {
+        position: relative; overflow: hidden; height: 285px;
+        flex-shrink: 0;
+    }
+
+    /* Books — taller portrait, music — square */
+    .tab-panel[data-tab="books"]  .rec-img-wrap { height: 300px; }
+    .tab-panel[data-tab="music"]  .rec-img-wrap { height: 220px; }
+
+    .rec-img {
+        width:100%; height:100%; object-fit:cover; display:block;
+        transition: transform 0.45s ease;
+    }
+    .rec-card:hover .rec-img { transform: scale(1.06); }
+
+    .rec-img-overlay {
+        position:absolute; inset:0;
+        background: linear-gradient(to top, rgba(15,25,30,0.98) 0%, rgba(15,25,30,0.15) 55%, transparent 100%);
+        pointer-events:none; z-index:2;
+    }
+
+    .rec-ai-tag {
+        position:absolute; top:10px; right:10px; z-index:3;
+        padding:3px 9px; border-radius:999px;
+        background:rgba(0,196,154,0.15); border:1px solid rgba(0,196,154,0.4);
+        font-size:0.6rem; font-weight:700; letter-spacing:0.08em;
+        color:#00C49A; text-transform:uppercase; backdrop-filter:blur(6px);
+        opacity:0; transform:translateY(-4px);
+        transition: opacity 0.2s, transform 0.2s;
+    }
+    .rec-card:hover .rec-ai-tag { opacity:1; transform:translateY(0); }
+
+    /* Card body */
+    .rec-body {
+        padding:14px 14px 16px; display:flex;
+        flex-direction:column; gap:5px; flex:1;
+        position:relative; z-index:2;
+    }
+
+    .rec-title  { font-size:0.92rem; font-weight:700; color:#fff; line-height:1.3; margin:0; }
+    .rec-meta   { font-size:0.72rem; color:rgba(255,255,255,0.35); margin:0; }
+    .rec-reason {
+        font-size:0.74rem; color:rgba(255,255,255,0.52);
+        font-style:italic; line-height:1.45; margin:6px 0 0; flex:1;
+        padding-left:9px; border-left:2px solid rgba(0,196,154,0.28);
+    }
+
+    /* Add button */
+    .add-trigger-btn {
+        margin-top:12px; width:100%; padding:9px 14px;
+        border-radius:10px; border:1px solid rgba(0,196,154,0.35);
+        background:rgba(0,196,154,0.07); color:#00C49A;
+        font-size:0.8rem; font-weight:600; cursor:pointer;
+        letter-spacing:0.02em;
+        transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+        display:flex; align-items:center; justify-content:center; gap:7px;
+        position:relative; overflow:hidden;
+    }
+    .add-trigger-btn::after {
+        content:''; position:absolute; inset:0;
+        background:radial-gradient(circle at center, rgba(0,196,154,0.18) 0%, transparent 70%);
+        opacity:0; transition:opacity 0.3s;
+    }
+    .add-trigger-btn:hover:not(:disabled)::after { opacity:1; }
+    .add-trigger-btn:hover:not(:disabled) {
+        background:rgba(0,196,154,0.14);
+        border-color:rgba(0,196,154,0.6);
+        box-shadow:0 0 14px rgba(0,196,154,0.18);
+    }
+    .add-trigger-btn.is-saved {
+        background:transparent; border-color:rgba(0,196,154,0.18);
+        color:rgba(0,196,154,0.55); cursor:default; font-weight:500;
+        letter-spacing:0.08em; font-size:0.7rem; text-transform:uppercase;
+    }
+    .add-trigger-btn.is-saved::after { display:none; }
+
+    /* ---------- SPARK BURST ---------- */
+    .spark {
+        position:fixed; width:5px; height:5px; border-radius:50%;
+        background:#00C49A; pointer-events:none;
+        animation: sparkFly var(--dur) ease forwards; z-index:99999;
+    }
+    @keyframes sparkFly {
+        0%   { transform:translate(0,0) scale(1); opacity:1; }
+        100% { transform:translate(var(--tx),var(--ty)) scale(0); opacity:0; }
+    }
+
+    /* ---------- SHELF MODAL ---------- */
+    #shelfModal {
+        position:fixed; inset:0; background:rgba(0,0,0,0.82);
+        display:none; align-items:center; justify-content:center;
+        z-index:9999; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    }
+
+    .shelf-modal-box {
+        background:#0f191e; border:1px solid rgba(0,196,154,0.22);
+        border-radius:24px; padding:30px 26px 24px;
+        min-width:300px; max-width:380px; width:90%;
+        box-shadow:0 30px 80px rgba(0,0,0,0.7), 0 0 60px rgba(0,196,154,0.04);
+        animation:modalIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    @keyframes modalIn {
+        from { transform:scale(0.88) translateY(14px); opacity:0; }
+        to   { transform:scale(1) translateY(0); opacity:1; }
+    }
+
+    .shelf-modal-eyebrow {
+        font-size:0.65rem; font-weight:700; letter-spacing:0.12em;
+        text-transform:uppercase; color:#00C49A; margin-bottom:6px; display:block;
+    }
+
+    #modalTitle {
+        font-size:1.08rem; font-weight:700; color:#fff;
+        margin:0 0 20px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+
+    .shelf-options { display:flex; flex-direction:column; gap:9px; }
+
+    .shelf-option {
+        display:flex; align-items:center; gap:13px; width:100%;
+        padding:13px 16px; border-radius:13px;
+        border:1px solid rgba(255,255,255,0.07);
+        background:rgba(255,255,255,0.03); color:#fff;
+        font-size:0.88rem; font-weight:500; cursor:pointer;
+        transition:background 0.18s, border-color 0.18s, transform 0.15s;
+        text-align:left;
+    }
+    .shelf-option:hover { background:rgba(0,196,154,0.1); border-color:rgba(0,196,154,0.28); transform:translateX(4px); }
+    .shelf-option .shelf-icon  { font-size:1rem; width:22px; text-align:center; flex-shrink:0; }
+    .shelf-option .shelf-label { font-weight:600; }
+    .shelf-option .shelf-desc  { font-size:0.68rem; color:rgba(255,255,255,0.32); margin-left:auto; }
+
+    .shelf-divider { height:1px; background:rgba(255,255,255,0.05); margin:16px 0 0; }
+
+    #closeShelfModal {
+        width:100%; margin-top:12px; padding:10px; border-radius:10px;
+        border:1px solid rgba(255,255,255,0.08); background:transparent;
+        color:rgba(255,255,255,0.32); font-size:0.82rem; cursor:pointer;
+        transition:color 0.2s, border-color 0.2s;
+    }
+    #closeShelfModal:hover { color:rgba(255,255,255,0.65); border-color:rgba(255,255,255,0.18); }
+
+    /* ---------- LOADING ---------- */
+    .panel-loading { position:relative; display:flex; flex-direction:column; align-items:center; margin-top:5rem; }
+
+    .panel-loading::before {
+        content:""; position:absolute; width:260px; height:260px;
+        background:radial-gradient(circle, rgba(0,196,154,0.1), transparent 70%);
+        border-radius:50%; z-index:-1; animation:auraPulse 4s ease-in-out infinite;
     }
 
     @keyframes auraPulse {
-        0%, 100% { transform: scale(0.95); opacity: 0.6; }
-        50% { transform: scale(1.1); opacity: 1; }
+        0%,100% { transform:scale(0.95); opacity:0.6; }
+        50%      { transform:scale(1.12); opacity:1; }
     }
 
-    /* sheep wrapper: floating and zooming */
     .sheep-wrapper {
-        width: 160px;
-        filter: drop-shadow(0 0 14px rgba(255, 218, 109, 0.25));
-        position: relative;
-        animation: sheepFloat 4s ease-in-out infinite;
+        width:160px;
+        filter:drop-shadow(0 0 22px rgba(0,196,154,0.22));
+        animation:sheepFloat 4s ease-in-out infinite;
     }
-
     @keyframes sheepFloat {
-        0%   { transform: translateY(0px) scale(1); }
-        50%  { transform: translateY(-8px) scale(1.05); }
-        100% { transform: translateY(0px) scale(1); }
+        0%,100% { transform:translateY(0px) scale(1); }
+        50%      { transform:translateY(-9px) scale(1.04); }
     }
+    .sheep-img { width:100%; display:block; }
 
-    .sheep-img {
-        width: 100%;
-        display: block;
-    }
-
-    /* yarn animation: magical flowing thread */
     .sheep-wrapper::after {
-        content: '';
-        display: block;
-        margin: 14px auto 0;
-        width: 120px;
-        height: 4px;
-        border-radius: 2px;
-        background: linear-gradient(90deg, transparent, #FFDA6D, transparent);
-        background-size: 200%;
-        opacity: 0.9;
-        animation: yarnFlow 1.6s linear infinite;
+        content:''; display:block; margin:14px auto 0;
+        width:120px; height:3px; border-radius:2px;
+        background:linear-gradient(90deg, transparent, #00C49A, transparent);
+        background-size:200%; opacity:0.8;
+        animation:yarnFlow 1.6s linear infinite;
     }
-
     @keyframes yarnFlow {
-        0%   { background-position: -120px; }
-        100% { background-position: 120px; }
+        0%   { background-position:-120px; }
+        100% { background-position:120px; }
     }
 
-    /* loading text: breathing flicker */
-    #loadingText {
-        color: #FFDA6D;
-        text-shadow: 0 0 8px rgba(255, 218, 109, 0.4);
-        animation: textBreath 3s ease-in-out infinite;
-        margin-top: 1.5rem;
-        text-align: center;
-        font-size: 1.125rem; /* text-lg */
-        font-weight: 500; /* medium */
+    .loading-text {
+        color:#00C49A;
+        text-shadow:0 0 12px rgba(0,196,154,0.35);
+        animation:textBreath 3s ease-in-out infinite;
+        margin-top:1.5rem; text-align:center;
+        font-size:1.05rem; font-weight:500;
     }
-
     @keyframes textBreath {
-        0%, 100% { opacity: 0.85; }
-        50% { opacity: 1; }
+        0%,100% { opacity:0.72; }
+        50%      { opacity:1; }
     }
 
-    /* typing dots animation */
     .dots::after {
-        content: '';
-        animation: dots 1.5s steps(3, end) infinite;
+        content:'';
+        animation:dots 1.5s steps(3,end) infinite;
     }
-
     @keyframes dots {
-        0%   { content: ''; }
-        33%  { content: '.'; }
-        66%  { content: '..'; }
-        100% { content: '...'; }
+        0%   { content:''; }
+        33%  { content:'.'; }
+        66%  { content:'..'; }
+        100% { content:'...'; }
     }
 
-    /* smooth fade-out for loading */
-    .fade-out {
-        opacity: 0;
-        transition: opacity 0.4s ease;
-    }
+    .fade-out { opacity:0; transition:opacity 0.4s ease; }
+
+    /* ---------- TOAST ---------- */
+    #toast { transform:translateY(160px); }
+
     </style>
 </head>
 
-<body class="bg-[#2C1810] min-h-screen relative overflow-x-hidden font-outfit text-white">
+<!-- ==================== SHELF MODAL (shared, swapped per tab) ==================== -->
+<div id="shelfModal">
+  <div class="shelf-modal-box">
+    <span class="shelf-modal-eyebrow">✦ Add to library</span>
+    <p id="modalTitle">Title</p>
+
+    <!-- Movies shelves -->
+    <div class="shelf-options" id="shelfOptions-movies">
+      <button class="shelf-option" data-shelf="favorites">
+        <span class="shelf-icon">⭐</span><span class="shelf-label">Favorites</span><span class="shelf-desc">All-time greats</span>
+      </button>
+      <button class="shelf-option" data-shelf="watchlist">
+        <span class="shelf-icon">📺</span><span class="shelf-label">Watchlist</span><span class="shelf-desc">Watch later</span>
+      </button>
+      <button class="shelf-option" data-shelf="watched">
+        <span class="shelf-icon">👁</span><span class="shelf-label">Seen It</span><span class="shelf-desc">Already watched</span>
+      </button>
+    </div>
+
+    <!-- Music shelves -->
+    <div class="shelf-options" id="shelfOptions-music" style="display:none;">
+      <button class="shelf-option" data-shelf="favorites">
+        <span class="shelf-icon">⭐</span><span class="shelf-label">Favorites</span><span class="shelf-desc">All-time greats</span>
+      </button>
+      <button class="shelf-option" data-shelf="listening">
+        <span class="shelf-icon">🎧</span><span class="shelf-label">Listening</span><span class="shelf-desc">On rotation</span>
+      </button>
+    </div>
+
+    <!-- Books shelves -->
+    <div class="shelf-options" id="shelfOptions-books" style="display:none;">
+      <button class="shelf-option" data-shelf="favorites">
+        <span class="shelf-icon">⭐</span><span class="shelf-label">Favorites</span><span class="shelf-desc">All-time greats</span>
+      </button>
+      <button class="shelf-option" data-shelf="reading">
+        <span class="shelf-icon">📖</span><span class="shelf-label">Reading</span><span class="shelf-desc">Currently reading</span>
+      </button>
+      <button class="shelf-option" data-shelf="wishlist">
+        <span class="shelf-icon">🔖</span><span class="shelf-label">Wishlist</span><span class="shelf-desc">Want to read</span>
+      </button>
+      <button class="shelf-option" data-shelf="finished">
+        <span class="shelf-icon">📚</span><span class="shelf-label">Finished</span><span class="shelf-desc">Already read</span>
+      </button>
+    </div>
+
+    <div class="shelf-divider"></div>
+    <button id="closeShelfModal">Cancel</button>
+  </div>
+</div>
+
+<!-- ==================== TOAST ==================== -->
+<div id="toast" style="
+  position:fixed; bottom:2rem; right:2rem;
+  display:flex; align-items:center; gap:14px;
+  padding:16px 22px; background:#0f191e; border-radius:14px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.55); color:white;
+  transform:translateY(160px);
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  z-index:10000; min-width:220px; border-left:4px solid #00C49A;
+">
+  <div>
+    <div id="toastTitle"   style="font-weight:700;font-size:0.9rem;"></div>
+    <div id="toastMessage" style="font-size:0.78rem;opacity:0.65;margin-top:2px;"></div>
+  </div>
+</div>
+
+<!-- ==================== BODY ==================== -->
+<body style="background:radial-gradient(circle at 50% 0%, #0f4c75 0%, #05181c 100%); background-color:#05181c;"
+      class="min-h-screen relative overflow-x-hidden font-outfit text-white">
+
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+
     <%- include('../partials/navbar_app') %>
 
-    <main class="relative z-0 mt-6 px-4 md:px-8 max-w-[1400px] mx-auto pb-12">
+    <main class="relative z-10 mt-6 px-4 md:px-8 max-w-[1400px] mx-auto pb-16">
 
-        <h1 class="text-4xl font-dancing text-white mb-6">
-            AI Movie Recommendations
-        </h1>
-
-        <!-- GRID -->
-        <div id="recommendationsGrid" class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8"></div>
-
-        <!-- EMPTY -->
-        <div id="recommendationsEmpty" class="text-center text-white/50 hidden mt-8"></div>
-
-        <!-- 🐑 LOADING -->
-        <div id="recommendationsLoading" class="flex flex-col items-center mt-16">
-
-            <div class="sheep-wrapper">
-                <img src="/assets/sheep-knitting.gif" class="sheep-img"/>
+        <!-- PAGE CONTROLS -->
+        <div class="page-controls">
+            <div class="page-controls-left">
+                <a href="/room" class="btn-back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5M12 5l-7 7 7 7"/>
+                    </svg>
+                    Back to Room
+                </a>
+                <div style="display:flex;flex-direction:column;gap:5px;">
+                    <h1 class="text-3xl font-dancing text-white" style="margin:0;" id="pageTitle">AI Recommendations</h1>
+                    <span class="ai-badge">
+                        <span class="ai-badge-dot"></span>
+                        Babushka AI · Personalised for you
+                    </span>
+                </div>
             </div>
 
-            <p id="loadingText" class="text-[#FFDA6D] mt-6 text-lg font-medium text-center">
-                Babushka AI is knitting your recommendations<span class="dots"></span>
-            </p>
+            <button class="btn-refresh" onclick="refreshActive()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+                New Picks
+            </button>
+        </div>
 
+        <!-- TABS BAR -->
+        <div class="tabs-bar">
+            <button class="tab-btn active" data-tab="movies" onclick="switchTab('movies')">
+                <span class="tab-icon">🎬</span> Movies
+            </button>
+            <button class="tab-btn" data-tab="music" onclick="switchTab('music')">
+                <span class="tab-icon">🎵</span> Music
+            </button>
+            <button class="tab-btn" data-tab="books" onclick="switchTab('books')">
+                <span class="tab-icon">📚</span> Books
+            </button>
+        </div>
+
+        <!-- ── MOVIES TAB ── -->
+        <div class="tab-panel active" data-tab="movies" id="panel-movies">
+            <div id="grid-movies"   class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5"></div>
+            <div id="empty-movies"  style="display:none;"></div>
+            <div id="loading-movies" class="panel-loading">
+                <div class="sheep-wrapper"><img src="/assets/sheep-knitting.gif" class="sheep-img"/></div>
+                <p class="loading-text" id="loadingText-movies">Babushka AI is knitting your recommendations<span class="dots"></span></p>
+            </div>
+        </div>
+
+        <!-- ── MUSIC TAB ── -->
+        <div class="tab-panel" data-tab="music" id="panel-music">
+            <div id="grid-music"   class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5"></div>
+            <div id="empty-music"  style="display:none;"></div>
+            <div id="loading-music" class="panel-loading">
+                <div class="sheep-wrapper"><img src="/assets/sheep-knitting.gif" class="sheep-img"/></div>
+                <p class="loading-text" id="loadingText-music">Babushka AI is curating your soundtrack<span class="dots"></span></p>
+            </div>
+        </div>
+
+        <!-- ── BOOKS TAB ── -->
+        <div class="tab-panel" data-tab="books" id="panel-books">
+            <div id="grid-books"   class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5"></div>
+            <div id="empty-books"  style="display:none;"></div>
+            <div id="loading-books" class="panel-loading">
+                <div class="sheep-wrapper"><img src="/assets/sheep-knitting.gif" class="sheep-img"/></div>
+                <p class="loading-text" id="loadingText-books">Babushka AI is flipping through the shelves<span class="dots"></span></p>
+            </div>
         </div>
 
     </main>
 
-   <script src="/js/recommendations.js"></script>
-
+    <script src="/js/recommendations.js"></script>
 </body>
 </html>

@@ -475,7 +475,7 @@ function setupInlineMediaSearch() {
           const isSelected = selectedGoalId === id;
 
           item.className =
-            `group flex items-center gap-3 border rounded-xl py-4 p-3 transition-colors shrink-0 ` +
+            `group relative flex items-center gap-3 border rounded-xl py-4 p-3 transition-colors shrink-0 ` +
             (goal.status === "completed"
               ? "bg-white/5 border-white/5 opacity-80"
               : "bg-teal-dark/30 hover:bg-teal-dark/50 border-white/5 ") +
@@ -490,25 +490,25 @@ function setupInlineMediaSearch() {
 
 item.innerHTML = `
   <div class="relative w-10 h-10 shrink-0">
-    <div class="w-10 h-10 rounded-full bg-teal-neon flex items-center justify-center text-teal-dark shadow-sm">
-      ${icons[goal.type] || icons.book}
-    </div>
+   <div class="w-10 h-10 rounded-full bg-teal-neon flex items-center justify-center text-teal-dark shadow-sm shrink-0">
+  ${icons[goal.type] || icons.book}
+</div>
 
     ${
-      goal.status === "active"
-        ? `
-        <button 
-          class="edit-goal absolute -top-1 -right-1 bg-black/70 hover:bg-teal-neon text-white hover:text-black rounded-full p-1 transition-all"
-          title="Edit goal"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 20h9"/>
-            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
-          </svg>
-        </button>
-        `
-        : ""
-    }
+  goal.status === "active"
+    ? `
+    <button 
+      class="edit-goal absolute top-2 right-2 bg-black/70 hover:bg-teal-neon text-white hover:text-black rounded-full p-1.5 transition-all opacity-0 group-hover:opacity-100"
+      title="Edit goal"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 20h9"/>
+        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+      </svg>
+    </button>
+    `
+    : ""
+}
   </div>
 
   <div class="flex-grow flex flex-col justify-center overflow-visible">

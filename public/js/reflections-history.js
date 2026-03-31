@@ -31,6 +31,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // -----------------------------
+  // TOP ADD REFLECTION BUTTON
+  // -----------------------------
+  const addReflectionBtnTop = document.getElementById("addReflectionBtnTop");
+  if (addReflectionBtnTop) {
+    addReflectionBtnTop.addEventListener("click", () => {
+      if (itemSelect.value) {
+        const { id, type } = JSON.parse(itemSelect.value);
+        window.location.href = `/add-reflection?itemId=${id}&itemType=${type}`;
+      } else if (itemId && itemType) {
+        window.location.href = `/add-reflection?itemId=${itemId}&itemType=${itemType}`;
+      } else {
+        window.location.href = "/add-reflection";
+      }
+    });
+  }
+
+  // -----------------------------
   // PAGINATION DEFAULTS
   // -----------------------------
   let page = 1;

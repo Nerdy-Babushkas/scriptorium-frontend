@@ -159,9 +159,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (option) {
           option.selected = true;
-
-          // optional UX improvement
-          itemSelect.disabled = true;
         }
       }
     } catch (error) {

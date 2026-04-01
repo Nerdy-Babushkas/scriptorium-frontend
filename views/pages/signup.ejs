@@ -4,7 +4,6 @@
   <%- include('../partials/head_public', { title: 'Sign Up — Scriptorium' }) %>
   <link rel="stylesheet" href="/css/auth.css">
 
-  <%# Same fonts as landing page — must load before render %>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -13,17 +12,11 @@
 
 <body class="auth-body">
 
-  <%# Grain texture overlay (matches landing) %>
   <div class="grain" aria-hidden="true"></div>
 
-  <%# Custom cursor (matches landing) %>
-  <div class="cursor" aria-hidden="true"></div>
+  <%# Custom cursor — must be in DOM %>
+  <div class="cursor" id="authCursor" aria-hidden="true"></div>
 
-  <%#
-    ── BACK BUTTON ──────────────────────────────────────────────
-    Replaces the navbar entirely on auth pages.
-    Creative: animated arrow, squiggly underline on hover.
-  %>
   <a href="/" class="auth-back" aria-label="Back to home">
     <span class="auth-back-arrow">
       <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -42,15 +35,12 @@
 
     <%# ══════════════════════════════════════════════
         LEFT PANEL — illustrated / decorative
-        Teal-green gradient for signup
     ══════════════════════════════════════════════ %>
     <div class="auth-panel-left" aria-hidden="true">
       <div class="auth-panel-noise"></div>
 
-      <%# Giant background word %>
       <div class="auth-bleed-word">JOIN</div>
 
-      <%# Floating book stack SVG %>
       <div class="auth-floater auth-floater--books">
         <svg viewBox="0 0 110 120" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="6" y="22" width="86" height="18" rx="3" fill="#c9b99a" transform="rotate(-7 6 22)"/>
@@ -64,7 +54,6 @@
         </svg>
       </div>
 
-      <%# Sticky note %>
       <div class="auth-floater auth-floater--note">
         <svg viewBox="0 0 90 88" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="88" height="86" rx="4" fill="#f5e87a" transform="rotate(-5 0 0)"/>
@@ -75,21 +64,18 @@
         </svg>
       </div>
 
-      <%# 4-point teal star %>
       <div class="auth-floater auth-floater--star">
         <svg viewBox="0 0 60 60" fill="none">
           <path d="M30 4L33 26L55 30L33 34L30 56L27 34L5 30L27 26Z" fill="#3d8c80" opacity="0.65"/>
         </svg>
       </div>
 
-      <%# Amber small star %>
       <div class="auth-floater auth-floater--star2">
         <svg viewBox="0 0 40 40" fill="none">
           <path d="M20 2L22.8 16.2L37 20L22.8 23.8L20 38L17.2 23.8L3 20L17.2 16.2Z" fill="#bf7a30" opacity="0.65"/>
         </svg>
       </div>
 
-      <%# Dashed arc scribble %>
       <div class="auth-floater auth-floater--arc">
         <svg viewBox="0 0 150 50" fill="none">
           <path d="M4 36 Q32 4 62 26 Q92 48 122 16 Q136 7 148 14"
@@ -98,7 +84,6 @@
         </svg>
       </div>
 
-      <%# Panel tagline %>
       <div class="auth-panel-tagline">
         <p class="auth-panel-eyebrow">— Your mind space</p>
         <h2>
@@ -108,7 +93,6 @@
         <p>Save books, music, films, and podcasts. Write what they meant. Let AI find what's next.</p>
       </div>
 
-      <%# Mini media cards preview %>
       <div class="auth-preview-cards">
         <div class="auth-preview-card">
           <div class="apc-dot apc-dot--teal"></div>
@@ -121,7 +105,7 @@
         <div class="auth-preview-card">
           <div class="apc-dot apc-dot--amber"></div>
           <div class="apc-text">
-            <strong>Bicep — Isles</strong>
+            <strong>Bicep by Isles</strong>
             <span>Saved · late night listening</span>
           </div>
           <span class="apc-badge">Album</span>
@@ -140,7 +124,7 @@
 
     <%# ══════════════════════════════════════════════
         RIGHT PANEL — signup form
-        All IDs preserved for signup.js backend:
+        IDs preserved exactly for signup.js:
           signupForm, email, password, confirmPassword,
           togglePassword, toggleConfirmPassword,
           submitBtn, formMessage
@@ -187,8 +171,14 @@
                 autocomplete="new-password"
                 required
               />
-              <%# id="togglePassword" preserved for signup.js %>
-              <button type="button" class="auth-toggle-btn" id="togglePassword" aria-label="Show password"></button>
+              <%# id="togglePassword" preserved exactly for signup.js %>
+              <button
+                type="button"
+                class="auth-toggle-btn"
+                id="togglePassword"
+                data-visible="false"
+                aria-label="Show password"
+              ></button>
             </div>
           </div>
 
@@ -204,15 +194,26 @@
                 autocomplete="new-password"
                 required
               />
-              <%# id="toggleConfirmPassword" preserved for signup.js %>
-              <button type="button" class="auth-toggle-btn" id="toggleConfirmPassword" aria-label="Show confirm password"></button>
+              <%# id="toggleConfirmPassword" preserved exactly for signup.js %>
+              <button
+                type="button"
+                class="auth-toggle-btn"
+                id="toggleConfirmPassword"
+                data-visible="false"
+                aria-label="Show confirm password"
+              ></button>
             </div>
           </div>
 
-          <%# id="formMessage" preserved for signup.js — class toggling handled by backend JS %>
+          <%#
+            id="formMessage" preserved exactly for signup.js.
+            signup.js sets className directly — our CSS detects
+            "bg-red-500/10" and "bg-green-500/10" substrings via [class*=].
+            The .hidden class is also respected.
+          %>
           <div id="formMessage" role="alert" aria-live="polite"></div>
 
-          <%# id="submitBtn" preserved for signup.js %>
+          <%# id="submitBtn" preserved exactly for signup.js %>
           <button type="submit" id="submitBtn">
             Create your room
             <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -251,10 +252,75 @@
 
   </div>
 
-  <%# Backend logic — untouched %>
+  <%# Backend logic — untouched, exactly as provided %>
   <script src="/js/signup.js" defer></script>
-  <%# Auth UI: cursor, password toggles, back button animation %>
-  <script src="/js/auth-nav.js" defer></script>
+
+  <%#
+    Inline auth UI script — replaces auth-nav.js entirely.
+    Handles: custom cursor, hover states, and eye-toggle data-attribute sync.
+    Does NOT touch signup form logic — that is 100% owned by signup.js.
+  %>
+  <script>
+    (function () {
+      /* ── CUSTOM CURSOR ─────────────────────────────────────── */
+      const cursor = document.getElementById('authCursor');
+      if (cursor && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        let cx = -100, cy = -100;
+        let raf;
+
+        document.addEventListener('mousemove', (e) => {
+          cx = e.clientX - 6;
+          cy = e.clientY - 6;
+          if (!raf) {
+            raf = requestAnimationFrame(() => {
+              cursor.style.transform = 'translate3d(' + cx + 'px,' + cy + 'px,0)';
+              raf = null;
+            });
+          }
+        });
+
+        document.addEventListener('mouseleave', () => { cursor.style.opacity = '0'; });
+        document.addEventListener('mouseenter', () => { cursor.style.opacity = ''; });
+
+        const hovEls = 'a, button, input, label, [role="button"]';
+        document.addEventListener('mouseover', (e) => {
+          if (e.target.closest(hovEls)) cursor.classList.add('hov');
+        });
+        document.addEventListener('mouseout', (e) => {
+          if (e.target.closest(hovEls)) cursor.classList.remove('hov');
+        });
+
+        document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
+        document.addEventListener('mouseup',   () => cursor.classList.remove('clicking'));
+      }
+
+      /* ── EYE TOGGLES — sync data-visible for both fields ──── */
+      /*
+        signup.js owns the click handlers and swaps input.type.
+        We piggyback on the same clicks to sync the data-visible attribute
+        so CSS can swap between the open-eye and crossed-eye SVG icons.
+        We attach AFTER signup.js DOMContentLoaded handlers run (window load).
+      */
+      function syncEyeToggle(btnId, inputId) {
+        const btn   = document.getElementById(btnId);
+        const input = document.getElementById(inputId);
+        if (!btn || !input) return;
+
+        btn.addEventListener('click', () => {
+          // signup.js has already toggled input.type at this point
+          const isVisible = input.type === 'text';
+          btn.setAttribute('data-visible', isVisible ? 'true' : 'false');
+          btn.setAttribute('aria-label', isVisible ? 'Hide password' : 'Show password');
+        });
+      }
+
+      window.addEventListener('load', () => {
+        syncEyeToggle('togglePassword',        'password');
+        syncEyeToggle('toggleConfirmPassword', 'confirmPassword');
+      });
+
+    })();
+  </script>
 
 </body>
 </html>

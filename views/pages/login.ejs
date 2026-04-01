@@ -14,7 +14,10 @@
 
   <div class="grain" aria-hidden="true"></div>
 
-  <%# Back button — same design as signup %>
+  <%# Custom cursor — must be in DOM for JS to find it %>
+  <div class="cursor" id="authCursor" aria-hidden="true"></div>
+
+  <%# Back button %>
   <a href="/" class="auth-back" aria-label="Back to home">
     <span class="auth-back-arrow">
       <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -31,17 +34,16 @@
 
   <%#
     Login layout: form LEFT, panel RIGHT
-    This is the reverse of signup (panel left, form right).
-    Creates variety between the two pages while keeping the same design language.
-    auth-page--login triggers the grid-reverse via CSS.
+    auth-page--login triggers grid-reverse via CSS.
   %>
   <div class="auth-page auth-page--login">
 
     <%# ══════════════════════════════════════════════
-        FORM PANEL — left on login
-        All backend IDs preserved for login.js:
-          loginForm, email, password,
-          togglePassword, submitBtn, formMessage
+        FORM PANEL
+        IDs preserved exactly for login.js:
+          loginForm, email, password, togglePassword
+        Note: login.js creates #loginMessage itself via JS (prepend),
+        so we do NOT put a #formMessage inside the form here.
     ══════════════════════════════════════════════ %>
     <div class="auth-panel-right">
       <div class="auth-form-wrap">
@@ -85,17 +87,25 @@
                 autocomplete="current-password"
                 required
               />
-              <%# id="togglePassword" preserved for login.js %>
-              <button type="button" class="auth-toggle-btn" id="togglePassword" aria-label="Show password"></button>
+              <%# id="togglePassword" preserved exactly for login.js %>
+              <button
+                type="button"
+                class="auth-toggle-btn"
+                id="togglePassword"
+                data-visible="false"
+                aria-label="Show password"
+              ></button>
             </div>
           </div>
 
           <a href="/forgot-password" class="auth-forgot">Forgot your password?</a>
 
-          <%# id="formMessage" preserved for login.js %>
-          <div id="formMessage" role="alert" aria-live="polite"></div>
+          <%#
+            login.js prepends its own #loginMessage div to the form via JS.
+            We do NOT place a static message div here — login.js owns it.
+            The CSS targets #loginMessage via [class*="bg-red"] / [class*="bg-green"].
+          %>
 
-          <%# id="submitBtn" not used in original login.js but keep for consistency %>
           <button type="submit" id="submitBtn">
             Log in
             <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -134,14 +144,12 @@
 
     <%# ══════════════════════════════════════════════
         DECORATIVE PANEL — right on login
-        Lavender gradient differentiates from signup
     ══════════════════════════════════════════════ %>
     <div class="auth-panel-left auth-panel-left--login" aria-hidden="true">
       <div class="auth-panel-noise"></div>
 
       <div class="auth-bleed-word">READ</div>
 
-      <%# Headphones SVG %>
       <div class="auth-floater auth-floater--headphones">
         <svg viewBox="0 0 100 96" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M20 50 Q20 22 50 22 Q80 22 80 50" stroke="#2d2d2d" stroke-width="6" stroke-linecap="round" fill="none"/>
@@ -154,7 +162,6 @@
         </svg>
       </div>
 
-      <%# Film reel SVG %>
       <div class="auth-floater auth-floater--reel">
         <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="50" cy="50" r="44" fill="#2d2d2d"/>
@@ -172,21 +179,18 @@
         </svg>
       </div>
 
-      <%# Lavender star %>
       <div class="auth-floater auth-floater--star">
         <svg viewBox="0 0 60 60" fill="none">
           <path d="M30 4L33 26L55 30L33 34L30 56L27 34L5 30L27 26Z" fill="#7a68c0" opacity="0.55"/>
         </svg>
       </div>
 
-      <%# Amber small star %>
       <div class="auth-floater auth-floater--star2">
         <svg viewBox="0 0 40 40" fill="none">
           <path d="M20 2L22.8 16.2L37 20L22.8 23.8L20 38L17.2 23.8L3 20L17.2 16.2Z" fill="#bf7a30" opacity="0.6"/>
         </svg>
       </div>
 
-      <%# Dashed arc %>
       <div class="auth-floater auth-floater--arc">
         <svg viewBox="0 0 150 50" fill="none">
           <path d="M4 36 Q32 4 62 26 Q92 48 122 16 Q136 7 148 14"
@@ -200,7 +204,7 @@
         <h2>
           Your <span class="caveat-word">space</span><br>awaits.
         </h2>
-        <p>Your reflections, rooms, and progress — right where you left them.</p>
+        <p>Your reflections, rooms, and progress right where you left them.</p>
       </div>
 
       <div class="auth-preview-cards">
@@ -215,7 +219,7 @@
         <div class="auth-preview-card">
           <div class="apc-dot apc-dot--teal"></div>
           <div class="apc-text">
-            <strong>Reading goal — 12 books</strong>
+            <strong>Reading goal : 12 books</strong>
             <span>68% complete · on track</span>
           </div>
           <span class="apc-badge">Goal</span>
@@ -226,10 +230,81 @@
 
   </div>
 
-  <%# Backend logic — untouched %>
+  <%# Backend logic — untouched, exactly as provided %>
   <script src="/js/login.js" defer></script>
-  <%# Auth UI interactions %>
-  <script src="/js/auth-nav.js" defer></script>
+
+  <%#
+    Inline auth UI script — replaces auth-nav.js entirely.
+    Handles: custom cursor, hover states, and eye-toggle data-attribute sync.
+    Does NOT touch login form logic — that is 100% owned by login.js.
+  %>
+  <script>
+    (function () {
+      /* ── CUSTOM CURSOR ─────────────────────────────────────── */
+      const cursor = document.getElementById('authCursor');
+      if (cursor && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        let cx = -100, cy = -100;
+        let raf;
+
+        document.addEventListener('mousemove', (e) => {
+          cx = e.clientX - 6; // offset half cursor width
+          cy = e.clientY - 6;
+          if (!raf) {
+            raf = requestAnimationFrame(() => {
+              cursor.style.transform = 'translate3d(' + cx + 'px,' + cy + 'px,0)';
+              raf = null;
+            });
+          }
+        });
+
+        document.addEventListener('mouseleave', () => {
+          cursor.style.opacity = '0';
+        });
+        document.addEventListener('mouseenter', () => {
+          cursor.style.opacity = '';
+        });
+
+        /* Expand cursor on interactive elements */
+        const hovEls = 'a, button, input, label, [role="button"]';
+        document.addEventListener('mouseover', (e) => {
+          if (e.target.closest(hovEls)) cursor.classList.add('hov');
+        });
+        document.addEventListener('mouseout', (e) => {
+          if (e.target.closest(hovEls)) cursor.classList.remove('hov');
+        });
+
+        /* Click feedback */
+        document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
+        document.addEventListener('mouseup',   () => cursor.classList.remove('clicking'));
+      }
+
+      /* ── EYE TOGGLE — sync data-visible attribute ──────────── */
+      /*
+        login.js owns the click handler and swaps input type.
+        We piggyback on the same click to sync the data-visible attribute
+        so CSS can swap between the open-eye and crossed-eye icons.
+        We do this AFTER login.js runs (DOMContentLoaded + defer ordering).
+      */
+      function syncEyeToggle(btn, input) {
+        if (!btn || !input) return;
+        btn.addEventListener('click', () => {
+          // login.js has already toggled the type at this point
+          const isVisible = input.getAttribute('type') === 'text';
+          btn.setAttribute('data-visible', isVisible ? 'true' : 'false');
+          btn.setAttribute('aria-label', isVisible ? 'Hide password' : 'Show password');
+        });
+      }
+
+      // Run after login.js DOMContentLoaded handlers have fired
+      window.addEventListener('load', () => {
+        syncEyeToggle(
+          document.getElementById('togglePassword'),
+          document.getElementById('password')
+        );
+      });
+
+    })();
+  </script>
 
 </body>
 </html>

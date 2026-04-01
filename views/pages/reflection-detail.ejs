@@ -2,6 +2,36 @@
 <html lang="en">
 <head>
     <%- include('../partials/head', { title: 'Reflection Detail - Scriptorium' }) %>
+    <style>
+        /* Mood buttons — identical to add-reflection */
+        .mood-btn {
+            transition: all 0.2s ease;
+        }
+        .mood-btn.selected {
+            background-color: #00C49A;
+            color: #000;
+            border-color: #00C49A;
+            box-shadow: 0 0 15px rgba(0, 196, 154, 0.4);
+        }
+
+        /* Custom confirm modal */
+        #confirmModal {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        #confirmModal.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+        #confirmBox {
+            transform: scale(0.95) translateY(8px);
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #confirmModal.open #confirmBox {
+            transform: scale(1) translateY(0);
+        }
+    </style>
 </head>
 <body class="bg-[#2C1810] min-h-screen font-outfit text-white flex flex-col">
 
@@ -14,6 +44,7 @@
         </div>
 
         <div id="reflectionContainer" class="hidden w-full max-w-5xl bg-[#1a262d]/80 backdrop-blur-xl border border-white/10 rounded-3xl p-8 flex flex-col gap-6 shadow-2xl">
+
             <!-- Top section: image + title + metadata -->
             <div class="flex flex-col md:flex-row gap-6">
                 <!-- Image -->
@@ -25,34 +56,59 @@
                 <div class="flex-grow flex flex-col gap-3">
                     <h2 id="itemTitle" class="text-3xl md:text-4xl font-bold text-[#00C49A] truncate"></h2>
                     <span id="itemDate" class="text-white/40 text-sm md:text-base"></span>
+
+                    <!-- VIEW: mood tags (read-only) -->
                     <div id="moodTags" class="flex flex-wrap gap-2 mt-2"></div>
+
+                    <!-- EDIT: mood buttons (hidden until editing) -->
+                    <div id="moodEditor" class="hidden flex flex-col gap-2 mt-2">
+                        <label class="text-[#00C49A] text-xs font-bold uppercase tracking-wider">Mood (pick up to 3)</label>
+                        <div class="flex flex-wrap gap-3" id="moodBtnContainer">
+                            <button type="button" class="mood-btn px-4 py-2 rounded-full border border-white/10 hover:border-[#00C49A] transition-all text-sm flex items-center gap-2" data-mood="Happy">
+                                <span>😊</span> Happy
+                            </button>
+                            <button type="button" class="mood-btn px-4 py-2 rounded-full border border-white/10 hover:border-[#00C49A] transition-all text-sm flex items-center gap-2" data-mood="Thoughtful">
+                                <span>🤔</span> Thoughtful
+                            </button>
+                            <button type="button" class="mood-btn px-4 py-2 rounded-full border border-white/10 hover:border-[#00C49A] transition-all text-sm flex items-center gap-2" data-mood="Inspired">
+                                <span>✨</span> Inspired
+                            </button>
+                            <button type="button" class="mood-btn px-4 py-2 rounded-full border border-white/10 hover:border-[#00C49A] transition-all text-sm flex items-center gap-2" data-mood="Confused">
+                                <span>😵‍💫</span> Confused
+                            </button>
+                            <button type="button" class="mood-btn px-4 py-2 rounded-full border border-white/10 hover:border-[#00C49A] transition-all text-sm flex items-center gap-2" data-mood="Sad">
+                                <span>😢</span> Sad
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Reflection text -->
-            <div class="">
+            <!-- Reflection text (view) / textarea (edit) -->
+            <div id="reflectionBody">
                 <p id="reflectionText" class="text-white/80 text-lg md:text-xl font-light whitespace-pre-line leading-relaxed"></p>
             </div>
 
             <!-- Buttons -->
             <div class="mt-6 flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4">
-                <!-- Back -->
                 <button id="backBtn" class="px-6 py-2 rounded-full border border-white/10 text-white/80 hover:text-white hover:bg-white/5 transition-all">
                     ← Back
                 </button>
 
-                <!-- Actions -->
                 <div class="flex gap-4" id="reflectionActions">
+                    <!-- View mode -->
                     <button id="editBtn" class="px-4 py-2 rounded-full border border-white/10 text-white/80 hover:text-white hover:bg-white/5 transition-all">
                         ✏️ Edit
                     </button>
                     <button id="deleteBtn" class="px-4 py-2 rounded-full border border-red-500 text-red-500/70 hover:text-red-500 hover:bg-red-500/10 transition-all">
                         🗑️ Delete
                     </button>
-                    <button id="saveEditBtn" class="px-4 py-2 rounded-full border border-[#00C49A] text-[#00C49A] hover:bg-[#00C49A]/10 hidden transition-all">
+
+                    <!-- Edit mode (hidden by default) -->
+                    <button id="saveEditBtn" class="hidden px-4 py-2 rounded-full bg-[#00C49A] text-black font-bold hover:bg-white hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,196,154,0.3)]">
                         💾 Save
                     </button>
-                    <button id="cancelEditBtn" class="px-4 py-2 rounded-full border border-white/10 text-white/60 hover:text-white hover:bg-white/5 hidden transition-all">
+                    <button id="cancelEditBtn" class="hidden px-4 py-2 rounded-full border border-white/10 text-white/60 hover:text-white hover:bg-white/5 transition-all">
                         ❌ Cancel
                     </button>
                 </div>
@@ -60,132 +116,37 @@
         </div>
     </main>
 
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return window.location.href = "/login";
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-8 right-8 flex items-center gap-4 px-6 py-4 rounded-xl shadow-2xl transform translate-y-40 transition-transform duration-500 z-[100] border-l-4">
+        <div id="toastIcon" class="text-2xl"></div>
+        <div>
+            <h4 id="toastTitle" class="font-bold text-lg"></h4>
+            <p id="toastMessage" class="text-sm opacity-90"></p>
+        </div>
+    </div>
 
-    const reflectionId = "<%= reflectionId %>";
-    const loading = document.getElementById("loading");
-    const container = document.getElementById("reflectionContainer");
-    const itemTitle = document.getElementById("itemTitle");
-    const itemImage = document.getElementById("itemImage");
-    const itemDate = document.getElementById("itemDate");
-    const reflectionText = document.getElementById("reflectionText");
-    const moodTags = document.getElementById("moodTags");
-    const backBtn = document.getElementById("backBtn");
-    const editBtn = document.getElementById("editBtn");
-    const deleteBtn = document.getElementById("deleteBtn");
-    const saveEditBtn = document.getElementById("saveEditBtn");
-    const cancelEditBtn = document.getElementById("cancelEditBtn");
+    <!-- Custom Confirm Modal -->
+    <div id="confirmModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center px-4">
+        <div id="confirmBox" class="w-full max-w-sm bg-[#0f191e] border border-white/10 rounded-2xl p-6 flex flex-col gap-5 shadow-2xl">
+            <div class="flex flex-col gap-1">
+                <h3 id="confirmTitle" class="text-white font-bold text-lg"></h3>
+                <p id="confirmMessage" class="text-white/50 text-sm"></p>
+            </div>
+            <div class="flex gap-3 justify-end">
+                <button id="confirmCancel" class="px-5 py-2 rounded-full border border-white/10 text-white/60 hover:text-white hover:bg-white/5 transition-all text-sm font-semibold">
+                    Cancel
+                </button>
+                <button id="confirmOk" class="px-5 py-2 rounded-full text-sm font-bold transition-all">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
 
-    let isEditing = false;
-    let originalText = "";
-
-    backBtn.addEventListener("click", () => window.history.back());
-
-    // Edit / Save / Cancel logic...
-    editBtn.addEventListener("click", () => {
-        if (isEditing) return;
-        isEditing = true;
-        originalText = reflectionText.textContent;
-        const textarea = document.createElement("textarea");
-        textarea.id = "reflectionEditTextarea";
-        textarea.value = originalText;
-        textarea.className = "w-full p-4 rounded-lg bg-[#1f2a30] text-white/80 font-light whitespace-pre-line text-lg";
-        reflectionText.replaceWith(textarea);
-        saveEditBtn.classList.remove("hidden");
-        cancelEditBtn.classList.remove("hidden");
-        editBtn.classList.add("hidden");
-        textarea.focus();
-    });
-
-    saveEditBtn.addEventListener("click", async () => {
-        const textarea = document.getElementById("reflectionEditTextarea");
-        const newText = textarea.value.trim();
-        if (newText.length < 30) return alert("Reflection must be at least 30 characters.");
-        if (!confirm("Save changes to this reflection?")) return;
-
-        try {
-            const res = await fetch(`https://scriptorium-backend-six.vercel.app/api/reflection/update/${reflectionId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json", Authorization: `jwt ${token}` },
-                body: JSON.stringify({ text: newText })
-            });
-
-            if (res.ok) {
-                const p = document.createElement("p");
-                p.id = "reflectionText";
-                p.className = "text-white/80 text-lg md:text-xl font-light whitespace-pre-line leading-relaxed";
-                p.textContent = newText;
-                textarea.replaceWith(p);
-                saveEditBtn.classList.add("hidden");
-                cancelEditBtn.classList.add("hidden");
-                editBtn.classList.remove("hidden");
-                isEditing = false;
-                alert("Reflection updated!");
-            } else {
-                const data = await res.json();
-                alert(data.message || "Failed to update reflection");
-            }
-        } catch (e) {
-            console.error(e);
-            alert("Network error");
-        }
-    });
-
-    cancelEditBtn.addEventListener("click", () => {
-        if (!isEditing) return;
-        isEditing = false;
-        const p = document.createElement("p");
-        p.id = "reflectionText";
-        p.className = "text-white/80 text-lg md:text-xl font-light whitespace-pre-line leading-relaxed";
-        p.textContent = originalText;
-        document.getElementById("reflectionEditTextarea").replaceWith(p);
-        saveEditBtn.classList.add("hidden");
-        cancelEditBtn.classList.add("hidden");
-        editBtn.classList.remove("hidden");
-    });
-
-    deleteBtn.addEventListener("click", async () => {
-        if (!confirm("Delete this reflection?")) return;
-        try {
-            const res = await fetch(`https://scriptorium-backend-six.vercel.app/api/reflection/remove/${reflectionId}`, {
-                method: "DELETE", headers: { Authorization: `jwt ${token}` }
-            });
-            if (res.ok) { alert("Reflection deleted"); window.location.href = "/reflections-history"; }
-            else { const data = await res.json(); alert(data.message || "Failed to delete"); }
-        } catch (e) { console.error(e); alert("Network error"); }
-    });
-
-    // Load reflection
-    try {
-        const res = await fetch(`https://scriptorium-backend-six.vercel.app/api/reflection/${reflectionId}`, {
-            headers: { Authorization: `jwt ${token}` }
-        });
-        if (!res.ok) throw new Error("Failed to fetch reflection");
-        const reflection = await res.json();
-
-        loading.classList.add("hidden");
-        container.classList.remove("hidden");
-
-        itemTitle.textContent = reflection.metadata?.title || "Unknown Item";
-        itemImage.src = reflection.metadata?.image || "https://via.placeholder.com/300";
-        itemDate.textContent = new Date(reflection.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-
-        function linkify(text) {
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            return text.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-[#00C49A] underline hover:text-[#00E0B0]">${url}</a>`);
-        }
-        reflectionText.innerHTML = linkify(reflection.text || "");
-        reflection.moodTags?.forEach(m => {
-            const span = document.createElement("span");
-            span.className = "mood-tag px-3 py-1 rounded-lg bg-[#00C49A]/20 text-sm md:text-base font-medium text-[#00C49A] hover:bg-[#00C49A]/30 transition-all";
-            span.textContent = m;
-            moodTags.appendChild(span);
-        });
-    } catch (e) { console.error(e); loading.textContent = "Failed to load reflection"; }
-});
-</script>
+    <script>
+        // Pass the EJS-rendered reflectionId to the external JS safely
+        window.__REFLECTION_ID__ = "<%= reflectionId %>";
+    </script>
+    <script src="/js/reflection-detail.js"></script>
 </body>
 </html>

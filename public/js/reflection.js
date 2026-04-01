@@ -31,139 +31,136 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- 2. DROPDOWN POPULATION ---
   async function loadDropdownItems() {
-    try {
-      // -----------------------------
-      // FETCH ALL DATA
-      // -----------------------------
-      const [booksRes, musicRes, moviesRes] = await Promise.all([
-        fetch("https://scriptorium-backend-six.vercel.app/api/books/shelf", {
+    // -----------------------------
+    // HELPER: SAFE FETCH PER SHELF
+    // Each shelf is fetched independently so one failure
+    // does not block the entire dropdown from rendering.
+    // -----------------------------
+    async function safeFetch(url) {
+      try {
+        const res = await fetch(url, {
           headers: { Authorization: `jwt ${token}` },
-        }),
-        fetch("https://scriptorium-backend-six.vercel.app/api/music/shelf", {
-          headers: { Authorization: `jwt ${token}` },
-        }),
-        fetch("https://scriptorium-backend-six.vercel.app/api/movies/shelf", {
-          headers: { Authorization: `jwt ${token}` },
-        }),
-      ]);
+        });
+        if (!res.ok) return {};
+        const data = await res.json();
+        return data && typeof data === "object" ? data : {};
+      } catch (err) {
+        console.warn(`Shelf fetch failed for ${url}:`, err);
+        return {};
+      }
+    }
 
-      const booksData = await booksRes.json();
-      const musicData = await musicRes.json();
-      const moviesData = await moviesRes.json();
+    const [booksData, musicData, moviesData] = await Promise.all([
+      safeFetch("https://scriptorium-backend-six.vercel.app/api/books/shelf"),
+      safeFetch("https://scriptorium-backend-six.vercel.app/api/music/shelf"),
+      safeFetch("https://scriptorium-backend-six.vercel.app/api/movies/shelf"),
+    ]);
 
-      // -----------------------------
-      // NORMALIZE DATA
-      // -----------------------------
-      const rawBooks = [
-        ...(booksData.favorites || []),
-        ...(booksData.reading || []),
-        ...(booksData.finished || []),
-      ];
+    // -----------------------------
+    // NORMALIZE DATA
+    // -----------------------------
+    const rawBooks = [
+      ...(Array.isArray(booksData.favorites) ? booksData.favorites : []),
+      ...(Array.isArray(booksData.reading) ? booksData.reading : []),
+      ...(Array.isArray(booksData.finished) ? booksData.finished : []),
+    ];
 
-      const rawTracks = [
-        ...(musicData.favorites || []),
-        ...(musicData.listening || []),
-        ...(musicData.finished || []),
-      ];
+    const rawTracks = [
+      ...(Array.isArray(musicData.favorites) ? musicData.favorites : []),
+      ...(Array.isArray(musicData.listening) ? musicData.listening : []),
+      ...(Array.isArray(musicData.finished) ? musicData.finished : []),
+    ];
 
-      const rawMovies = [
-        ...(moviesData.favorites || []),
-        ...(moviesData.watching || []),
-        ...(moviesData.watched || []),
-      ];
+    const rawMovies = [
+      ...(Array.isArray(moviesData.favorites) ? moviesData.favorites : []),
+      ...(Array.isArray(moviesData.watching) ? moviesData.watching : []),
+      ...(Array.isArray(moviesData.watched) ? moviesData.watched : []),
+    ];
 
-      // -----------------------------
-      // REMOVE DUPLICATES
-      // -----------------------------
-      const uniqueBooks = [
-        ...new Map(rawBooks.map((i) => [i._id, i])).values(),
-      ];
-      const uniqueTracks = [
-        ...new Map(rawTracks.map((i) => [i._id, i])).values(),
-      ];
-      const uniqueMovies = [
-        ...new Map(rawMovies.map((i) => [i._id, i])).values(),
-      ];
+    // -----------------------------
+    // REMOVE DUPLICATES
+    // -----------------------------
+    const uniqueBooks = [...new Map(rawBooks.map((i) => [i._id, i])).values()];
+    const uniqueTracks = [
+      ...new Map(rawTracks.map((i) => [i._id, i])).values(),
+    ];
+    const uniqueMovies = [
+      ...new Map(rawMovies.map((i) => [i._id, i])).values(),
+    ];
 
-      // -----------------------------
-      // HANDLE EMPTY STATE
-      // -----------------------------
-      if (!uniqueBooks.length && !uniqueTracks.length && !uniqueMovies.length) {
-        itemSelect.innerHTML = "";
+    // -----------------------------
+    // RESET DROPDOWN (always rebuild cleanly)
+    // -----------------------------
+    itemSelect.innerHTML = '<option value="">Select a memory...</option>';
+    itemSelect.disabled = false;
+
+    // -----------------------------
+    // HANDLE EMPTY STATE
+    // -----------------------------
+    if (!uniqueBooks.length && !uniqueTracks.length && !uniqueMovies.length) {
+      const opt = document.createElement("option");
+      opt.text = "No items in your active shelves yet";
+      opt.disabled = true;
+      itemSelect.appendChild(opt);
+      return;
+    }
+
+    // -----------------------------
+    // HELPER: APPEND GROUP
+    // -----------------------------
+    function appendGroup(label, items, type) {
+      if (!items.length) return;
+
+      const group = document.createElement("optgroup");
+      group.label = label;
+
+      items.forEach((item) => {
         const opt = document.createElement("option");
-        opt.text = "No items in your active shelves";
-        itemSelect.appendChild(opt);
-        itemSelect.disabled = true;
-        return;
-      }
 
-      // -----------------------------
-      // RESET DROPDOWN
-      // -----------------------------
-      itemSelect.innerHTML = '<option value="">Select a memory...</option>';
-
-      // -----------------------------
-      // HELPER: APPEND GROUP
-      // -----------------------------
-      function appendGroup(label, items, type) {
-        if (!items.length) return;
-
-        const group = document.createElement("optgroup");
-        group.label = label;
-
-        items.forEach((item) => {
-          const opt = document.createElement("option");
-
-          opt.value = JSON.stringify({
-            id: item._id,
-            type,
-            title: item.title,
-            image:
-              type === "movie"
-                ? item.poster
-                : type === "book"
-                  ? item.imageLinks?.thumbnail
-                  : item.coverUrl,
-          });
-
-          opt.text =
-            type === "track"
-              ? `${item.title} - ${item.artist?.name || "Unknown"}`
-              : item.title;
-
-          group.appendChild(opt);
+        opt.value = JSON.stringify({
+          id: item._id,
+          type,
+          title: item.title,
+          image:
+            type === "movie"
+              ? item.poster
+              : type === "book"
+                ? item.imageLinks?.thumbnail
+                : item.coverUrl,
         });
 
-        itemSelect.appendChild(group);
-      }
+        opt.text =
+          type === "track"
+            ? `${item.title} - ${item.artist?.name || "Unknown"}`
+            : item.title;
 
-      // -----------------------------
-      // BUILD DROPDOWN
-      // -----------------------------
-      appendGroup("Movies", uniqueMovies, "movie");
-      appendGroup("Books", uniqueBooks, "book");
-      appendGroup("Music", uniqueTracks, "track");
+        group.appendChild(opt);
+      });
 
-      // -----------------------------
-      // AUTO-SELECT FROM URL
-      // -----------------------------
-      if (itemId && itemType) {
-        const option = [...itemSelect.options].find((opt) => {
-          try {
-            const val = JSON.parse(opt.value);
-            return val.id === itemId && val.type === itemType;
-          } catch {
-            return false;
-          }
-        });
+      itemSelect.appendChild(group);
+    }
 
-        if (option) {
-          option.selected = true;
+    // -----------------------------
+    // BUILD DROPDOWN
+    // -----------------------------
+    appendGroup("Movies", uniqueMovies, "movie");
+    appendGroup("Books", uniqueBooks, "book");
+    appendGroup("Music", uniqueTracks, "track");
+
+    // -----------------------------
+    // AUTO-SELECT FROM URL
+    // -----------------------------
+    if (itemId && itemType) {
+      const normalizedType = itemType === "music" ? "track" : itemType;
+      const option = [...itemSelect.options].find((opt) => {
+        try {
+          const val = JSON.parse(opt.value);
+          return val.id === itemId && val.type === normalizedType;
+        } catch {
+          return false;
         }
-      }
-    } catch (error) {
-      console.error("Dropdown error:", error);
-      showToast("Error", "Failed to load shelf items", "error");
+      });
+      if (option) option.selected = true;
     }
   }
 

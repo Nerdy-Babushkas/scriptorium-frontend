@@ -1,118 +1,354 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <%- include('../partials/head', { title: 'Music Room - Scriptorium' }) %>
-    <style>
-        /* Shared Styles from Library (Gold Dots) */
-        .shelf-dot {
-            position: absolute; width: 24px; height: 24px;
-            background-color: rgba(255, 218, 109, 0.6);
-            border: 2px solid #FFDA6D; border-radius: 50%;
-            cursor: pointer; z-index: 30;
-            box-shadow: 0 0 15px #FFDA6D;
-            transition: all 0.3s ease;
-        }
-        .shelf-dot::after {
-            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 100%; height: 100%; border: 1px solid #FFDA6D; border-radius: 50%; animation: pulse-ring 2s infinite;
-        }
-        .shelf-dot:hover { transform: scale(1.3); background-color: #FFDA6D; }
-        .dot-label {
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(0,0,0,0.8); color: #FFDA6D; padding: 4px 12px;
-            border-radius: 12px; font-size: 12px; font-weight: bold; opacity: 0;
-            transition: opacity 0.3s; pointer-events: none; white-space: nowrap; border: 1px solid #FFDA6D;
-        }
-        .shelf-dot:hover .dot-label { opacity: 1; }
-        @keyframes pulse-ring { 0% { opacity: 1; width: 100%; height: 100%; } 100% { opacity: 0; width: 300%; height: 300%; } }
-        
-        /* Modal & Scroll */
-        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .animate-zoom-in { animation: zoomIn 0.3s ease-out forwards; }
-        .custom-scroll::-webkit-scrollbar { width: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #00C49A; border-radius: 4px; }
-    </style>
+        <style>
+            /* Shared Styles from Library (Gold Dots) */
+            .shelf-dot {
+                position: absolute;
+                width: 24px;
+                height: 24px;
+                background-color: rgba(255, 218, 109, 0.6);
+                border: 2px solid #FFDA6D;
+                border-radius: 50%;
+                cursor: pointer;
+                z-index: 30;
+                box-shadow: 0 0 15px #FFDA6D;
+                transition: all 0.3s ease;
+            }
+
+            .shelf-dot::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 100%;
+                height: 100%;
+                border: 1px solid #FFDA6D;
+                border-radius: 50%;
+                animation: pulse-ring 2s infinite;
+            }
+
+            .shelf-dot:hover {
+                transform: scale(1.3);
+                background-color: #FFDA6D;
+            }
+
+            .dot-label {
+                position: absolute;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: #FFDA6D;
+                padding: 4px 12px;
+                border-radius: 12px;
+                font-size: 12px;
+                font-weight: bold;
+                opacity: 0;
+                transition: opacity 0.3s;
+                pointer-events: none;
+                white-space: nowrap;
+                border: 1px solid #FFDA6D;
+            }
+
+            .shelf-dot:hover .dot-label {
+                opacity: 1;
+            }
+
+            @keyframes pulse-ring {
+                0% {
+                    opacity: 1;
+                    width: 100%;
+                    height: 100%;
+                }
+
+                100% {
+                    opacity: 0;
+                    width: 300%;
+                    height: 300%;
+                }
+            }
+
+            /* Modal & Scroll */
+            @keyframes zoomIn {
+                from {
+                    opacity: 0;
+                    transform: scale(0.95);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+
+            .animate-zoom-in {
+                animation: zoomIn 0.3s ease-out forwards;
+            }
+
+            .custom-scroll::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .custom-scroll::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            .custom-scroll::-webkit-scrollbar-thumb {
+                background: #00C49A;
+                border-radius: 4px;
+            }
+
+            /* Overlay */
+            #tipOverlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.4);
+                backdrop-filter: blur(6px);
+                z-index: 998;
+                display: none;
+            }
+
+            /* Main Box */
+            #tipBox {
+                position: fixed;
+                bottom: 30px;
+                left: 30px;
+
+                width: 340px;
+                background: rgba(20, 30, 35, 0.95);
+                backdrop-filter: blur(15px);
+
+                color: white;
+                padding: 20px;
+                border-radius: 16px;
+
+                z-index: 999;
+                display: none;
+
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            }
+
+            /* Title */
+            #tipContent strong {
+                display: block;
+                font-size: 16px;
+                margin-bottom: 6px;
+            }
+
+            /* Text spacing */
+            #tipContent {
+                font-size: 14px;
+                line-height: 1.5;
+                margin-bottom: 15px;
+            }
+
+            /* DOTS (horizontal center) */
+            #tipDots {
+                display: flex;
+                justify-content: center;
+                gap: 6px;
+                margin-bottom: 12px;
+            }
+
+            /* ARROWS */
+            .tip-nav {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 12px;
+            }
+
+            .tip-nav button {
+                background: rgba(255, 255, 255, 0.1);
+                border: none;
+                color: white;
+                padding: 6px 10px;
+                border-radius: 8px;
+                cursor: pointer;
+            }
+
+            .tip-nav button:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+            /* ACTION BUTTONS */
+            .tip-actions {
+                display: flex;
+                justify-content: space-between;
+                gap: 10px;
+            }
+
+            .tip-actions button {
+                flex: 1;
+                padding: 8px;
+                border-radius: 10px;
+                border: none;
+                cursor: pointer;
+                font-size: 13px;
+            }
+
+            /* Close */
+            #closeTip {
+                background: #4CAF50;
+                color: white;
+            }
+
+            /* Don't show */
+            #disableTips {
+                background: rgba(255, 255, 255, 0.15);
+                color: white;
+            }
+
+            #closeTip:hover {
+                background: #45a049;
+            }
+
+            #disableTips:hover {
+                background: rgba(255, 255, 255, 0.25);
+            }
+        </style>
 </head>
+
 <body class="bg-[#2C1810] min-h-screen relative overflow-x-hidden font-outfit text-white">
 
     <%- include('../partials/navbar_app') %>
 
-    <main class="relative z-0 mt-6 px-4 md:px-8 max-w-[1400px] mx-auto pb-12">
-        <div class="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
-            
-            <img src="/assets/room3.png" alt="Music" class="w-full h-auto object-cover block">
+        <main class="relative z-0 mt-6 px-4 md:px-8 max-w-[1400px] mx-auto pb-12">
+            <div class="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
 
-            <a href="/room" class="absolute top-4 left-4 z-20 flex items-center gap-2 px-4 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full hover:bg-black/80 hover:border-scriptorium-gold transition-all group">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="text-white group-hover:text-scriptorium-gold transition-colors"><path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span class="font-outfit text-sm font-medium text-white group-hover:text-scriptorium-gold transition-colors">Back to Room</span>
-            </a>
+                <img src="/assets/room3.png" alt="Music" class="w-full h-auto object-cover block">
 
-            <div class="absolute top-4 right-4 z-20 flex items-center gap-3">
-                <a href="/library" class="px-5 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full hover:bg-black/80 hover:border-scriptorium-gold transition-all">
-                    <span class="font-outfit text-sm font-medium text-white hover:text-scriptorium-gold transition-colors">Library</span>
+                <a href="/room"
+                    class="absolute top-4 left-4 z-20 flex items-center gap-2 px-4 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full hover:bg-black/80 hover:border-scriptorium-gold transition-all group">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        class="text-white group-hover:text-scriptorium-gold transition-colors">
+                        <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <span
+                        class="font-outfit text-sm font-medium text-white group-hover:text-scriptorium-gold transition-colors">Back
+                        to Room</span>
                 </a>
-                <a href="/theatre" class="px-5 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full hover:bg-black/80 hover:border-scriptorium-gold transition-all">
-                    <span class="font-outfit text-sm font-medium text-white hover:text-scriptorium-gold transition-colors">Theatre</span>
+
+                <div class="absolute top-4 right-4 z-20 flex items-center gap-3">
+                    <a href="/library"
+                        class="px-5 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full hover:bg-black/80 hover:border-scriptorium-gold transition-all">
+                        <span
+                            class="font-outfit text-sm font-medium text-white hover:text-scriptorium-gold transition-colors">Library</span>
+                    </a>
+                    <a href="/theatre"
+                        class="px-5 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full hover:bg-black/80 hover:border-scriptorium-gold transition-all">
+                        <span
+                            class="font-outfit text-sm font-medium text-white hover:text-scriptorium-gold transition-colors">Theatre</span>
+                    </a>
+                    <%- include('../partials/ai_button') %>
+                </div>
+
+                <div class="shelf-dot" style="top: 55%; left: 84%;"
+                    onclick="openShelf('listening', 'Currently Listening')">
+                    <div class="dot-label">Listening</div>
+                </div>
+
+                <div class="shelf-dot" style="top: 26%; left: 11%;" onclick="openShelf('finished', 'Finished Albums')">
+                    <div class="dot-label">Finished</div>
+                </div>
+
+                <div class="shelf-dot" style="top: 30%; left: 45%;" onclick="openShelf('favorites', 'Top Hits')">
+                    <div class="dot-label">Favorites</div>
+                </div>
+
+                <a href="/add-reflection" class="shelf-dot" style="top: 85%; left: 31%;">
+                    <div class="dot-label">Add Reflection</div>
                 </a>
-                <%- include('../partials/ai_button') %>
             </div>
+        </main>
 
-            <div class="shelf-dot" style="top: 55%; left: 84%;" onclick="openShelf('listening', 'Currently Listening')">
-                <div class="dot-label">Listening</div>
-            </div>
-
-            <div class="shelf-dot" style="top: 26%; left: 11%;" onclick="openShelf('finished', 'Finished Albums')">
-                <div class="dot-label">Finished</div>
-            </div>
-
-            <div class="shelf-dot" style="top: 30%; left: 45%;" onclick="openShelf('favorites', 'Top Hits')">
-                <div class="dot-label">Favorites</div>
-            </div>
-            
-            <a href="/add-reflection" class="shelf-dot" style="top: 85%; left: 31%;">
-                <div class="dot-label">Add Reflection</div>
-            </a>
-        </div>
-    </main>
-
-    <div id="shelfViewModal" class="hidden fixed inset-0 z-50 bg-[#0f191e]/95 backdrop-blur-xl p-6 overflow-hidden flex flex-col animate-zoom-in">
-        <div class="flex justify-between items-center mb-8 max-w-7xl mx-auto w-full border-b border-white/10 pb-6 shrink-0">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-[#00C49A]/20 rounded-xl border border-[#00C49A]">
-                    <span class="text-2xl">🎵</span>
+        <div id="shelfViewModal"
+            class="hidden fixed inset-0 z-50 bg-[#0f191e]/95 backdrop-blur-xl p-6 overflow-hidden flex flex-col animate-zoom-in">
+            <div
+                class="flex justify-between items-center mb-8 max-w-7xl mx-auto w-full border-b border-white/10 pb-6 shrink-0">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-[#00C49A]/20 rounded-xl border border-[#00C49A]">
+                        <span class="text-2xl">🎵</span>
+                    </div>
+                    <div>
+                        <h2 id="shelfTitle" class="text-4xl font-dancing text-white">Shelf Name</h2>
+                        <p class="text-white/50 text-sm mt-1"><span id="bookCount">0</span> tracks stored</p>
+                    </div>
                 </div>
-                <div>
-                    <h2 id="shelfTitle" class="text-4xl font-dancing text-white">Shelf Name</h2>
-                    <p class="text-white/50 text-sm mt-1"><span id="bookCount">0</span> tracks stored</p>
+                <button onclick="closeShelf()"
+                    class="px-6 py-2 rounded-full border border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white transition-all shadow-lg font-bold text-sm uppercase tracking-wider">Close</button>
+            </div>
+
+            <div class="flex-grow overflow-y-auto custom-scroll w-full max-w-7xl mx-auto pr-2">
+                <div id="shelfLoading" class="hidden flex flex-col items-center justify-center h-64">
+                    <div
+                        class="w-16 h-16 border-4 border-[#00C49A]/30 border-t-[#00C49A] rounded-full animate-spin mb-4">
+                    </div>
+                    <p class="text-[#00C49A] animate-pulse">Loading tracks...</p>
+                </div>
+                <div id="shelfGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8 pb-20">
+                </div>
+                <div id="shelfEmpty" class="hidden flex flex-col items-center justify-center h-64 opacity-60">
+                    <p class="text-xl font-medium text-white/70">No music here yet.</p>
+                    <a href="/search?type=music"
+                        class="mt-4 px-6 py-2 rounded-full bg-[#00C49A]/20 text-[#00C49A] border border-[#00C49A] hover:bg-[#00C49A] hover:text-[#05181c] transition-all font-bold text-sm">Find
+                        Music</a>
                 </div>
             </div>
-            <button onclick="closeShelf()" class="px-6 py-2 rounded-full border border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white transition-all shadow-lg font-bold text-sm uppercase tracking-wider">Close</button>
         </div>
 
-        <div class="flex-grow overflow-y-auto custom-scroll w-full max-w-7xl mx-auto pr-2">
-            <div id="shelfLoading" class="hidden flex flex-col items-center justify-center h-64">
-                <div class="w-16 h-16 border-4 border-[#00C49A]/30 border-t-[#00C49A] rounded-full animate-spin mb-4"></div>
-                <p class="text-[#00C49A] animate-pulse">Loading tracks...</p>
+        <script>
+            // Force Search Bar to Music Mode
+            const searchForm = document.querySelector('form[action="/search"]');
+            if (searchForm) {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden'; hiddenInput.name = 'type'; hiddenInput.value = 'music';
+                searchForm.appendChild(hiddenInput);
+            }
+        </script>
+        <!-- TIP OVERLAY -->
+        <div id="tipOverlay"></div>
+
+        <!-- TIP BOX -->
+        <div id="tipBox">
+
+            <div id="tipContent"></div>
+
+            <div id="tipDots"></div>
+
+            <!-- ARROWS -->
+            <div class="tip-nav">
+                <button id="prevTip">←</button>
+                <button id="nextTip">→</button>
             </div>
-            <div id="shelfGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8 pb-20"></div>
-            <div id="shelfEmpty" class="hidden flex flex-col items-center justify-center h-64 opacity-60">
-                <p class="text-xl font-medium text-white/70">No music here yet.</p>
-                <a href="/search?type=music" class="mt-4 px-6 py-2 rounded-full bg-[#00C49A]/20 text-[#00C49A] border border-[#00C49A] hover:bg-[#00C49A] hover:text-[#05181c] transition-all font-bold text-sm">Find Music</a>
+
+            <!-- ACTION BUTTONS -->
+            <div class="tip-actions">
+                <button id="closeTip">Close</button>
+                <button id="disableTips">Don't show</button>
             </div>
+
         </div>
-    </div>
 
-    <script>
-        // Force Search Bar to Music Mode
-        const searchForm = document.querySelector('form[action="/search"]');
-        if (searchForm) {
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden'; hiddenInput.name = 'type'; hiddenInput.value = 'music';
-            searchForm.appendChild(hiddenInput);
-        }
-    </script>
-
-    <script src="/js/library.js"></script>
 </body>
+
+
+<script type="module">
+    import { initTips } from "/js/tips.js";
+
+    initTips({
+        tips: [
+            "<strong>Welcome to the Music Room</strong><br><br>Relax, explore, and enjoy your personal music space designed for discovery.",
+            "<strong>Create & Manage Playlists</strong><br><br>Add your favorite songs and organize them into playlists for different moods and moments.",
+            "<strong>Interaction</strong><br><br>Click glowing elements to Add music, explore tracks, and control your listening experience."
+        ],
+    });
+</script>
+<script src="/js/library.js"></script>
+</body>
+
 </html>

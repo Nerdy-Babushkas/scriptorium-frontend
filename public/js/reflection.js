@@ -454,4 +454,200 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "/reflections-history";
     }
   });
+
+  // --- 6. REFLECTION TEMPLATES ---
+  const TEMPLATES = [
+    {
+      id: "first-impressions",
+      icon: "✨",
+      iconBg: "rgba(255,218,109,0.12)",
+      iconColor: "#FFDA6D",
+      label: "First Impressions",
+      description: "Capture your raw, unfiltered reaction",
+      text:
+        "My first impression was...\n\n" +
+        "What immediately stood out to me was...\n\n" +
+        "The moment I knew I was hooked (or not) was...\n\n" +
+        "Compared to what I expected, it was...",
+    },
+    {
+      id: "quote-reflection",
+      icon: "💬",
+      iconBg: "rgba(0,196,154,0.12)",
+      iconColor: "#00C49A",
+      label: "Quote & Meaning",
+      description: "Anchor your thoughts around a memorable line",
+      text:
+        'A line that stayed with me: "..."\n\n' +
+        "Why this resonated: ...\n\n" +
+        "It made me think about my own life because...\n\n" +
+        "If I had to pass this quote on to someone, I'd give it to someone who...",
+    },
+    {
+      id: "emotional-journey",
+      icon: "🌊",
+      iconBg: "rgba(99,102,241,0.12)",
+      iconColor: "#818cf8",
+      label: "Emotional Journey",
+      description: "Trace the feelings it stirred in you",
+      text:
+        "When I started, I felt...\n\n" +
+        "The moment my emotions shifted was...\n\n" +
+        "The scene / part that hit hardest was... because...\n\n" +
+        "After finishing, I was left feeling...\n\n" +
+        "I think it affected me this way because in my own life I...",
+    },
+    {
+      id: "growth-lessons",
+      icon: "🌱",
+      iconBg: "rgba(34,197,94,0.12)",
+      iconColor: "#4ade80",
+      label: "Growth & Lessons",
+      description: "What did you take away and learn?",
+      text:
+        "The biggest lesson I took from this was...\n\n" +
+        "Something it challenged me to reconsider: ...\n\n" +
+        "A belief it confirmed that I already held: ...\n\n" +
+        "One thing I want to apply to my own life: ...\n\n" +
+        "I would recommend this to someone who is going through...",
+    },
+    {
+      id: "deep-dive",
+      icon: "🔍",
+      iconBg: "rgba(239,68,68,0.12)",
+      iconColor: "#f87171",
+      label: "Deep Dive",
+      description: "A structured breakdown of craft & substance",
+      text:
+        "What worked really well: ...\n\n" +
+        "What I felt could have been stronger: ...\n\n" +
+        "The themes I noticed running through it: ...\n\n" +
+        "How it fits into the creator's broader body of work: ...\n\n" +
+        "My overall verdict in one sentence: ...",
+    },
+    {
+      id: "would-i-recommend",
+      icon: "📣",
+      iconBg: "rgba(251,146,60,0.12)",
+      iconColor: "#fb923c",
+      label: "Would I Recommend?",
+      description: "Write it like you're telling a friend",
+      text:
+        "I'd describe this to a friend as: ...\n\n" +
+        "The type of person who would love this is someone who...\n\n" +
+        "I'd tell them to pay attention to...\n\n" +
+        "A word of warning though: ...\n\n" +
+        "On a scale of 1–10 I'd give it a ___ because...",
+    },
+    {
+      id: "then-vs-now",
+      icon: "⏳",
+      iconBg: "rgba(168,85,247,0.12)",
+      iconColor: "#c084fc",
+      label: "Then vs. Now",
+      description: "Revisit something you've experienced before",
+      text:
+        "The last time I encountered this was...\n\n" +
+        "Back then I thought / felt...\n\n" +
+        "Experiencing it now, I notice...\n\n" +
+        "What changed in me between then and now is...\n\n" +
+        "Something that still hits the same: ...",
+    },
+  ];
+
+  const templateBtn = document.getElementById("templateBtn");
+  const templateDrawer = document.getElementById("templateDrawer");
+  const templateOverlay = document.getElementById("templateOverlay");
+  const closeTemplateDrawer = document.getElementById("closeTemplateDrawer");
+  const templateList = document.getElementById("templateList");
+
+  // Render template cards
+  function renderTemplates() {
+    templateList.innerHTML = "";
+    TEMPLATES.forEach((tpl, i) => {
+      const card = document.createElement("div");
+      card.className =
+        "template-card template-card-anim border border-white/8 rounded-xl p-4 flex items-start gap-3";
+      card.style.animationDelay = `${i * 45}ms`;
+      card.style.background = "rgba(255,255,255,0.03)";
+
+      card.innerHTML = `
+        <div class="template-icon" style="background: ${tpl.iconBg};">
+          <span>${tpl.icon}</span>
+        </div>
+        <div class="flex-grow min-w-0">
+          <div class="flex items-center justify-between gap-2">
+            <h4 class="text-white text-sm font-bold leading-none">${tpl.label}</h4>
+            <span class="template-use-btn px-2.5 py-1 rounded-full text-[10px] font-bold text-black shrink-0" style="background: ${tpl.iconColor};">Use this</span>
+          </div>
+          <p class="text-white/40 text-xs mt-1.5 leading-relaxed">${tpl.description}</p>
+        </div>
+      `;
+
+      card.addEventListener("click", () => applyTemplate(tpl));
+      templateList.appendChild(card);
+    });
+  }
+
+  function openDrawer() {
+    renderTemplates();
+    templateDrawer.classList.add("open");
+    templateOverlay.classList.add("open");
+    templateBtn.classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeDrawer() {
+    templateDrawer.classList.remove("open");
+    templateOverlay.classList.remove("open");
+    templateBtn.classList.remove("active");
+    document.body.style.overflow = "";
+  }
+
+  function applyTemplate(tpl) {
+    // If textarea already has text, confirm before overwriting
+    if (textArea.value.trim().length > 0) {
+      const confirmed = confirm(
+        "This will replace your current text. Continue?",
+      );
+      if (!confirmed) return;
+    }
+
+    closeDrawer();
+
+    // Small delay so the drawer close animation plays first
+    setTimeout(() => {
+      textArea.value = tpl.text;
+
+      // Trigger char count update
+      const len = textArea.value.length;
+      charCount.textContent = `${len} chars`;
+      charCount.className =
+        len < 30
+          ? "absolute bottom-3 right-4 text-xs text-red-500"
+          : "absolute bottom-3 right-4 text-xs text-white/30";
+
+      // Flash the textarea border as a nice confirmation
+      textArea.classList.add("fill-flash");
+      setTimeout(() => textArea.classList.remove("fill-flash"), 850);
+
+      // Focus and move cursor to the first blank
+      textArea.focus();
+      const firstBlank = textArea.value.indexOf("...");
+      if (firstBlank !== -1) {
+        textArea.setSelectionRange(firstBlank, firstBlank + 3);
+      }
+    }, 280);
+  }
+
+  templateBtn?.addEventListener("click", openDrawer);
+  closeTemplateDrawer?.addEventListener("click", closeDrawer);
+  templateOverlay?.addEventListener("click", closeDrawer);
+
+  // Close on Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && templateDrawer.classList.contains("open")) {
+      closeDrawer();
+    }
+  });
 });

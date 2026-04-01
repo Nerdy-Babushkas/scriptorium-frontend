@@ -31,6 +31,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // -----------------------------
+  // TOP ADD REFLECTION BUTTON
+  // -----------------------------
+  const addReflectionBtnTop = document.getElementById("addReflectionBtnTop");
+  if (addReflectionBtnTop) {
+    addReflectionBtnTop.addEventListener("click", () => {
+      if (itemSelect.value) {
+        const { id, type } = JSON.parse(itemSelect.value);
+        window.location.href = `/add-reflection?itemId=${id}&itemType=${type}`;
+      } else {
+        window.location.href = "/add-reflection";
+      }
+    });
+  }
+
+  // -----------------------------
   // PAGINATION DEFAULTS
   // -----------------------------
   let page = 1;
@@ -42,49 +57,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadDropdownItems();
 
   if (itemId && itemType) {
-    // Prefill dropdown with actual title and load filtered reflections
+    // Normalize: URL may send "music" but dropdown stores "track"
+    const normalizedType = itemType === "music" ? "track" : itemType;
+
     if (itemSelect) {
-      let itemTitle = "Selected Item"; // fallback
-
-      try {
-        let url = "";
-        switch (itemType) {
-          case "book":
-            url = `https://scriptorium-backend-six.vercel.app/api/books/${itemId}`;
-            break;
-          case "movie":
-            url = `https://scriptorium-backend-six.vercel.app/api/movies/${itemId}`;
-            break;
-          case "track":
-          case "music":
-            url = `https://scriptorium-backend-six.vercel.app/api/music/${itemId}`;
-            break;
+      const matchingOpt = Array.from(itemSelect.options).find((o) => {
+        if (!o.value) return false;
+        try {
+          const parsed = JSON.parse(o.value);
+          return parsed.id === itemId && parsed.type === normalizedType;
+        } catch {
+          return false;
         }
-
-        if (url) {
-          const res = await fetch(url, {
-            headers: { Authorization: `jwt ${token}` },
-          });
-          const data = await res.json();
-          if (data) {
-            itemTitle =
-              itemType === "track"
-                ? `${data.title} - ${data.artist?.name || "Unknown"}`
-                : data.title || itemTitle;
-          }
-        }
-      } catch (err) {
-        console.error("Error fetching item title:", err);
-      }
-
-      const opt = document.createElement("option");
-      opt.value = JSON.stringify({ id: itemId, type: itemType });
-      opt.text = itemTitle; // actual fetched title
-      opt.selected = true;
-      itemSelect.appendChild(opt);
+      });
+      if (matchingOpt) matchingOpt.selected = true;
     }
 
-    await loadItemReflections(itemId, itemType);
+    await loadItemReflections(itemId, normalizedType);
   } else {
     // No specific item: load all reflections
     await loadAllReflections();

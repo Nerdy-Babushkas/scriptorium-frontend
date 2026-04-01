@@ -1,60 +1,17 @@
-<nav class="fixed top-0 left-0 w-full z-50 py-3 px-4 sm:px-8 lg:px-16 transition-all"
-     style="background: radial-gradient(circle at 29% 30%, #0f7ca0 8%, #073c4d 35%);">
+<header class="nav" role="banner">
+  <a href="/" class="nav-logo" aria-label="Scriptorium home">
+    <span class="logo-dot" aria-hidden="true" style="width: 8px; height: 8px; background: var(--teal); border-radius: 50%; display: inline-block; margin-right: 8px;"></span>
+    <span style="font-family: var(--font-clash); font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em;">Scriptorium</span>
+  </a>
 
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-        
-        <a href="/" class="font-dancing text-2xl md:text-3xl text-white font-bold tracking-wider hover:opacity-80 transition-opacity">
-            Scriptorium
-        </a>
-        
-        <div class="hidden md:flex space-x-8 lg:space-x-12">
-            <a href="/#about" class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">About</a>
-            <a href="/#features" class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">Features</a>
-            <a href="/contact" class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">Contact</a>
-            <% if (user) { %>
-                <form action="/logout" method="POST" class="inline">
-                    <button type="submit"
-                    class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">
-                        Logout
-                    </button>
-                </form>
-            <% } else { %>
-                <a href="/login"
-                class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">
-                Login
-                </a>
-            <% } %>
+  <ul class="nav-links" role="list" style="display: flex; gap: 2rem; list-style: none;">
+    <li><a href="/#about" class="nav-link">About</a></li>
+    <li><a href="/#rooms" class="nav-link">Rooms</a></li>
+    <li><a href="/#features" class="nav-link">Features</a></li>
+  </ul>
 
-        </div>
-
-        <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-        </button>
-    </div>
-
-    <div id="mobile-menu" class="hidden md:hidden bg-scriptorium-dark absolute top-full left-0 w-full border-t border-white/10 p-4 space-y-4 shadow-xl">
-        <a href="/#about" class="block text-white font-outfit text-lg">About</a>
-        <a href="/#features" class="block text-white font-outfit text-lg">Features</a>
-        <a href="/contact" class="block text-white font-outfit text-lg">Contact</a>
-        <% if (user) { %>
-            <form action="/logout" method="POST">
-                <button type="submit" class="block text-white font-outfit text-lg">
-                    Logout
-                </button>
-            </form>
-        <% } else { %>
-            <a href="/login" class="block text-white font-outfit text-lg">
-                Login
-            </a>
-        <% } %>
-
-    </div>
-</nav>
-
-<script>
-    const btn = document.getElementById('mobile-menu-btn');
-    const menu = document.getElementById('mobile-menu');
-    btn.addEventListener('click', () => menu.classList.toggle('hidden'));
-</script>
+  <div class="nav-actions" style="display: flex; align-items: center; gap: 1.5rem;">
+    <a href="/login" class="nav-login" style="font-family: var(--font-clash); font-size: 0.85rem; font-weight: 600; opacity: 0.7;">Log in</a>
+    <a href="/signup" class="nav-cta" style="background: var(--ink); color: var(--cream); padding: 0.75rem 1.5rem; border-radius: 50px; font-family: var(--font-clash); font-size: 0.85rem; font-weight: 600;">Get started</a>
+  </div>
+</header>

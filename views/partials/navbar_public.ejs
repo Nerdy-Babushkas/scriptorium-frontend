@@ -1,17 +1,49 @@
-<header class="nav" role="banner">
+<%#
+  navbar_public.ejs
+  Public-facing navbar — used on: landing, login, signup, and any other public page.
+  CSS classes match landing.css exactly.
+  Fonts + CSS variables are expected to be loaded by the page that includes this partial.
+  For login/signup pages: make sure auth.css (or global.css) defines the same CSS vars.
+%>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"></div>
+
+<header class="nav" id="nav" role="banner">
+
   <a href="/" class="nav-logo" aria-label="Scriptorium home">
-    <span class="logo-dot" aria-hidden="true" style="width: 8px; height: 8px; background: var(--teal); border-radius: 50%; display: inline-block; margin-right: 8px;"></span>
-    <span style="font-family: var(--font-clash); font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em;">Scriptorium</span>
+    <span class="logo-text">Scriptorium</span>
+    <svg class="logo-squiggle" viewBox="0 0 120 8" fill="none" aria-hidden="true">
+      <path d="M2 5 Q20 1 38 5 Q56 9 74 5 Q92 1 110 5 Q116 6.5 118 5"
+        stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    </svg>
   </a>
 
-  <ul class="nav-links" role="list" style="display: flex; gap: 2rem; list-style: none;">
-    <li><a href="/#about" class="nav-link">About</a></li>
-    <li><a href="/#rooms" class="nav-link">Rooms</a></li>
-    <li><a href="/#features" class="nav-link">Features</a></li>
-  </ul>
+  <nav class="nav-links" aria-label="Main navigation">
+    <a href="/#about"    class="nav-link">About</a>
+    <a href="/#rooms"   class="nav-link">Rooms</a>
+    <a href="/#ai"      class="nav-link">AI</a>
+  </nav>
 
-  <div class="nav-actions" style="display: flex; align-items: center; gap: 1.5rem;">
-    <a href="/login" class="nav-login" style="font-family: var(--font-clash); font-size: 0.85rem; font-weight: 600; opacity: 0.7;">Log in</a>
-    <a href="/signup" class="nav-cta" style="background: var(--ink); color: var(--cream); padding: 0.75rem 1.5rem; border-radius: 50px; font-family: var(--font-clash); font-size: 0.85rem; font-weight: 600;">Get started</a>
+  <div class="nav-actions">
+    <a href="/login"  class="nav-login">Log in</a>
+    <a href="/signup" class="nav-cta">
+      Get started
+      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+    <button class="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
   </div>
+
+  <div class="nav-drawer" aria-hidden="true">
+    <a href="/#about">About</a>
+    <a href="/#rooms">Rooms</a>
+    <a href="/#ai">AI picks</a>
+    <a href="/login">Log in</a>
+    <a href="/signup" class="drawer-cta">Get started →</a>
+  </div>
+
 </header>

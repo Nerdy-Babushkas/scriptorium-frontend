@@ -723,3 +723,163 @@ input { font: inherit; }
 /* ── 11. LOGIN — form left, panel right ──────────────────────── */
 .auth-page--login .auth-panel-right { order: 1; }
 .auth-page--login .auth-panel-left  { order: 2; }
+/* ══════════════════════════════════════════════════════════════
+   FORGOT PASSWORD & RESET PASSWORD — additions to auth.css
+   Panel variants: forgot = warm amber, reset = teal-green
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Forgot password panel — warm amber/rose gradient ────────── */
+.auth-panel-left--forgot {
+  background: linear-gradient(155deg, #f5ede0 0%, #e8c8a0 45%, #d4a878 100%);
+}
+.auth-panel-left--forgot .auth-panel-tagline h2 .caveat-word {
+  color: var(--amber);
+}
+
+/* ── Reset password panel — deep teal gradient ───────────────── */
+.auth-panel-left--reset {
+  background: linear-gradient(155deg, #d8eee8 0%, #a8d4c8 45%, #78b8a8 100%);
+}
+.auth-panel-left--reset .auth-panel-tagline h2 .caveat-word {
+  color: var(--teal);
+}
+
+/* ── Decorative emoji floater ────────────────────────────────── */
+/*
+  Big illustrated emoji sits centre-stage on the panel.
+  Floats independently, separate from the small SVG floaters.
+*/
+.auth-emoji-hero {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(5rem, 10vw, 8rem);
+  line-height: 1;
+  margin-bottom: 1.5rem;
+  display: block;
+  text-align: center;
+  animation: emoji-bob 3.5s ease-in-out infinite;
+  filter: drop-shadow(0 12px 32px rgba(28,24,20,0.15));
+  user-select: none;
+}
+@keyframes emoji-bob {
+  0%,100% { transform: translateY(0) rotate(0deg);   }
+  30%      { transform: translateY(-14px) rotate(-4deg); }
+  60%      { transform: translateY(-6px)  rotate(2deg);  }
+}
+
+/* Forgot page: emoji has a little shake on load */
+.auth-emoji-hero--forgot {
+  animation: emoji-bob 3.5s ease-in-out infinite,
+             emoji-shake 0.7s cubic-bezier(0.36,0.07,0.19,0.97) 0.4s 1;
+}
+@keyframes emoji-shake {
+  0%,100% { transform: rotate(0deg); }
+  15%     { transform: rotate(-8deg); }
+  30%     { transform: rotate(8deg); }
+  45%     { transform: rotate(-6deg); }
+  60%     { transform: rotate(6deg); }
+  75%     { transform: rotate(-3deg); }
+  90%     { transform: rotate(3deg); }
+}
+
+/* Reset page: emoji bounces in triumphantly */
+.auth-emoji-hero--reset {
+  animation: emoji-bob 3.5s ease-in-out infinite,
+             emoji-bounce-in 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.4s 1 both;
+}
+@keyframes emoji-bounce-in {
+  from { transform: scale(0.4) translateY(24px); opacity: 0; }
+  to   { transform: scale(1)   translateY(0);    opacity: 1; }
+}
+
+/* ── Message box — styled consistently (overrides Tailwind classes) ── */
+/*
+  Backend JS sets message.className = "mt-4 text-center text-green-300 font-medium"
+  or "mt-4 text-center text-red-300 font-medium" — we hook into those.
+  The #message element is also styled below for when it's visible.
+*/
+#message {
+  padding: 0.8rem 1rem;
+  border-radius: 14px;
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  border: 1.5px solid transparent;
+  margin-top: 0.75rem;
+  transition: all 0.25s;
+}
+#message.hidden { display: none !important; }
+
+/* Green success state */
+#message.text-green-300 {
+  background: var(--teal-p);
+  border-color: var(--teal);
+  color: var(--teal) !important;
+}
+/* Red error state */
+#message.text-red-300 {
+  background: var(--rose-p);
+  border-color: var(--rose);
+  color: var(--rose) !important;
+}
+
+/* ── Submit button loading state ─────────────────────────────── */
+#submitBtn:disabled,
+button[type="submit"]:disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* ── "Back to login" link — styled to match auth design ──────── */
+.auth-back-to-login {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-clash);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-top: 1.4rem;
+  text-decoration: none;
+  border-bottom: 1.5px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.auth-back-to-login:hover {
+  color: var(--teal);
+  border-color: var(--teal-l);
+}
+
+/* ── Success state — full panel replacement after submission ──── */
+/*
+  Optional progressive enhancement: JS can add .is-success to
+  .auth-form-wrap to show a big success message instead of the form.
+  Not required for backend to work — purely additive.
+*/
+.auth-success-state {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 2rem 0;
+}
+.auth-success-state.visible { display: flex; }
+.auth-success-emoji {
+  font-size: 4rem;
+  animation: emoji-bounce-in 0.6s var(--spring) both;
+}
+.auth-success-state h2 {
+  font-family: var(--font-clash);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.auth-success-state p {
+  font-size: 0.9rem;
+  color: var(--ink-3);
+  max-width: 280px;
+  line-height: 1.65;
+}

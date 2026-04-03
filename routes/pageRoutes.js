@@ -34,7 +34,7 @@ router.use((req, res, next) => {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       res.locals.user = decoded; // this makes <%= user %> available in EJS
-    } catch (err) {
+    } catch (_err) {
       res.clearCookie("token");
     }
   }

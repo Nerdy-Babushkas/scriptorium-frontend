@@ -1,1 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
+
+@source "../views/**/*.ejs";
+@source "../public/js/**/*.js";

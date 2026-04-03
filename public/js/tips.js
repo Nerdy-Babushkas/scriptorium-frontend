@@ -19,7 +19,7 @@ export function initTips({ tips }) {
     // ✅ NEW: Dynamic backend URL
     const BASE_URL = window.location.origin.includes("localhost")
         ? "http://localhost:3001"
-        : "https://scriptorium-backend-3pyf41cmm-nerdy-babushkas-projects.vercel.app";
+        : "https://scriptorium-backend-six.vercel.app";
 
 
     function renderDots() {

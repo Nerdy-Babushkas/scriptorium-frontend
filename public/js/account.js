@@ -43,11 +43,14 @@ document.getElementById("profileForm").addEventListener("submit", async (e) => {
   };
 
   try {
-    const res = await fetch("http://localhost:8080/api/user/account", {
-      method: "PATCH",
-      headers: getAuthHeaders(), // Use the helper here
-      body: JSON.stringify(data),
-    });
+    const res = await fetch(
+      "https://scriptorium-backend-six.vercel.app/api/user/account",
+      {
+        method: "PATCH",
+        headers: getAuthHeaders(), // Use the helper here
+        body: JSON.stringify(data),
+      },
+    );
 
     const result = await res.json();
     if (!res.ok) throw new Error(result.message || "Failed to update profile");
@@ -71,7 +74,7 @@ document
 
     try {
       const res = await fetch(
-        "http://localhost:8080/api/user/account/password",
+        "https://scriptorium-backend-six.vercel.app/api/user/account/password",
         {
           method: "PATCH",
           headers: getAuthHeaders(), // Use the helper here

@@ -96,10 +96,13 @@ document
 // --- LOAD USER DATA ON START ---
 async function loadUserData() {
   try {
-    const res = await fetch("http://localhost:8080/api/user/account", {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
+    const res = await fetch(
+      "https://scriptorium-backend-six.vercel.app/api/user/account",
+      {
+        method: "GET",
+        headers: getAuthHeaders(),
+      },
+    );
 
     const data = await res.json();
 

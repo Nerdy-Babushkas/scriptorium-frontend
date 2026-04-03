@@ -78,7 +78,7 @@ router.get("/room", requireAuth, (req, res) => {
 });
 
 router.get("/account", requireAuth, (req, res) => {
-  res.render("pages/placeholder", { pageName: "Account" });
+  res.render("pages/account", { pageName: "Account" });
 });
 
 router.get("/rewards", requireAuth, (req, res) => {

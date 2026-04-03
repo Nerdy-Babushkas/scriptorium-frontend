@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { title: 'My Account - Scriptorium' }) %>
+
+    <style>
+        .bg-scriptorium-dark {
+            background-color: #0f3d3e;
+            background: radial-gradient(circle at 50% 0%, #0f4c75 0%, #05181c 100%);
+        }
+
+        .glass-card {
+            background-color: rgba(20, 30, 35, 0.65);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+</head>
+
+<body class="bg-scriptorium-dark min-h-screen relative overflow-x-hidden font-outfit text-white">
+
+    <%- include('../partials/navbar_app') %>
+
+    <main class="relative z-10 flex items-center justify-center min-h-screen px-6 py-20">
+
+        <div class="w-full max-w-5xl glass-card rounded-3xl p-8 md:p-12 shadow-2xl border border-[#00C49A]/20">
+
+            <div class="flex flex-col lg:flex-row gap-12">
+                
+                <div class="lg:w-1/3">
+                    <h1 class="font-dancing text-5xl mb-3">My Account</h1>
+                    <p class="text-white/60 mb-8 text-sm md:text-base">Manage your profile information and security preferences.</p>
+                    
+                    <nav class="hidden lg:flex flex-col space-y-2">
+                        <a href="#profileSection" class="px-4 py-2.5 rounded-lg bg-white/5 text-[#00C49A] font-medium border-l-2 border-[#00C49A] transition-all">
+                            Profile Settings
+                        </a>
+                        <!-- <a href="#securitySection" class="px-4 py-2.5 rounded-lg hover:bg-white/5 text-white/60 hover:text-white transition-all border-l-2 border-transparent">
+                            Security & Password
+                        </a> -->
+                    </nav>
+                </div>
+
+                <div class="lg:w-2/3 space-y-8">
+
+                    <section id="profileSection" class="bg-black/30 rounded-2xl border border-white/10 overflow-hidden flex flex-col">
+                        <div class="p-6 md:p-8 flex-1">
+                            <h2 class="text-xl font-bold mb-1 text-[#00C49A]">Profile Settings</h2>
+                            <p class="text-sm text-white/50 mb-8">Update your basic account details.</p>
+
+                            <form id="profileForm" class="space-y-6">
+                                <div class="grid md:grid-cols-[140px_1fr] items-center gap-2 md:gap-4">
+                                    <label class="text-sm text-white/70" for="userName">Username</label>
+                                    <input 
+                                        type="text"
+                                        id="userName"
+                                        class="w-full h-[48px] px-5 rounded-xl bg-[#0f191e] border border-white/10 text-white focus:outline-none focus:border-[#00C49A] transition-colors"
+                                        placeholder="Enter new username"
+                                    />
+                                </div>
+
+                                <hr class="border-white/5 my-4">
+
+                                <div class="grid md:grid-cols-[140px_1fr] items-center gap-2 md:gap-4">
+                                    <label class="text-sm text-white/70">Preferences</label>
+                                    <div class="flex items-center gap-3 bg-[#0f191e] w-fit p-3 px-4 rounded-xl border border-white/10">
+                                        <input 
+                                            type="checkbox"
+                                            id="aiRecommendations"
+                                            class="w-4 h-4 accent-[#00C49A]"
+                                        />
+                                        <label for="aiRecommendations" class="text-sm text-white/80 cursor-pointer">
+                                            Enable AI recommendations
+                                        </label>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="bg-black/40 p-4 px-6 md:px-8 border-t border-white/5 flex justify-end">
+                            <button 
+                                type="submit"
+                                form="profileForm"
+                                class="h-[44px] px-8 rounded-full bg-[#00C49A] text-[#05181c] font-bold uppercase tracking-wide text-sm hover:bg-[#00a884] transition-all shadow-lg"
+                            >
+                                Save Changes
+                            </button>
+                        </div>
+                    </section>
+
+                    <section id="securitySection" class="bg-black/30 rounded-2xl border border-white/10 overflow-hidden flex flex-col">
+                        <div class="p-6 md:p-8 flex-1">
+                            <h2 class="text-xl font-bold mb-1 text-[#00C49A]">Change Password</h2>
+                            <p class="text-sm text-white/50 mb-8">Ensure your account is using a long, secure password.</p>
+
+                            <form id="passwordForm" class="space-y-6">
+                                <div class="grid md:grid-cols-[140px_1fr] items-center gap-2 md:gap-4">
+                                    <label class="text-sm text-white/70" for="oldPassword">Old Password</label>
+                                    <input 
+                                        type="password"
+                                        id="oldPassword"
+                                        class="w-full h-[48px] px-5 rounded-xl bg-[#0f191e] border border-white/10 text-white focus:outline-none focus:border-[#00C49A] transition-colors"
+                                    />
+                                </div>
+
+                                <div class="grid md:grid-cols-[140px_1fr] items-center gap-2 md:gap-4">
+                                    <label class="text-sm text-white/70" for="newPassword">New Password</label>
+                                    <input 
+                                        type="password"
+                                        id="newPassword"
+                                        class="w-full h-[48px] px-5 rounded-xl bg-[#0f191e] border border-white/10 text-white focus:outline-none focus:border-[#00C49A] transition-colors"
+                                    />
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="bg-black/40 p-4 px-6 md:px-8 border-t border-white/5 flex justify-end">
+                            <button 
+                                type="submit"
+                                form="passwordForm"
+                                class="h-[44px] px-8 rounded-full bg-[#00C49A] text-[#05181c] font-bold uppercase tracking-wide text-sm hover:bg-[#00a884] transition-all shadow-lg"
+                            >
+                                Update Password
+                            </button>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="fixed bottom-8 right-8 flex items-center gap-4 px-6 py-4 rounded-xl shadow-2xl transform translate-y-40 transition-transform duration-500 z-[100] border-l-4 bg-[#0f191e] border-[#00C49A]">
+        <div>
+            <h4 id="toastTitle" class="font-bold text-[#00C49A]"></h4>
+            <p id="toastMessage" class="text-sm text-white/80"></p>
+        </div>
+    </div>
+
+    <script src="/js/account.js"></script>
+</body>
+</html>

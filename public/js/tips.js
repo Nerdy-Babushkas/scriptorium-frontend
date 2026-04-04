@@ -15,12 +15,11 @@ export function initTips({ tips }) {
     }
 
     let current = 0;
-
+ 
     // Dynamic backend URL
     const BASE_URL = window.location.origin.includes("localhost")
         ? "http://localhost:3001"
         : "https://scriptorium-backend-six.vercel.app";
-        
 
 
     function renderDots() {
@@ -71,13 +70,8 @@ export function initTips({ tips }) {
     async function checkTips() {
         try {
             const res = await fetch(`${BASE_URL}/api/user/tips`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "jwt " + token
-                },
-                credentials: "include" 
-            })
+                headers: { Authorization: "jwt " + token },
+            });
 
             const data = await res.json();
 
@@ -115,7 +109,6 @@ export function initTips({ tips }) {
                     "Content-Type": "application/json",
                     Authorization: "jwt " + token,
                 },
-                credentials: "include",
                 body: JSON.stringify({ showTips: false }),
             });
         } catch { }

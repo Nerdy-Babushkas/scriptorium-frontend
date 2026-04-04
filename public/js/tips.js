@@ -16,7 +16,7 @@ export function initTips({ tips }) {
 
     let current = 0;
  
-    // ✅ NEW: Dynamic backend URL
+    // Dynamic backend URL
     const BASE_URL = window.location.origin.includes("localhost")
         ? "http://localhost:3001"
         : "https://scriptorium-backend-six.vercel.app";
@@ -69,7 +69,7 @@ export function initTips({ tips }) {
 
     async function checkTips() {
         try {
-            const res = await fetch(`${BASE_URL}/api/tips`, {
+            const res = await fetch(`${BASE_URL}/api/user/tips`, {
                 headers: { Authorization: "jwt " + token },
             });
 
@@ -103,7 +103,7 @@ export function initTips({ tips }) {
 
     disableBtn.onclick = async () => {
         try {
-            await fetch(`${BASE_URL}/api/tips`, {
+            await fetch(`${BASE_URL}/api/user/tips`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",

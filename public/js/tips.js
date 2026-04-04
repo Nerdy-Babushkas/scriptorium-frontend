@@ -15,7 +15,7 @@ export function initTips({ tips }) {
     }
 
     let current = 0;
- 
+
     // Dynamic backend URL
     const BASE_URL = window.location.origin.includes("localhost")
         ? "http://localhost:3001"
@@ -70,8 +70,13 @@ export function initTips({ tips }) {
     async function checkTips() {
         try {
             const res = await fetch(`${BASE_URL}/api/user/tips`, {
-                headers: { Authorization: "jwt " + token },
-            });
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "jwt " + token
+                },
+                credentials: "include" 
+            })
 
             const data = await res.json();
 
@@ -109,6 +114,7 @@ export function initTips({ tips }) {
                     "Content-Type": "application/json",
                     Authorization: "jwt " + token,
                 },
+                credentials: "include",
                 body: JSON.stringify({ showTips: false }),
             });
         } catch { }

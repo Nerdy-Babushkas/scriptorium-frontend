@@ -69,7 +69,7 @@ export function initTips({ tips }) {
 
     async function checkTips() {
         try {
-            const res = await fetch(`${BASE_URL}/tips`, {
+            const res = await fetch(`${BASE_URL}/user/tips`, {
                 headers: { Authorization: "jwt " + token },
             });
 
@@ -103,7 +103,7 @@ export function initTips({ tips }) {
 
     disableBtn.onclick = async () => {
         try {
-            await fetch(`${BASE_URL}/tips`, {
+            await fetch(`${BASE_URL}/user/tips`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",

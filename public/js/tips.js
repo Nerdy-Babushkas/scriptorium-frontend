@@ -16,7 +16,6 @@ export function initTips({ tips }) {
 
     let current = 0;
  
-    // (KEEPING THIS - not used now but no change)
     const BASE_URL = window.location.origin.includes("localhost")
         ? "http://localhost:3001"
         : "https://scriptorium-backend-six.vercel.app/api";
@@ -65,12 +64,12 @@ export function initTips({ tips }) {
         }, 300);
     }
 
-    // ❌ REMOVE BACKEND TOKEN USAGE
-    // const token = localStorage.getItem("token");
+    // ✅ NEW: get user identifier
+    const user = localStorage.getItem("userEmail") || "guest";
 
-    // ✅ LOCAL STORAGE VERSION
     function checkTips() {
-        const showTips = localStorage.getItem("showTips");
+        // ✅ UPDATED: user-specific key
+        const showTips = localStorage.getItem(`showTips_${user}`);
 
         if (showTips !== "false") {
             openModal();
@@ -94,9 +93,9 @@ export function initTips({ tips }) {
 
     closeBtn.onclick = closeModal;
 
-    // ✅ SAVE TO LOCAL STORAGE INSTEAD OF API
+    // ✅ UPDATED: save per user
     disableBtn.onclick = () => {
-        localStorage.setItem("showTips", "false");
+        localStorage.setItem(`showTips_${user}`, "false");
         closeModal();
     };
 

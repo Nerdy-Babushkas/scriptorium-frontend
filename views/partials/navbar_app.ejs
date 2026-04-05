@@ -1,25 +1,45 @@
+<%#
+  navbar_app.ejs
+  Authenticated navbar — used on all post-login pages (room, library, theatre, music, progress, etc.)
+  
+  Expects these partials to exist:
+    - views/partials/search_bar.ejs  (receives query + type vars)
+  
+  Variables it safely handles as optional:
+    - query  (search input value)
+    - type   (search type filter)
+  
+  JS: /js/navbar.js handles profile-menu-btn + profile-dropdown toggle.
+%>
+
+<%# Ambient background blobs (decorative, pointer-events none) %>
 <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
     <div class="absolute left-[10%] top-0 w-[500px] h-[500px] bg-scriptorium-gold rounded-full opacity-20 blur-[120px]"></div>
     <div class="absolute right-0 top-[40%] w-[600px] h-[600px] bg-scriptorium-gold-light rounded-full opacity-15 blur-[130px]"></div>
 </div>
 
 <nav class="relative z-20 px-6 lg:px-12 py-4 flex items-center justify-between gap-8 bg-[#2C1810]/90 backdrop-blur-sm border-b border-white/5">
-    
+
+    <%# Logo — links back to room dashboard %>
     <a href="/room" class="font-dancing font-bold text-3xl text-white tracking-wide hover:opacity-80 transition-opacity whitespace-nowrap">
         Scriptorium
     </a>
 
+    <%# Search bar — hidden on mobile, full width on md+ %>
     <div class="hidden md:flex flex-grow max-w-2xl">
-        <%- include('./search_bar', { 
-        query: typeof query !== 'undefined' ? query : '', 
-        type: typeof type !== 'undefined' ? type : '' 
+        <%- include('./search_bar', {
+            query: typeof query !== 'undefined' ? query : '',
+            type:  typeof type  !== 'undefined' ? type  : ''
         }) %>
     </div>
 
+    <%# Right side: nav links + profile menu %>
     <div class="flex items-center gap-6 lg:gap-8 whitespace-nowrap">
+
+        <%# Desktop nav links %>
         <div class="hidden lg:flex items-center gap-6">
-            <a href="/progress" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Progress</a>
-            <a href="/rewards" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Rewards</a>
+            <a href="/progress"  class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Progress</a>
+            <a href="/rewards"   class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Rewards</a>
             <a href="/customise" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Customise</a>
             <a href="/about" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">About</a>
 
@@ -33,61 +53,57 @@
             </a>
         </div>
 
-        <!-- <div class="flex items-center gap-4">
-            <button class="p-2 text-white hover:bg-white/10 rounded-lg transition-colors">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button> -->
+        <%# Profile menu %>
         <div class="flex items-center gap-4">
-                    
-                    <div class="relative">
-                        <button id="profile-menu-btn" class="block w-10 h-10 rounded-full bg-white/20 overflow-hidden border border-white/30 hover:border-scriptorium-gold transition-colors focus:outline-none">
-                            <img src="/assets/account.png" alt="Profile" class="w-full h-full object-cover">
+            <div class="relative">
+
+                <%# Avatar button — id="profile-menu-btn" required by navbar.js %>
+                <button
+                    id="profile-menu-btn"
+                    class="block w-10 h-10 rounded-full bg-white/20 overflow-hidden border border-white/30 hover:border-scriptorium-gold transition-colors focus:outline-none"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                >
+                    <img src="/assets/account.png" alt="Profile" class="w-full h-full object-cover">
+                </button>
+
+                <%# Dropdown — id="profile-dropdown" required by navbar.js %>
+                <div
+                    id="profile-dropdown"
+                    class="hidden absolute right-0 mt-3 w-48 bg-[#3E2723] rounded-xl shadow-2xl border border-white/10 overflow-hidden z-50 animate-fade-in-down"
+                    role="menu"
+                >
+                    <a href="/account" class="block px-5 py-3 text-white font-outfit text-base hover:bg-white/10 transition-colors" role="menuitem">
+                        My Account
+                    </a>
+
+                    <div class="h-[1px] bg-white/10 w-full"></div>
+
+                    <form action="/logout" method="POST" class="block w-full">
+                        <button
+                            type="submit"
+                            class="w-full text-left px-5 py-3 text-[#FF6B6B] hover:text-[#ff8585] font-outfit text-base font-medium hover:bg-white/5 transition-colors"
+                            role="menuitem"
+                        >
+                            Logout
                         </button>
-
-                        <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-[#3E2723] rounded-xl shadow-2xl border border-white/10 overflow-hidden z-50 animate-fade-in-down">
-                            
-                            <a href="/account" class="block px-5 py-3 text-white font-outfit text-base hover:bg-white/10 transition-colors">
-                                My Account
-                            </a>
-                            
-                            <div class="h-[1px] bg-white/10 w-full"></div>
-
-                            <form action="/logout" method="POST" class="block w-full">
-                                <button type="submit" class="w-full text-left px-5 py-3 text-[#FF6B6B] hover:text-[#ff8585] font-outfit text-base font-medium hover:bg-white/5 transition-colors">
-                                    Logout
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
+                    </form>
                 </div>
+
             </div>
-        </nav>
+        </div>
 
+    </div>
+</nav>
 
-       <script src="/js/navbar.js"></script>
+<script src="/js/navbar.js"></script>
 
-        <style>
-            @keyframes fadeInDown {
-                from { opacity: 0; transform: translateY(-10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            .animate-fade-in-down {
-                animation: fadeInDown 0.2s ease-out forwards;
-            }
-
-            /* Pencil icon — white/dim at rest, gold glow on hover */
-            .pencil-icon {
-                filter: brightness(0) invert(1);
-                opacity: 0.5;
-            }
-            a:hover .pencil-icon {
-                filter: brightness(0) invert(1)
-                        sepia(1) saturate(4) hue-rotate(5deg) brightness(1.15)
-                        drop-shadow(0 0 6px rgba(212,175,55,0.8));
-                opacity: 1;
-                transform: scale(1.12) rotate(-8deg);
-            }
-        </style>
+<style>
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-down {
+        animation: fadeInDown 0.2s ease-out forwards;
+    }
+</style>

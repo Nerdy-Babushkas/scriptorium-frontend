@@ -63,7 +63,7 @@
         border: 1px solid rgba(255,255,255,0.07);
         border-radius: 20px; padding: 28px 28px 24px;
         position: relative; overflow: hidden;
-        margin-bottom: 2.5rem;
+        margin-bottom: 1.5rem;
     }
     .streak-card::before {
         content: ''; position: absolute; inset: 0;
@@ -151,6 +151,72 @@
         background: rgba(255,196,0,0.08); border: 1px solid rgba(255,196,0,0.25);
         font-size: 0.75rem; font-weight: 600; color: rgba(255,196,0,0.8);
         margin-top: 14px; width: fit-content;
+    }
+
+    /* ---------- STREAK HOW-IT-WORKS BANNER ---------- */
+    .streak-explainer {
+        background: rgba(0,196,154,0.05);
+        border: 1px solid rgba(0,196,154,0.16);
+        border-radius: 16px;
+        padding: 16px 18px;
+        margin-bottom: 2rem;
+
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px 18px;
+    }
+
+    .streak-explainer-title {
+        font-size: 0.75rem; /* bigger */
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #00C49A;
+        width: 100%;
+        margin-bottom: 4px;
+    }
+
+    .streak-explainer:hover {
+        border-color: rgba(0,196,154,0.3);
+        background: rgba(0,196,154,0.07);
+        transition: all 0.2s ease;
+    }
+
+    .streak-action {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.9rem; /* bigger + readable */
+        color: rgba(255,255,255,0.8);
+        font-weight: 600;
+    }
+
+    .streak-action-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 10px;
+        background: rgba(0,196,154,0.12);
+        border: 1px solid rgba(0,196,154,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .streak-divider {
+        width: 1px;
+        height: 26px;
+        background: rgba(255,255,255,0.1);
+    }
+
+    .streak-explainer-note {
+        width: 100%;
+        font-size: 0.78rem; /* bigger */
+        color: rgba(255,255,255,0.5);
+        margin-top: 2px;
+        line-height: 1.4;
     }
 
     /* ---------- BADGE GRID ---------- */
@@ -329,7 +395,7 @@
     }
     .unlock-close:hover { background: rgba(0,196,154,0.16); border-color: rgba(0,196,154,0.5); }
 
-    /* Confetti sparks reuse from recommendations */
+    /* Confetti sparks */
     .spark {
         position: fixed; width: 6px; height: 6px; border-radius: 50%;
         pointer-events: none;
@@ -340,8 +406,71 @@
         100% { transform: translate(var(--tx),var(--ty)) scale(0); opacity: 0; }
     }
 
-    /* ---------- TOAST ---------- */
-    #toast { transform: translateY(160px); }
+    /* ---------- TOAST STACK ---------- */
+    #toastStack {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 10px;
+        z-index: 10000;
+        pointer-events: none;
+        max-width: 320px;
+        width: calc(100vw - 3rem);
+    }
+    .toast-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 13px 16px;
+        background: #0c1a20;
+        border-radius: 14px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+        border-left: 3px solid #00C49A;
+        pointer-events: all;
+        cursor: pointer;
+        transform: translateX(120%);
+        opacity: 0;
+        transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+        will-change: transform, opacity;
+    }
+    .toast-item.toast-error { border-left-color: #ff6b6b; }
+    .toast-item.toast-info  { border-left-color: #a29bfe; }
+    .toast-item.visible {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    .toast-emoji {
+        font-size: 1.3rem;
+        line-height: 1;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+    .toast-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .toast-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #fff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .toast-msg {
+        font-size: 0.73rem;
+        color: rgba(255,255,255,0.5);
+        line-height: 1.4;
+    }
+    .toast-dismiss {
+        margin-left: auto;
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.2);
+        align-self: flex-start;
+        flex-shrink: 0;
+        padding: 0 2px;
+        line-height: 1;
+    }
+    .toast-dismiss:hover { color: rgba(255,255,255,0.5); }
 
     /* ---------- LOADING SKELETON ---------- */
     .skeleton {
@@ -379,21 +508,8 @@
     </div>
 </div>
 
-<!-- ==================== TOAST ==================== -->
-<div id="toast" style="
-  position:fixed; bottom:2rem; right:2rem;
-  display:flex; align-items:center; gap:14px;
-  padding:16px 22px; background:#0f191e; border-radius:14px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.55); color:white;
-  transform:translateY(160px);
-  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
-  z-index:10000; min-width:220px; border-left:4px solid #00C49A;
-">
-    <div>
-        <div id="toastTitle"   style="font-weight:700;font-size:0.9rem;"></div>
-        <div id="toastMessage" style="font-size:0.78rem;opacity:0.65;margin-top:2px;"></div>
-    </div>
-</div>
+<!-- ==================== TOAST STACK ==================== -->
+<div id="toastStack"></div>
 
 <!-- ==================== BODY ==================== -->
 <body style="background:radial-gradient(circle at 50% 0%, #1a0f4c 0%, #05181c 100%); background-color:#05181c;"
@@ -441,6 +557,26 @@
             <div id="streakContent" style="display:none;"></div>
         </div>
 
+        <!-- HOW THE STREAK WORKS -->
+        <div class="streak-explainer">
+            <span class="streak-explainer-title">How your streak works</span>
+
+            <div class="streak-action">
+                <div class="streak-action-icon">✍️</div>
+                Write a reflection
+            </div>
+
+            <div class="streak-divider"></div>
+
+            <div class="streak-action">
+                <div class="streak-action-icon">🎯</div>
+                Update goal progress
+            </div>
+
+            <p class="streak-explainer-note">
+                Do either once per day to keep your streak alive.
+            </p>
+        </div>
         <!-- ══ PROGRESS ════════════════════════════════════════════════════════ -->
         <div class="progress-section">
             <p class="section-title">Progress</p>

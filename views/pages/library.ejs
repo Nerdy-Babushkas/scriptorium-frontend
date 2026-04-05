@@ -3,6 +3,7 @@
 
 <head>
     <%- include('../partials/head', { title: 'Library - Scriptorium' }) %>
+
         <style>
             /* Interactive Dot Animation - REVERTED TO GOLD */
             .shelf-dot {
@@ -321,8 +322,92 @@
                         Find Books
                     </a>
                 </div>
+=======
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <style>
+        #container3d {
+            width: 100%;
+            height: 100vh;
+            display: block;
+        }
+        .animate-zoom-in { animation: zoomIn 0.3s ease-out forwards; }
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #00C49A; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-[#2C1810] min-h-screen overflow-hidden font-outfit text-white">
+
+    <%- include('../partials/navbar_app') %>
+
+    <!-- 3D ROOM CONTAINER -->
+    <div id="container3d"></div>
+
+    <!-- BACK BUTTON -->
+    <a href="/room" class="fixed top-20 left-4 z-20 flex items-center gap-2 px-4 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full hover:bg-black/80 transition-all group">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="text-white"><path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="font-outfit text-sm font-medium text-white">Back to Room</span>
+    </a>
+
+    <!-- NAV BUTTONS -->
+    <div class="fixed top-20 right-4 z-20 flex items-center gap-3">
+        <a href="/music" class="px-5 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full hover:bg-black/80 transition-all">
+            <span class="font-outfit text-sm font-medium text-white">Music</span>
+        </a>
+        <a href="/theatre" class="px-5 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full hover:bg-black/80 transition-all">
+            <span class="font-outfit text-sm font-medium text-white">Theatre</span>
+        </a>
+        <%- include('../partials/ai_button') %>
+    </div>
+
+    <!-- SHELF MODAL -->
+    <div id="shelfViewModal" class="hidden fixed inset-0 z-50 bg-[#0f191e]/95 backdrop-blur-xl p-6 overflow-hidden flex flex-col animate-zoom-in">
+
+        <div class="flex justify-between items-center mb-8 max-w-7xl mx-auto w-full border-b border-white/10 pb-6 shrink-0">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-[#00C49A]/20 rounded-xl border border-[#00C49A]">
+                    <svg class="w-8 h-8 text-[#00C49A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 id="shelfTitle" class="text-4xl font-dancing text-white">Shelf Name</h2>
+                    <p class="text-white/50 text-sm mt-1"><span id="bookCount">0</span> books stored here</p>
+                </div>
+            </div>
+            <button onclick="closeShelf()" class="group flex items-center gap-2 px-6 py-2 rounded-full border border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white transition-all">
+                <span class="font-bold text-sm uppercase tracking-wider">Close Shelf</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="flex-grow overflow-y-auto custom-scroll w-full max-w-7xl mx-auto pr-2">
+            <div id="shelfLoading" class="hidden flex flex-col items-center justify-center h-64">
+                <div class="w-16 h-16 border-4 border-[#00C49A]/30 border-t-[#00C49A] rounded-full animate-spin mb-4"></div>
+                <p class="text-[#00C49A] font-medium animate-pulse">Dusting off the books...</p>
+            </div>
+            <div id="shelfGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8 pb-20"></div>
+            <div id="shelfEmpty" class="hidden flex flex-col items-center justify-center h-64 opacity-60">
+                <img src="/assets/astro4.png" class="w-40 mb-6 grayscale" alt="Empty">
+                <p class="text-xl font-medium text-white/70">This shelf is empty.</p>
+                <a href="/search" class="mt-4 px-6 py-2 rounded-full bg-[#00C49A]/20 text-[#00C49A] border border-[#00C49A] hover:bg-[#00C49A] hover:text-[#05181c] transition-all font-bold text-sm">Find Books</a>
+
             </div>
         </div>
+
 
         <!-- TIP OVERLAY -->
         <div id="tipOverlay"></div>
@@ -348,6 +433,10 @@
 
         </div>
 
+=======
+    <script src="/js/library.js"></script>
+    <script type="module" src="/js/library-3d.js"></script>
+>>>>>>> main
 </body>
 
 

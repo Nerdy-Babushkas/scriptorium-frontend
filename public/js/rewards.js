@@ -26,14 +26,12 @@ const PROGRESS_CONFIG = [
     label: "Streak",
     icon: "🔥",
     thresholds: [3, 7, 14, 30, 100],
-    // value resolved at render time from streakData.current
   },
   {
     key: "reflection",
     label: "Reflections",
     icon: "✍️",
     thresholds: [1, 5, 20, 50],
-    // value resolved at render time from earned reflection badges
   },
   {
     key: "media",
@@ -45,7 +43,7 @@ const PROGRESS_CONFIG = [
     key: "goal",
     label: "Goals",
     icon: "🎯",
-    thresholds: [1, 5], // completed goals only
+    thresholds: [1, 5],
   },
 ];
 
@@ -89,12 +87,10 @@ function renderStreak() {
   const grace = streakData?.graceDaysAvailable || 0;
   const total = streakData?.totalActiveDays || 0;
 
-  // ── Animal mood based on current streak ──────────────────────────────────
-  // Swap src for your actual GIF assets when available
   const animalSrc = getAnimalSrc(current);
   const animalAlt = getAnimalAlt(current);
 
-  // ── Scarf stripes (show up to 30, current streak filled) ─────────────────
+  // ── Scarf stripes ────────────────────────────────────────────────────────
   const SCARF_SLOTS = 30;
   let scarfHtml = "";
   for (let i = 0; i < SCARF_SLOTS; i++) {
@@ -104,9 +100,9 @@ function renderStreak() {
     scarfHtml += `<div class="scarf-stripe ${cls}" title="Day ${i + 1}"></div>`;
   }
 
-  // ── Weekly mini-calendar (Mon–Sun of current week) ────────────────────────
+  // ── Weekly mini-calendar ──────────────────────────────────────────────────
   const today = new Date();
-  const dow = today.getDay(); // 0 = Sun
+  const dow = today.getDay();
   const mondayOffset = dow === 0 ? -6 : 1 - dow;
   const monday = new Date(today);
   monday.setDate(today.getDate() + mondayOffset);
@@ -126,7 +122,6 @@ function renderStreak() {
     const dayNum = day.getDate();
     const isToday = sameDay(day, today);
     const isFuture = day > today;
-    // A day counts as "done" if the streak covers it — approximate via lastActiveDate
     const streakCoversDay =
       lastActive &&
       !isFuture &&
@@ -144,13 +139,11 @@ function renderStreak() {
       </div>`;
   }
 
-  // ── Grace pill ────────────────────────────────────────────────────────────
   const gracePill =
     grace > 0
       ? `<div class="grace-pill">🛡️ ${grace} grace day${grace > 1 ? "s" : ""} available</div>`
       : "";
 
-  // ── Mood message ─────────────────────────────────────────────────────────
   const moodMsg = getMoodMessage(current);
 
   content.innerHTML = `
@@ -200,27 +193,22 @@ function renderProgress() {
   const earnedKeys = new Set(allBadges.map((b) => b.key));
 
   const rows = PROGRESS_CONFIG.map((cfg) => {
-    // Count how many badges in this category are earned
     const earnedInCat = allBadges.filter((b) => b.category === cfg.key).length;
     const totalInCat = fullCatalogue.filter(
       (b) => b.category === cfg.key,
     ).length;
 
-    // Current numeric value for the progress fill
     let current = 0;
     if (cfg.key === "streak") {
       current = streakData?.current || 0;
     } else {
-      // Infer current value from the highest earned threshold
       const earned = cfg.thresholds.filter((t) =>
         earnedKeys.has(`${cfg.key}_${t}`),
       );
       current = earned.length ? Math.max(...earned) : 0;
     }
 
-    // Next threshold
     const next = cfg.thresholds.find((t) => t > current);
-    const max = cfg.thresholds[cfg.thresholds.length - 1];
     const pct = next ? Math.min(100, Math.round((current / next) * 100)) : 100;
 
     const nextLabel = next
@@ -253,7 +241,6 @@ function renderBadges(filterCat) {
 
   const earnedMap = new Map(allBadges.map((b) => [b.key, b]));
 
-  // Filter catalogue by selected category
   const visible = fullCatalogue.filter(
     (b) => cat === "all" || b.category === cat,
   );
@@ -267,7 +254,6 @@ function renderBadges(filterCat) {
     return;
   }
 
-  // Earned first, then locked
   const sorted = [...visible].sort((a, b) => {
     const aEarned = earnedMap.has(a.key) ? 0 : 1;
     const bEarned = earnedMap.has(b.key) ? 0 : 1;
@@ -306,15 +292,13 @@ function renderBadges(filterCat) {
 /* ─── FILTER ─────────────────────────────────────────────────────────────────── */
 function filterBadges(cat) {
   activeFilter = cat;
-
   document.querySelectorAll(".filter-btn").forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.cat === cat);
   });
-
   renderBadges(cat);
 }
 
-/* ─── BADGE UNLOCK MODAL (called from outside, e.g. after a ping) ────────────── */
+/* ─── BADGE UNLOCK MODAL ─────────────────────────────────────────────────────── */
 function showBadgeUnlock(badge) {
   document.getElementById("unlockIcon").textContent = badge.icon || "🏅";
   document.getElementById("unlockName").textContent = badge.name || "New badge";
@@ -330,6 +314,110 @@ document.getElementById("unlockClose")?.addEventListener("click", () => {
 document.getElementById("badgeUnlockModal")?.addEventListener("click", (e) => {
   if (e.target === document.getElementById("badgeUnlockModal")) {
     document.getElementById("badgeUnlockModal").style.display = "none";
+  }
+});
+
+/* ─── TOAST SYSTEM ───────────────────────────────────────────────────────────────
+   Call showToast(options) from anywhere — including other JS files.
+   Options:
+     title   {string}  bold first line
+     msg     {string}  smaller second line  (optional)
+     emoji   {string}  leading emoji        (optional, default "✦")
+     type    {string}  "success" | "error" | "info"  (optional, default "success")
+     duration{number}  ms before auto-dismiss        (optional, default 3800)
+
+   To show new badge toasts from another page's JS:
+     window.dispatchEvent(new CustomEvent("scriptorium:badges", {
+       detail: { badges: [ ...badgeObjects ] }
+     }));
+   rewards.js listens for this event and shows a toast per badge.
+   Any page can fire it — just import nothing, no coupling.
+────────────────────────────────────────────────────────────────────────────────── */
+function showToast({
+  title,
+  msg = "",
+  emoji = "✦",
+  type = "success",
+  duration = 3800,
+} = {}) {
+  const stack = document.getElementById("toastStack");
+  if (!stack) return;
+
+  const item = document.createElement("div");
+  item.className = `toast-item${type === "error" ? " toast-error" : type === "info" ? " toast-info" : ""}`;
+  item.innerHTML = `
+    <span class="toast-emoji">${escapeHtml(emoji)}</span>
+    <div class="toast-body">
+      <div class="toast-title">${escapeHtml(title)}</div>
+      ${msg ? `<div class="toast-msg">${escapeHtml(msg)}</div>` : ""}
+    </div>
+    <span class="toast-dismiss">✕</span>
+  `;
+
+  // Dismiss on click
+  item.addEventListener("click", () => dismissToast(item));
+
+  stack.appendChild(item);
+
+  // Trigger enter animation on next frame
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => item.classList.add("visible"));
+  });
+
+  // Auto-dismiss
+  const timer = setTimeout(() => dismissToast(item), duration);
+  item._dismissTimer = timer;
+}
+
+function dismissToast(item) {
+  clearTimeout(item._dismissTimer);
+  item.classList.remove("visible");
+  item.addEventListener("transitionend", () => item.remove(), { once: true });
+}
+
+/* ─── BADGE TOAST HELPER ─────────────────────────────────────────────────────── */
+// Call this to surface new badges as toasts (and show the unlock modal for the first one).
+// Used internally and also by other pages via the custom event below.
+function showNewBadges(badges) {
+  if (!badges || !badges.length) return;
+
+  // Show the full unlock modal for the first new badge
+  showBadgeUnlock(badges[0]);
+
+  // Toast for every badge (including the first, as a persistent reminder)
+  badges.forEach((badge) => {
+    showToast({
+      title: `${badge.icon || "🏅"} ${badge.name}`,
+      msg: badge.description,
+      emoji: badge.icon || "🏅",
+      type: "success",
+      duration: 5000,
+    });
+  });
+}
+
+/* ─── CROSS-PAGE EVENT LISTENER ──────────────────────────────────────────────────
+   Other pages (reflections, goals, media) fire this event after getting
+   _newBadges back from the API. rewards.js doesn't need to be loaded there —
+   they dispatch the event on window and any page that has rewards.js loaded
+   will catch it. For pages that DON'T have rewards.js, add a tiny inline
+   listener (see bottom of this file for the snippet to copy).
+────────────────────────────────────────────────────────────────────────────────── */
+window.addEventListener("scriptorium:badges", (e) => {
+  const badges = e.detail?.badges;
+  if (badges?.length) showNewBadges(badges);
+});
+
+window.addEventListener("scriptorium:streak", (e) => {
+  const { current } = e.detail || {};
+  if (current !== undefined) {
+    showToast({
+      title: `🔥 ${current}-day streak!`,
+      msg: "Keep it going — write or make progress today.",
+      emoji: "🔥",
+      type: "success",
+      duration: 3500,
+    });
   }
 });
 
@@ -356,19 +444,6 @@ function spawnConfetti() {
     document.body.appendChild(spark);
     spark.addEventListener("animationend", () => spark.remove());
   }
-}
-
-/* ─── TOAST ──────────────────────────────────────────────────────────────────── */
-function showToast(title, msg, type) {
-  const toast = document.getElementById("toast");
-  if (!toast) return;
-  document.getElementById("toastTitle").textContent = title;
-  document.getElementById("toastMessage").textContent = msg;
-  toast.style.borderLeftColor = type === "success" ? "#00C49A" : "#ff6b6b";
-  toast.style.transform = "translateY(0)";
-  setTimeout(() => {
-    toast.style.transform = "translateY(160px)";
-  }, 3500);
 }
 
 /* ─── ERROR STATE ────────────────────────────────────────────────────────────── */
@@ -447,3 +522,36 @@ function escapeAttr(str) {
 document.addEventListener("DOMContentLoaded", () => {
   fetchAll();
 });
+
+/*
+═══════════════════════════════════════════════════════════
+  HOW TO FIRE BADGE/STREAK TOASTS FROM OTHER PAGES
+═══════════════════════════════════════════════════════════
+  After any API call that returns _newBadges (reflection, goal, media),
+  paste this helper into that page's JS file:
+
+  function notifyBadges(newBadges, streak) {
+    if (newBadges?.length) {
+      window.dispatchEvent(new CustomEvent("scriptorium:badges", {
+        detail: { badges: newBadges }
+      }));
+    }
+    if (streak?.current > 1) {
+      window.dispatchEvent(new CustomEvent("scriptorium:streak", {
+        detail: { current: streak.current }
+      }));
+    }
+  }
+
+  Then call it after your fetch:
+    const data = await res.json();               // has data.reflection._newBadges
+    notifyBadges(data.reflection._newBadges, data.streak);
+
+  If the user is ON the rewards page, rewards.js catches the event and
+  shows the toast + modal. If they're on another page that also loads
+  rewards.js (e.g. via a shared bundle), same thing. If rewards.js is
+  NOT loaded on that page, add the toast stack HTML + showToast() to
+  your shared layout instead — or just use the event to refresh a
+  notification badge in the navbar.
+═══════════════════════════════════════════════════════════
+*/

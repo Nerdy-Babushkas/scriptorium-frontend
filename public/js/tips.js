@@ -16,7 +16,7 @@ export function initTips({ tips }) {
 
     let current = 0;
  
-    // Dynamic backend URL
+    // (KEEPING THIS - not used now but no change)
     const BASE_URL = window.location.origin.includes("localhost")
         ? "http://localhost:3001"
         : "https://scriptorium-backend-six.vercel.app/api";
@@ -65,21 +65,14 @@ export function initTips({ tips }) {
         }, 300);
     }
 
-    const token = localStorage.getItem("token");
+    // ❌ REMOVE BACKEND TOKEN USAGE
+    // const token = localStorage.getItem("token");
 
-    async function checkTips() {
-        try {
-            const res = await fetch(`${BASE_URL}/user/tips`, {
-                headers: { Authorization: "jwt " + token },
-            });
+    // ✅ LOCAL STORAGE VERSION
+    function checkTips() {
+        const showTips = localStorage.getItem("showTips");
 
-            const data = await res.json();
-
-            if (data.showTips !== false) {
-                openModal();
-                showTip(current);
-            }
-        } catch {
+        if (showTips !== "false") {
             openModal();
             showTip(current);
         }
@@ -101,18 +94,9 @@ export function initTips({ tips }) {
 
     closeBtn.onclick = closeModal;
 
-    disableBtn.onclick = async () => {
-        try {
-            await fetch(`${BASE_URL}/user/tips`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "jwt " + token,
-                },
-                body: JSON.stringify({ showTips: false }),
-            });
-        } catch { }
-
+    // ✅ SAVE TO LOCAL STORAGE INSTEAD OF API
+    disableBtn.onclick = () => {
+        localStorage.setItem("showTips", "false");
         closeModal();
     };
 

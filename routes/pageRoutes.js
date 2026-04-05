@@ -34,7 +34,7 @@ router.use((req, res, next) => {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       res.locals.user = decoded; // this makes <%= user %> available in EJS
-    } catch (err) {
+    } catch (_err) {
       res.clearCookie("token");
     }
   }
@@ -82,7 +82,7 @@ router.get("/account", requireAuth, (req, res) => {
 });
 
 router.get("/rewards", requireAuth, (req, res) => {
-  res.render("pages/placeholder", { pageName: "Rewards" });
+  res.render("pages/rewards");
 });
 
 router.get("/customise", requireAuth, (req, res) => {

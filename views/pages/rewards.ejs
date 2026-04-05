@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { title: 'Rewards - Scriptorium' }) %>
+    <style>
+
+    /* ============================================================
+       REWARDS PAGE — streak · badges · progress
+    ============================================================ */
+
+    /* ---------- AMBIENT ORBS ---------- */
+    .bg-orb {
+        position: fixed; border-radius: 50%;
+        filter: blur(90px); pointer-events: none;
+        z-index: 0; opacity: 0.18;
+        animation: orbDrift 12s ease-in-out infinite alternate;
+    }
+    .bg-orb-1 { width:520px; height:520px; background:#1a0f4c; top:-120px; left:-100px; animation-delay:0s; }
+    .bg-orb-2 { width:400px; height:400px; background:#00C49A; bottom:10%; right:-80px; animation-delay:-4s; }
+    .bg-orb-3 { width:300px; height:300px; background:#4c1a0f; bottom:30%; left:30%; animation-delay:-8s; }
+    @keyframes orbDrift {
+        from { transform: translateY(0px) scale(1); }
+        to   { transform: translateY(30px) scale(1.08); }
+    }
+
+    /* ---------- PAGE CONTROLS ---------- */
+    .page-controls {
+        display: flex; align-items: center;
+        justify-content: space-between; flex-wrap: wrap;
+        gap: 12px; margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .page-controls-left { display: flex; align-items: center; gap: 14px; }
+    .btn-back {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 8px 16px; border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.7);
+        font-size: 0.82rem; font-weight: 500; cursor: pointer;
+        transition: background 0.2s, color 0.2s, transform 0.15s;
+        text-decoration: none;
+    }
+    .btn-back:hover { background: rgba(255,255,255,0.1); color:#fff; transform: translateX(-2px); }
+    .btn-back svg { width:14px; height:14px; flex-shrink:0; }
+
+    /* ---------- SECTION TITLES ---------- */
+    .section-title {
+        font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+        text-transform: uppercase; color: #00C49A;
+        margin: 0 0 1rem; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::after {
+        content: ''; flex: 1; height: 1px;
+        background: linear-gradient(90deg, rgba(0,196,154,0.3), transparent);
+    }
+
+    /* ---------- STREAK CARD ---------- */
+    .streak-card {
+        background: rgba(15,25,30,0.7);
+        backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 20px; padding: 28px 28px 24px;
+        position: relative; overflow: hidden;
+        margin-bottom: 2.5rem;
+    }
+    .streak-card::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(ellipse at 0% 0%, rgba(0,196,154,0.08) 0%, transparent 60%);
+        pointer-events: none;
+    }
+    .streak-top {
+        display: flex; align-items: flex-start;
+        justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    }
+    .streak-numbers { display: flex; gap: 32px; }
+    .streak-stat { display: flex; flex-direction: column; gap: 4px; }
+    .streak-stat-value {
+        font-size: 2.8rem; font-weight: 800; line-height: 1;
+        background: linear-gradient(135deg, #00C49A, #7fffd4);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .streak-stat-value.cold { -webkit-text-fill-color: rgba(255,255,255,0.3); background: none; }
+    .streak-stat-label {
+        font-size: 0.72rem; color: rgba(255,255,255,0.4);
+        text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;
+    }
+    .streak-animal {
+        width: 90px; flex-shrink: 0;
+        filter: drop-shadow(0 0 18px rgba(0,196,154,0.25));
+        animation: animalFloat 4s ease-in-out infinite;
+    }
+    @keyframes animalFloat {
+        0%,100% { transform: translateY(0px); }
+        50%      { transform: translateY(-8px); }
+    }
+
+    /* Scarf stripe bar */
+    .scarf-bar {
+        margin-top: 22px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .scarf-label {
+        font-size: 0.72rem; color: rgba(255,255,255,0.35);
+        display: flex; justify-content: space-between;
+    }
+    .scarf-stripes {
+        display: flex; gap: 3px; flex-wrap: wrap;
+    }
+    .scarf-stripe {
+        height: 10px; border-radius: 3px; flex: 1; min-width: 8px; max-width: 28px;
+        transition: opacity 0.3s;
+    }
+    .scarf-stripe.filled   { background: #00C49A; }
+    .scarf-stripe.today    { background: #7fffd4; animation: stripeGlow 1.5s ease-in-out infinite; }
+    .scarf-stripe.empty    { background: rgba(255,255,255,0.07); }
+    .scarf-stripe.grace    { background: rgba(255,196,0,0.4); }
+    @keyframes stripeGlow {
+        0%,100% { opacity: 1; } 50% { opacity: 0.55; }
+    }
+
+    /* Weekly mini-calendar */
+    .week-row {
+        display: flex; gap: 6px; margin-top: 18px;
+    }
+    .week-day {
+        flex: 1; display: flex; flex-direction: column;
+        align-items: center; gap: 5px;
+    }
+    .week-day-label {
+        font-size: 0.62rem; color: rgba(255,255,255,0.3);
+        text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .week-day-dot {
+        width: 28px; height: 28px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.7rem; font-weight: 700;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.04);
+        color: rgba(255,255,255,0.2);
+    }
+    .week-day-dot.done  { background: rgba(0,196,154,0.2); border-color: rgba(0,196,154,0.5); color: #00C49A; }
+    .week-day-dot.today { background: rgba(0,196,154,0.35); border-color: #00C49A; color: #fff; box-shadow: 0 0 10px rgba(0,196,154,0.4); }
+    .week-day-dot.grace { background: rgba(255,196,0,0.15); border-color: rgba(255,196,0,0.35); color: rgba(255,196,0,0.7); }
+
+    /* Grace day pill */
+    .grace-pill {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 12px; border-radius: 999px;
+        background: rgba(255,196,0,0.08); border: 1px solid rgba(255,196,0,0.25);
+        font-size: 0.75rem; font-weight: 600; color: rgba(255,196,0,0.8);
+        margin-top: 14px; width: fit-content;
+    }
+
+    /* ---------- BADGE GRID ---------- */
+    .badges-section { margin-bottom: 2.5rem; }
+    .badge-filter-row {
+        display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem;
+    }
+    .filter-btn {
+        padding: 5px 14px; border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: transparent; color: rgba(255,255,255,0.45);
+        font-size: 0.78rem; font-weight: 600; cursor: pointer;
+        transition: all 0.18s; letter-spacing: 0.02em;
+    }
+    .filter-btn:hover  { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.25); }
+    .filter-btn.active { background: rgba(0,196,154,0.12); border-color: rgba(0,196,154,0.4); color: #00C49A; }
+
+    .badges-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 12px;
+    }
+
+    .badge-card {
+        background: rgba(15,25,30,0.65);
+        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 16px; padding: 18px 12px 16px;
+        display: flex; flex-direction: column;
+        align-items: center; gap: 8px; text-align: center;
+        transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+        position: relative; overflow: hidden;
+    }
+    .badge-card.earned {
+        border-color: rgba(0,196,154,0.22);
+    }
+    .badge-card.earned:hover {
+        transform: translateY(-5px);
+        border-color: rgba(0,196,154,0.4);
+        box-shadow: 0 14px 40px rgba(0,0,0,0.5), 0 0 24px rgba(0,196,154,0.07);
+    }
+    .badge-card.locked {
+        opacity: 0.45; filter: grayscale(0.6);
+    }
+    .badge-card.locked:hover { transform: none; }
+
+    /* Earned shimmer */
+    .badge-card.earned::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(105deg, transparent 35%, rgba(0,196,154,0.06) 50%, transparent 65%);
+        background-size: 200% 100%; background-position: -200% 0;
+        border-radius: 16px; pointer-events: none;
+    }
+    .badge-card.earned:hover::before { animation: scanSweep 0.6s ease forwards; }
+    @keyframes scanSweep {
+        from { background-position: -200% 0; }
+        to   { background-position: 220% 0; }
+    }
+
+    .badge-icon {
+        font-size: 2rem; line-height: 1;
+        filter: drop-shadow(0 0 8px rgba(0,196,154,0.3));
+    }
+    .badge-card.locked .badge-icon { filter: none; }
+    .badge-icon-locked { font-size: 1.5rem; opacity: 0.3; }
+
+    .badge-name {
+        font-size: 0.78rem; font-weight: 700;
+        color: #fff; line-height: 1.25;
+    }
+    .badge-card.locked .badge-name { color: rgba(255,255,255,0.3); }
+
+    .badge-desc {
+        font-size: 0.65rem; color: rgba(255,255,255,0.3);
+        line-height: 1.4; margin: 0;
+    }
+
+    .badge-date {
+        font-size: 0.6rem; color: rgba(0,196,154,0.5);
+        font-weight: 600; letter-spacing: 0.04em;
+        margin-top: 2px;
+    }
+
+    /* Earned sparkle corner */
+    .badge-sparkle {
+        position: absolute; top: 9px; right: 9px;
+        width: 7px; height: 7px; border-radius: 50%;
+        background: #00C49A;
+        box-shadow: 0 0 6px rgba(0,196,154,0.7);
+        animation: badgePulse 2s ease-in-out infinite;
+    }
+    @keyframes badgePulse {
+        0%,100% { opacity: 1; transform: scale(1); }
+        50%      { opacity: 0.4; transform: scale(0.6); }
+    }
+
+    /* ---------- PROGRESS BARS (category totals) ---------- */
+    .progress-section { margin-bottom: 2.5rem; }
+    .progress-rows { display: flex; flex-direction: column; gap: 14px; }
+    .progress-row {
+        background: rgba(15,25,30,0.65);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 14px; padding: 16px 20px;
+        display: flex; flex-direction: column; gap: 8px;
+    }
+    .progress-row-top {
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .progress-row-label {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 0.85rem; font-weight: 600; color: #fff;
+    }
+    .progress-row-label span { font-size: 1rem; }
+    .progress-row-count {
+        font-size: 0.75rem; color: rgba(255,255,255,0.35);
+        font-weight: 500;
+    }
+    .progress-track {
+        height: 6px; border-radius: 3px;
+        background: rgba(255,255,255,0.06); overflow: hidden;
+    }
+    .progress-fill {
+        height: 100%; border-radius: 3px;
+        background: linear-gradient(90deg, #00C49A, #7fffd4);
+        transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .progress-next {
+        font-size: 0.65rem; color: rgba(255,255,255,0.25);
+    }
+
+    /* ---------- BADGE UNLOCK MODAL ---------- */
+    #badgeUnlockModal {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+        display: none; align-items: center; justify-content: center;
+        z-index: 9999; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    }
+    .badge-unlock-box {
+        background: #0a1418; border: 1px solid rgba(0,196,154,0.3);
+        border-radius: 28px; padding: 40px 32px 32px;
+        max-width: 340px; width: 90%; text-align: center;
+        animation: unlockPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative; overflow: hidden;
+    }
+    .badge-unlock-box::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(ellipse at 50% -10%, rgba(0,196,154,0.15) 0%, transparent 65%);
+        pointer-events: none;
+    }
+    @keyframes unlockPop {
+        from { transform: scale(0.7) translateY(30px); opacity: 0; }
+        to   { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .unlock-eyebrow {
+        font-size: 0.62rem; font-weight: 700; letter-spacing: 0.15em;
+        text-transform: uppercase; color: #00C49A; margin-bottom: 16px; display: block;
+    }
+    .unlock-icon {
+        font-size: 4.5rem; line-height: 1; display: block; margin-bottom: 14px;
+        animation: iconBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+    }
+    @keyframes iconBounce {
+        from { transform: scale(0.4) rotate(-15deg); opacity: 0; }
+        to   { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    .unlock-title {
+        font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0 0 6px;
+    }
+    .unlock-desc {
+        font-size: 0.85rem; color: rgba(255,255,255,0.45); margin: 0 0 24px; line-height: 1.5;
+    }
+    .unlock-close {
+        width: 100%; padding: 11px; border-radius: 12px;
+        border: 1px solid rgba(0,196,154,0.3); background: rgba(0,196,154,0.08);
+        color: #00C49A; font-size: 0.88rem; font-weight: 600; cursor: pointer;
+        transition: background 0.2s, border-color 0.2s;
+    }
+    .unlock-close:hover { background: rgba(0,196,154,0.16); border-color: rgba(0,196,154,0.5); }
+
+    /* Confetti sparks reuse from recommendations */
+    .spark {
+        position: fixed; width: 6px; height: 6px; border-radius: 50%;
+        pointer-events: none;
+        animation: sparkFly var(--dur) ease forwards; z-index: 99999;
+    }
+    @keyframes sparkFly {
+        0%   { transform: translate(0,0) scale(1); opacity: 1; }
+        100% { transform: translate(var(--tx),var(--ty)) scale(0); opacity: 0; }
+    }
+
+    /* ---------- TOAST ---------- */
+    #toast { transform: translateY(160px); }
+
+    /* ---------- LOADING SKELETON ---------- */
+    .skeleton {
+        background: linear-gradient(90deg,
+            rgba(255,255,255,0.04) 25%,
+            rgba(255,255,255,0.09) 50%,
+            rgba(255,255,255,0.04) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 10px;
+    }
+    @keyframes shimmer {
+        0%   { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    /* ---------- EMPTY / ERROR STATE ---------- */
+    .state-center {
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        text-align: center; padding: 4rem 2rem;
+    }
+
+    </style>
+</head>
+
+<!-- ==================== BADGE UNLOCK MODAL ==================== -->
+<div id="badgeUnlockModal">
+    <div class="badge-unlock-box">
+        <span class="unlock-eyebrow">✦ Badge unlocked</span>
+        <span class="unlock-icon" id="unlockIcon"></span>
+        <p class="unlock-title" id="unlockName"></p>
+        <p class="unlock-desc" id="unlockDesc"></p>
+        <button class="unlock-close" id="unlockClose">Nice one!</button>
+    </div>
+</div>
+
+<!-- ==================== TOAST ==================== -->
+<div id="toast" style="
+  position:fixed; bottom:2rem; right:2rem;
+  display:flex; align-items:center; gap:14px;
+  padding:16px 22px; background:#0f191e; border-radius:14px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.55); color:white;
+  transform:translateY(160px);
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  z-index:10000; min-width:220px; border-left:4px solid #00C49A;
+">
+    <div>
+        <div id="toastTitle"   style="font-weight:700;font-size:0.9rem;"></div>
+        <div id="toastMessage" style="font-size:0.78rem;opacity:0.65;margin-top:2px;"></div>
+    </div>
+</div>
+
+<!-- ==================== BODY ==================== -->
+<body style="background:radial-gradient(circle at 50% 0%, #1a0f4c 0%, #05181c 100%); background-color:#05181c;"
+      class="min-h-screen relative overflow-x-hidden font-outfit text-white">
+
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+
+    <%- include('../partials/navbar_app') %>
+
+    <main class="relative z-10 mt-6 px-4 md:px-8 max-w-[1100px] mx-auto pb-16">
+
+        <!-- PAGE CONTROLS -->
+        <div class="page-controls">
+            <div class="page-controls-left">
+                <a href="/room" class="btn-back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5M12 5l-7 7 7 7"/>
+                    </svg>
+                    Back to Room
+                </a>
+                <div style="display:flex;flex-direction:column;gap:5px;">
+                    <h1 class="text-3xl font-dancing text-white" style="margin:0;">Rewards</h1>
+                    <span style="font-size:0.68rem;color:rgba(255,255,255,0.35);font-weight:500;letter-spacing:0.04em;">
+                        Streaks · Badges · Progress
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ STREAK ══════════════════════════════════════════════════════════ -->
+        <p class="section-title">Daily streak</p>
+
+        <div class="streak-card" id="streakCard">
+            <!-- Skeleton while loading -->
+            <div id="streakSkeleton">
+                <div style="display:flex;gap:32px;margin-bottom:20px;">
+                    <div class="skeleton" style="width:80px;height:60px;border-radius:12px;"></div>
+                    <div class="skeleton" style="width:80px;height:60px;border-radius:12px;"></div>
+                </div>
+                <div class="skeleton" style="width:100%;height:10px;border-radius:5px;"></div>
+            </div>
+            <!-- Real content injected by JS -->
+            <div id="streakContent" style="display:none;"></div>
+        </div>
+
+        <!-- ══ PROGRESS ════════════════════════════════════════════════════════ -->
+        <div class="progress-section">
+            <p class="section-title">Progress</p>
+            <div class="progress-rows" id="progressRows">
+                <!-- Skeletons -->
+                <div class="skeleton" style="height:72px;border-radius:14px;"></div>
+                <div class="skeleton" style="height:72px;border-radius:14px;"></div>
+                <div class="skeleton" style="height:72px;border-radius:14px;"></div>
+                <div class="skeleton" style="height:72px;border-radius:14px;"></div>
+            </div>
+        </div>
+
+        <!-- ══ BADGES ══════════════════════════════════════════════════════════ -->
+        <div class="badges-section">
+            <p class="section-title">Badges</p>
+            <div class="badge-filter-row" id="filterRow">
+                <button class="filter-btn active" data-cat="all" onclick="filterBadges('all')">All</button>
+                <button class="filter-btn" data-cat="streak"     onclick="filterBadges('streak')">🔥 Streaks</button>
+                <button class="filter-btn" data-cat="reflection" onclick="filterBadges('reflection')">✍️ Reflections</button>
+                <button class="filter-btn" data-cat="media"      onclick="filterBadges('media')">📚 Media</button>
+                <button class="filter-btn" data-cat="goal"       onclick="filterBadges('goal')">🎯 Goals</button>
+                <button class="filter-btn" data-cat="milestone"  onclick="filterBadges('milestone')">🐣 Milestones</button>
+            </div>
+            <div class="badges-grid" id="badgesGrid">
+                <!-- Skeletons -->
+                <% for(let i = 0; i < 8; i++) { %>
+                <div class="skeleton" style="height:150px;border-radius:16px;"></div>
+                <% } %>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="/js/rewards.js"></script>
+</body>
+</html>

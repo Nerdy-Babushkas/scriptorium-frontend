@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <%- include('../partials/head_public', { title: 'Scriptorium - Your Space to Create' }) %>
+    <%- include('../partials/head_public', { title: user ? 'About Scriptorium' : 'Scriptorium - Your Space to Create' }) %>
 </head>
 <body class="bg-scriptorium-dark min-h-screen overflow-x-hidden relative">
     
@@ -9,6 +9,8 @@
     <%- include('../partials/navbar_public') %>
 
     <div class="relative z-10">
+        <% if (!user) { %>
+        <!-- ── HERO: guests only ── -->
         <section class="pt-19 sm:pt-27 pb-12 sm:pb-20 px-4 sm:px-8 lg:px-16">
             <div class="max-w-7xl mx-auto">
                 <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
@@ -30,6 +32,34 @@
                 </div>
             </div>
         </section>
+        <% } else { %>
+        <!-- ── ABOUT HERO: logged-in users ── -->
+        <section class="pt-19 sm:pt-27 pb-12 sm:pb-20 px-4 sm:px-8 lg:px-16">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                    <div class="space-y-6 sm:space-y-8 order-2 lg:order-1">
+                        <span class="inline-block font-outfit text-sm font-semibold uppercase tracking-[3px] text-scriptorium-green opacity-80">
+                            What is Scriptorium?
+                        </span>
+                        <h1 class="font-dancing text-4xl sm:text-5xl lg:text-6xl xl:text-[64px] font-bold text-white leading-[110%] capitalize">
+                            Your Space to Think, Feel, and Create.
+                        </h1>
+                        <p class="font-roboto text-lg sm:text-xl text-white leading-[137.5%] max-w-[524px]">
+                            A virtual room built around you — your books, music, movies, reflections, and growth, all in one cosy space.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 sm:gap-5 pt-4">
+                            <a href="/room" class="font-outfit text-lg sm:text-xl font-semibold text-white uppercase tracking-[2px] bg-scriptorium-teal hover:bg-scriptorium-teal/90 transition-colors px-12 py-3.5 rounded-[50px] text-center">
+                                Go to your Room →
+                            </a>
+                        </div>
+                    </div>
+                    <div class="order-1 lg:order-2 flex justify-center lg:justify-end">
+                        <img src="/assets/hero-image.png" alt="Virtual learning space" class="w-full max-w-[400px] sm:max-w-[500px] lg:max-w-[624px] h-auto" />
+                    </div>
+                </div>
+            </div>
+        </section>
+        <% } %>
 
         <section id="about" class="pt-6 sm:pt-10 pb-12 sm:pb-20 px-4 sm:px-8 lg:px-16">
             <div class="max-w-7xl mx-auto">
@@ -67,6 +97,30 @@
                 </div>
             </div>
         </section>
+
+        <% if (user) { %>
+        <!-- ── Logged-in footer nudge ── -->
+        <section class="pb-24 px-4 sm:px-8 lg:px-16">
+            <div class="max-w-7xl mx-auto flex flex-col items-center gap-5 text-center">
+                <p class="font-roboto text-lg text-white/60">Ready to dive back in?</p>
+                <a href="/room" class="font-outfit text-lg font-semibold text-white uppercase tracking-[2px] bg-scriptorium-teal hover:bg-scriptorium-teal/90 transition-colors px-12 py-3.5 rounded-[50px]">
+                    Open your Room →
+                </a>
+            </div>
+        </section>
+        <% } else { %>
+        <!-- ── Guest footer nudge ── -->
+        <section class="pb-24 px-4 sm:px-8 lg:px-16">
+            <div class="max-w-7xl mx-auto flex flex-col items-center gap-5 text-center">
+                <p class="font-roboto text-lg text-white/60">Ready to make it yours?</p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="/login" class="font-outfit text-lg font-semibold text-white uppercase tracking-[2px] bg-scriptorium-teal hover:bg-scriptorium-teal/90 transition-colors px-12 py-3.5 rounded-[50px] text-center">Log in</a>
+                    <a href="/signup" class="font-outfit text-lg font-semibold text-white uppercase tracking-[2px] border border-scriptorium-blue hover:bg-scriptorium-blue/10 transition-colors px-12 py-3.5 rounded-[50px] text-center">Sign up</a>
+                </div>
+            </div>
+        </section>
+        <% } %>
+
     </div>
 </body>
 </html>

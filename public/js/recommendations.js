@@ -5,6 +5,15 @@
 
 const BASE_URL = "https://scriptorium-backend-six.vercel.app/api";
 
+// Mirrors account.js — must match passport strategy: .fromAuthHeaderWithScheme("jwt")
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  return {
+    "Content-Type": "application/json",
+    Authorization: `JWT ${token}`,
+  };
+};
+
 /* ─── PER-TAB CONFIG ────────────────────────────────────────────────────────── */
 const TAB_CONFIG = {
   movies: {
@@ -172,13 +181,18 @@ function switchTab(tab) {
 
   activeTab = tab;
 
-  // Only fetch if not already loading or done
-  if (tabState[tab] === false) fetchTab(tab);
+  // Only fetch if not already loading or done, and AI is not disabled
+  if (tabState[tab] === false && !document.getElementById("ai-disabled-banner"))
+    fetchTab(tab);
 }
 
 function refreshActive() {
-  // Don't allow refresh while a fetch is already in flight
-  if (tabState[activeTab] === "loading") return;
+  // Don't allow refresh while a fetch is already in flight or AI is disabled
+  if (
+    tabState[activeTab] === "loading" ||
+    document.getElementById("ai-disabled-banner")
+  )
+    return;
 
   tabState[activeTab] = false;
   document.getElementById(`grid-${activeTab}`).innerHTML = "";
@@ -445,7 +459,159 @@ function showToast(title, msg, type) {
   }, 3500);
 }
 
+/* ─── AI RECOMMENDATIONS GATE ────────────────────────────────────────────────── */
+async function checkAiEnabled() {
+  try {
+    const res = await fetch(
+      "https://scriptorium-backend-six.vercel.app/api/user/account",
+      {
+        method: "GET",
+        headers: getAuthHeaders(),
+      },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok || !data.ai_info) {
+      showAiDisabledBanner();
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error("Failed to check AI settings:", err);
+    // Fail open — let the tab fetch proceed and surface any real auth errors
+    return true;
+  }
+}
+
+function showAiDisabledBanner() {
+  // Hide all tab panels content and show a full-width notice instead
+  const main = document.querySelector("main");
+  if (!main) return;
+
+  // Hide tab bar and panels
+  const tabsBar = document.querySelector(".tabs-bar");
+  const refreshBtn = document.querySelector(".btn-refresh");
+  if (tabsBar) tabsBar.style.display = "none";
+  if (refreshBtn) refreshBtn.style.display = "none";
+
+  // Remove any existing banner
+  document.getElementById("ai-disabled-banner")?.remove();
+
+  const banner = document.createElement("div");
+  banner.id = "ai-disabled-banner";
+  banner.innerHTML = `
+    <style>
+      @keyframes bannerFadeIn {
+        from { opacity: 0; transform: translateY(18px) scale(0.98); }
+        to   { opacity: 1; transform: translateY(0)   scale(1);    }
+      }
+      #ai-disabled-banner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 4rem 2rem;
+        animation: bannerFadeIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+      .adb-card {
+        background: rgba(15, 25, 30, 0.72);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 3rem 2.5rem 2.5rem;
+        max-width: 480px;
+        width: 100%;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+        position: relative;
+        overflow: hidden;
+      }
+      .adb-card::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: radial-gradient(ellipse at 50% -10%, rgba(0,196,154,0.12) 0%, transparent 65%);
+        pointer-events: none;
+      }
+      .adb-icon {
+        font-size: 3rem;
+        margin-bottom: 1.25rem;
+        display: block;
+        filter: grayscale(0.2);
+      }
+      .adb-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 0.6rem;
+      }
+      .adb-subtitle {
+        font-size: 0.88rem;
+        color: rgba(255,255,255,0.45);
+        line-height: 1.6;
+        margin: 0 0 2rem;
+      }
+      .adb-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 26px;
+        border-radius: 999px;
+        border: 1px solid rgba(0,196,154,0.5);
+        background: rgba(0,196,154,0.1);
+        color: #00C49A;
+        font-size: 0.88rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-decoration: none;
+        transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      }
+      .adb-link:hover {
+        background: rgba(0,196,154,0.18);
+        border-color: #00C49A;
+        box-shadow: 0 0 22px rgba(0,196,154,0.25);
+        transform: translateY(-1px);
+      }
+      .adb-link svg { width: 15px; height: 15px; flex-shrink: 0; }
+      .adb-hint {
+        margin-top: 1.25rem;
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.2);
+        letter-spacing: 0.03em;
+      }
+    </style>
+
+    <div class="adb-card">
+      <span class="adb-icon">🤖</span>
+      <p class="adb-title">AI Recommendations are turned off</p>
+      <p class="adb-subtitle">
+        Babushka AI needs your permission to personalise picks for you.<br>
+        Enable it in your account settings and come back for movies, music &amp; books curated just for you.
+      </p>
+      <a href="/account" class="adb-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+        Go to Account Settings
+      </a>
+      <p class="adb-hint">Settings → AI Recommendations toggle</p>
+    </div>
+  `;
+
+  // Insert after the page-controls div
+  const pageControls = main.querySelector(".page-controls");
+  if (pageControls) {
+    pageControls.insertAdjacentElement("afterend", banner);
+  } else {
+    main.prepend(banner);
+  }
+}
+
 /* ─── INIT ───────────────────────────────────────────────────────────────────── */
-document.addEventListener("DOMContentLoaded", () => {
-  fetchTab("movies");
+document.addEventListener("DOMContentLoaded", async () => {
+  const enabled = await checkAiEnabled();
+  if (enabled) fetchTab("movies");
 });

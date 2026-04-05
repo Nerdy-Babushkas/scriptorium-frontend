@@ -92,3 +92,31 @@ document
       showToast("Security Alert", err.message, true);
     }
   });
+
+// --- LOAD USER DATA ON START ---
+async function loadUserData() {
+  try {
+    const res = await fetch(
+      "https://scriptorium-backend-six.vercel.app/api/user/account",
+      {
+        method: "GET",
+        headers: getAuthHeaders(),
+      },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      showToast("Session invalid", data.message, true);
+      return;
+    }
+
+    // Fill the fields
+    document.getElementById("userName").value = data.userName || "";
+    document.getElementById("aiRecommendations").checked = !!data.ai_info;
+  } catch (err) {
+    console.error("Failed to load user data:", err);
+  }
+}
+
+loadUserData();

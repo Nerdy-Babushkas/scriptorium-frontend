@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 // --- INTERACTIVE OBJECTS CONFIG ---
-// These should be the LEAF mesh names (the actual geometry, not parent groups)
 const interactiveObjects = {
   'Music':     { url: '/music',   label: 'Music Room' },
   'Music.001': { url: '/music',   label: 'Music Room' },
@@ -14,7 +14,7 @@ const interactiveObjects = {
 let scene, camera, renderer, controls;
 let clickableMeshes = [];
 let hoveredObject = null;
-let outlineMesh = null; // the highlight outline we'll add/remove
+let outlineMesh = null;
 
 // --- TOOLTIP ---
 const tooltip = document.createElement('div');
@@ -37,31 +37,25 @@ document.body.appendChild(tooltip);
 
 // --- RAYCASTER ---
 const raycaster = new THREE.Raycaster();
-// Tighten the raycaster — only detect hits very close to the ray center
 raycaster.params.Mesh.threshold = 0;
 const mouse = new THREE.Vector2();
 
 // --- OUTLINE MATERIAL ---
 const outlineMaterial = new THREE.MeshBasicMaterial({
   color: 0xf0c040,
-  side: THREE.BackSide, // renders on the outside of the mesh
+  side: THREE.BackSide,
 });
 
 function addOutline(mesh) {
   removeOutline();
   outlineMesh = new THREE.Mesh(mesh.geometry, outlineMaterial);
-  outlineMesh.scale.setScalar(1.07); // slightly bigger = outline effect
-  outlineMesh.position.copy(mesh.position);
-  outlineMesh.rotation.copy(mesh.rotation);
   outlineMesh.matrixAutoUpdate = true;
 
-  // Add as sibling (same parent) so transforms match
   if (mesh.parent) {
     mesh.parent.add(outlineMesh);
     outlineMesh.applyMatrix4(mesh.matrixWorld);
     outlineMesh.matrix.premultiply(mesh.parent.matrixWorld.clone().invert());
     outlineMesh.matrix.decompose(outlineMesh.position, outlineMesh.quaternion, outlineMesh.scale);
-    // Scale up slightly for outline
     outlineMesh.scale.multiplyScalar(1.07);
   } else {
     scene.add(outlineMesh);
@@ -71,7 +65,6 @@ function addOutline(mesh) {
 function removeOutline() {
   if (outlineMesh) {
     outlineMesh.parent?.remove(outlineMesh);
-    outlineMesh.geometry = null; // don't dispose shared geometry
     outlineMesh = null;
   }
 }
@@ -84,11 +77,30 @@ function registerClickableObjects(model) {
       if (config) {
         child.userData.config = config;
         clickableMeshes.push(child);
-        console.log(`  ✓ Registered as clickable: "${child.name}" → ${config.url}`);
+        console.log(`✓ Registered: "${child.name}" → ${config.url}`);
       }
     }
   });
   console.log(`Total clickable meshes: ${clickableMeshes.length}`);
+}
+
+// --- KEY FIX: Canvas-relative mouse ---
+function getCanvasRelativeMouse(e) {
+  const canvas = renderer.domElement;
+  const rect = canvas.getBoundingClientRect();
+  mouse.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+  mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+}
+
+function getHitTarget(intersects) {
+  for (const intersect of intersects) {
+    let obj = intersect.object;
+    while (obj) {
+      if (obj.userData.config) return obj;
+      obj = obj.parent;
+    }
+  }
+  return null;
 }
 
 function init() {
@@ -115,27 +127,41 @@ function init() {
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
   controls.minDistance = 0.1;
-  controls.maxDistance = 15;
+  controls.maxDistance = 50;
   controls.enablePan = false;
 
-  // --- LOAD MODEL ---
+  // --- DRACO LOADER (fixes the compression error) ---
+  const dracoLoader = new DRACOLoader();
+  dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+
+  // --- GLTF LOADER ---
   const loader = new GLTFLoader();
-  loader.load('/assets/models/main_room.glb', (gltf) => {
-    const model = gltf.scene;
-    scene.add(model);
+  loader.setDRACOLoader(dracoLoader);
 
-    registerClickableObjects(model);
+  // --- LOAD MODEL FROM CLOUDINARY ---
+  loader.load(
+    'https://res.cloudinary.com/dtonhoq70/image/upload/v1775384112/main_room_i4ekxx.glb',
+    (gltf) => {
+      const model = gltf.scene;
+      scene.add(model);
 
-    const box = new THREE.Box3().setFromObject(model);
-    const center = box.getCenter(new THREE.Vector3());
-    camera.position.set(center.x, center.y + 1.5, center.z + 4);
-    controls.target.copy(center);
-    controls.update();
+      registerClickableObjects(model);
 
-    console.log('3D Room Initialized.');
-  }, undefined, (error) => {
-    console.error('Load Error:', error);
-  });
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      camera.position.set(center.x, center.y + 2, center.z + 10);
+      controls.target.copy(center);
+      controls.update();
+
+      console.log('3D Room Initialized.');
+    },
+    (progress) => {
+      console.log('Loading:', Math.round(progress.loaded / progress.total * 100) + '%');
+    },
+    (error) => {
+      console.error('Load Error:', error);
+    }
+  );
 
   window.addEventListener('mousemove', onMouseMove);
   window.addEventListener('click', onMouseClick);
@@ -144,41 +170,22 @@ function init() {
   animate();
 }
 
-function getHitTarget(intersects) {
-  // From the ray hits, find the first one that has a config registered
-  for (const intersect of intersects) {
-    let obj = intersect.object;
-    // Walk up the tree in case we hit a child of a registered mesh
-    while (obj) {
-      if (obj.userData.config) return obj;
-      obj = obj.parent;
-    }
-  }
-  return null;
-}
-
 function onMouseMove(e) {
-  mouse.x =  (e.clientX / window.innerWidth)  * 2 - 1;
-  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  getCanvasRelativeMouse(e);
 
   tooltip.style.left = e.clientX + 16 + 'px';
   tooltip.style.top  = e.clientY + 'px';
 
   raycaster.setFromCamera(mouse, camera);
-
-  // Only test against registered clickable meshes for precision
-  const intersects = raycaster.intersectObjects(clickableMeshes, false); // false = no deep children
-
+  const intersects = raycaster.intersectObjects(clickableMeshes, false);
   const target = getHitTarget(intersects);
 
   if (target !== hoveredObject) {
-    // Clear old hover
     removeOutline();
     hoveredObject = null;
     document.body.style.cursor = 'default';
     tooltip.style.opacity = '0';
 
-    // Apply new hover
     if (target) {
       hoveredObject = target;
       addOutline(target);
@@ -190,8 +197,7 @@ function onMouseMove(e) {
 }
 
 function onMouseClick(e) {
-  mouse.x =  (e.clientX / window.innerWidth)  * 2 - 1;
-  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  getCanvasRelativeMouse(e);
 
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(clickableMeshes, false);

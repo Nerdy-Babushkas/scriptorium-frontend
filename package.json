@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node local.js",
     "dev": "nodemon api/index.js",
-    "build": "tailwindcss -i ./src/input.css -o ./public/css/style.css",
+    "build": "echo 'no build step required'",
     "test": "jest",
     "lint": "eslint .",
     "format:check": "echo \"No formatter configured\""

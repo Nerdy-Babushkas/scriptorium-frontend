@@ -53,6 +53,42 @@
       .custom-scroll::-webkit-scrollbar-thumb:hover {
         background: #00a07d;
       }
+
+      @keyframes yarnFloat {
+        0% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(0px) scale(0.8);
+        }
+        20% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(-8px) scale(1);
+        }
+        80% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(-40px) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(-58px) scale(0.9);
+        }
+      }
+      @keyframes goalCompletePop {
+        0% {
+          opacity: 0;
+          transform: translateX(-50%) scale(0.5);
+        }
+        40% {
+          opacity: 1;
+          transform: translateX(-50%) scale(1.15);
+        }
+        70% {
+          transform: translateX(-50%) scale(0.95);
+        }
+        100% {
+          opacity: 1;
+          transform: translateX(-50%) scale(1);
+        }
+      }
     </style>
   </head>
   <body
@@ -235,22 +271,22 @@
 </div>
          
           <div class="relative">
-  <label class="block text-white/70 text-sm mb-1 font-medium"
-    >Attach a piece of media</label
-  >
-  <input
-    type="text"
-    id="modal-media-search"
-    class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
-    placeholder="N/A"
-    value="N/A"
-    autocomplete="off"
-  />
-  <div
-    id="media-search-results"
-    class="hidden absolute z-50 mt-2 w-full max-h-56 overflow-y-auto rounded-lg border border-white/10 bg-[#081014] shadow-xl"
-  ></div>
-</div>
+            <label class="block text-white/70 text-sm mb-1 font-medium"
+              >Attach a piece of media</label
+            >
+            <input
+              type="text"
+              id="modal-media-search"
+              class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
+              placeholder="N/A"
+              value="N/A"
+              autocomplete="off"
+            />
+            <div
+              id="media-search-results"
+              class="hidden absolute z-50 mt-2 w-full max-h-56 overflow-y-auto rounded-lg border border-white/10 bg-[#081014] shadow-xl"
+            ></div>
+          </div>
         </div>
 
         <div class="flex justify-end gap-3 mt-8">
@@ -285,6 +321,50 @@
         music: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>`,
         movies: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>`,
       };
+
+      function createBurst(x, y) {
+  const burstContainer = document.createElement("div");
+  burstContainer.style.position = "absolute";
+  burstContainer.style.left = `${x}px`;
+  burstContainer.style.top = `${y}px`;
+  burstContainer.style.pointerEvents = "none";
+  burstContainer.style.width = "0";
+  burstContainer.style.height = "0";
+  document.body.appendChild(burstContainer);
+
+  const colors = ["#FFDA6D", "#00C49A", "#D90429", "#FFFFFF"];
+  const count = 25;
+
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement("div");
+    const angle = Math.random() * 2 * Math.PI;
+    const speed = 30 + Math.random() * 20;
+    const size = 4 + Math.random() * 4;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+
+    particle.style.position = "absolute";
+    particle.style.width = `${size}px`;
+    particle.style.height = `${size}px`;
+    particle.style.borderRadius = "50%";
+    particle.style.backgroundColor = color;
+    particle.style.left = "0px";
+    particle.style.top = "0px";
+    particle.style.opacity = 1;
+    particle.style.transform = "translate(0,0) scale(1)";
+    particle.style.transition = "transform 0.8s ease-out, opacity 0.8s ease-out";
+
+    burstContainer.appendChild(particle);
+
+    requestAnimationFrame(() => {
+      particle.style.transform = `translate(${Math.cos(angle) * speed}px, ${Math.sin(angle) * speed}px) scale(0.5)`;
+      particle.style.opacity = "0";
+    });
+  }
+
+  setTimeout(() => {
+    burstContainer.remove();
+  }, 900);
+}
 function updateTrackingUI() {
   const tracking = document.getElementById("modal-tracking").value;
   const goalType = document.getElementById("modal-type").value;
@@ -511,7 +591,7 @@ function setupInlineMediaSearch() {
       function render() {
         const container = document.getElementById("goals-container");
         container.innerHTML = "";
-
+        const pct = goal.total > 0 ? Math.round((goal.current / goal.total) * 100) : 0;
         goals = goals.map((g) => {
           const total = Number(g.total || 0);
           const current = Number(g.current || 0);
@@ -603,6 +683,12 @@ class="edit-goal absolute -top-5 -right-6 bg-black/70 hover:bg-teal-neon text-wh
     <div class="goal-pct text-xs text-teal-neon/80">${pct}%</div>
   </div>
 `;
+
+if (pct === 100 && !goal.bursted) {
+  const rect = item.getBoundingClientRect();
+  createBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  goal.bursted = true; 
+}
 
           item.addEventListener("click", (e) => {
             if (e.target.closest(".goal-bar")) return;
@@ -949,5 +1035,6 @@ console.log("Saving media:", media);
       document.getElementById("modal-tracking").addEventListener("change", updateTrackingUI);
 document.getElementById("modal-type").addEventListener("change", updateTrackingUI);
     </script>
+    <script src="/js/progress.js"></script>
   </body>
 </html>

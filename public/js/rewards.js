@@ -483,7 +483,7 @@ function getAnimalSrc(streak) {
 
 function getAnimalAlt(streak) {
   if (streak === 0) return "Idle";
-  if (streak < 3) return "Cosy";
+  if (streak < 4) return "Cosy";
   if (streak < 14) return "Happy";
   return "Excited";
 }

@@ -5,9 +5,14 @@
 
 <nav class="relative z-20 px-6 lg:px-12 py-4 flex items-center justify-between gap-8 bg-[#2C1810]/90 backdrop-blur-sm border-b border-white/5">
     
-    <a href="/room" class="font-dancing font-bold text-3xl text-white tracking-wide hover:opacity-80 transition-opacity whitespace-nowrap">
-        Scriptorium
-    </a>
+    <div class="flex items-center gap-2 whitespace-nowrap">
+        <a href="/room" class="font-dancing font-bold text-3xl text-white tracking-wide hover:opacity-80 transition-opacity">
+            Scriptorium
+        </a>
+        <a href="/help" title="Help" class="mb-2 flex-shrink-0 opacity-40 hover:opacity-90 transition-opacity duration-200">
+            <img src="/assets/info.png" alt="Help" class="w-5 h-5 object-contain" style="filter:brightness(0) invert(1);" />
+        </a>
+    </div>
 
     <div class="hidden md:flex flex-grow max-w-2xl">
         <%- include('./search_bar', { 

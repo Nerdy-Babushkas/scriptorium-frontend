@@ -28,6 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentItemData = null;
   let currentType =
     new URLSearchParams(window.location.search).get("type") || "movies";
+  // Persist immediately so the navbar search bar stays in sync
+  localStorage.setItem("lastSearchType", currentType);
 
   const initialQuery = new URLSearchParams(window.location.search).get("q");
 
@@ -75,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     currentType = type;
     currentPage = 1;
+    localStorage.setItem("lastSearchType", type);
     updateTabs(type);
     toggleAdvancedFields(type);
 

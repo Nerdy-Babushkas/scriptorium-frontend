@@ -287,6 +287,7 @@
       };
 function updateTrackingUI() {
   const tracking = document.getElementById("modal-tracking").value;
+  const goalType = document.getElementById("modal-type").value;
 
   const targetInput = document.getElementById("modal-target");
   const targetLabel = document.getElementById("target-label");
@@ -305,8 +306,17 @@ function updateTrackingUI() {
     // One-time goal: show only binary select
     currentBinary.style.display = "block";
     targetLabel.textContent = "Completion";
-  } else if (tracking === "countable" || tracking === "custom") {
-    // Countable or Custom goal: show target value and current progress
+  } else if (tracking === "countable") {
+    // Countable goal: show target value and current progress
+    targetInput.style.display = "block";
+    currentProgressContainer.style.display = "flex";
+
+    if (goalType === "book") targetLabel.textContent = "Number of Chapters";
+    else if (goalType === "movies") targetLabel.textContent = "Number of Movies";
+    else if (goalType === "music") targetLabel.textContent = "Number of Songs";
+    else targetLabel.textContent = "Target Value";
+  } else if (tracking === "custom") {
+    // Custom goal: show target value and current progress
     targetInput.style.display = "block";
     currentProgressContainer.style.display = "flex";
     targetLabel.textContent = "Target Value";
@@ -748,7 +758,7 @@ updateTrackingUI();
   const modal = document.getElementById("goal-modal");
   modal.classList.remove("hidden");
   modal.classList.add("flex");
-  
+
 document.getElementById("modal-current-progress").value = "";
 
   if (!editingGoalId) {

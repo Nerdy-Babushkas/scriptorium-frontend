@@ -1,49 +1,51 @@
 // ============================================================
 // SHELF CONFIG — define all shelves + API endpoints per media type
 // ============================================================
-const SHELF_CONFIG = {
-  book: {
-    shelves: [
-      { key: "wishlist", label: "📋 Wishlist" },
-      { key: "reading", label: "📖 Reading" },
-      { key: "finished", label: "✅ Finished" },
-      { key: "favorites", label: "⭐ Favorites" },
-    ],
-    completionShelf: "finished",
-    addEndpoint:
-      "https://scriptorium-backend-six.vercel.app/api/books/shelf/add",
-    removeEndpoint:
-      "https://scriptorium-backend-six.vercel.app/api/books/shelf/remove",
-    idKey: "bookId",
-  },
-  music: {
-    shelves: [
-      { key: "listening", label: "🎧 Listening" },
-      { key: "finished", label: "✅ Finished" },
-      { key: "favorites", label: "⭐ Favorites" },
-    ],
-    completionShelf: "finished",
-    addEndpoint:
-      "https://scriptorium-backend-six.vercel.app/api/music/shelf/add",
-    removeEndpoint:
-      "https://scriptorium-backend-six.vercel.app/api/music/shelf/remove",
-    idKey: "trackId",
-  },
-  movie: {
-    shelves: [
-      { key: "watchlist", label: "📋 Watchlist" },
-      { key: "watching", label: "📺 Watching" },
-      { key: "watched", label: "✅ Watched" },
-      { key: "favorites", label: "⭐ Favorites" },
-    ],
-    completionShelf: "watched",
-    addEndpoint:
-      "https://scriptorium-backend-six.vercel.app/api/movies/shelf/add",
-    removeEndpoint:
-      "https://scriptorium-backend-six.vercel.app/api/movies/shelf/remove",
-    idKey: "movieId",
-  },
-};
+if (!window.SHELF_CONFIG) {
+  window.SHELF_CONFIG = {
+    book: {
+      shelves: [
+        { key: "wishlist", label: "📋 Wishlist" },
+        { key: "reading", label: "📖 Reading" },
+        { key: "finished", label: "✅ Finished" },
+        { key: "favorites", label: "⭐ Favorites" },
+      ],
+      completionShelf: "finished",
+      addEndpoint:
+        "https://scriptorium-backend-six.vercel.app/api/books/shelf/add",
+      removeEndpoint:
+        "https://scriptorium-backend-six.vercel.app/api/books/shelf/remove",
+      idKey: "bookId",
+    },
+    music: {
+      shelves: [
+        { key: "listening", label: "🎧 Listening" },
+        { key: "finished", label: "✅ Finished" },
+        { key: "favorites", label: "⭐ Favorites" },
+      ],
+      completionShelf: "finished",
+      addEndpoint:
+        "https://scriptorium-backend-six.vercel.app/api/music/shelf/add",
+      removeEndpoint:
+        "https://scriptorium-backend-six.vercel.app/api/music/shelf/remove",
+      idKey: "trackId",
+    },
+    movie: {
+      shelves: [
+        { key: "watchlist", label: "📋 Watchlist" },
+        { key: "watching", label: "📺 Watching" },
+        { key: "watched", label: "✅ Watched" },
+        { key: "favorites", label: "⭐ Favorites" },
+      ],
+      completionShelf: "watched",
+      addEndpoint:
+        "https://scriptorium-backend-six.vercel.app/api/movies/shelf/add",
+      removeEndpoint:
+        "https://scriptorium-backend-six.vercel.app/api/movies/shelf/remove",
+      idKey: "movieId",
+    },
+  };
+}
 
 // ============================================================
 // DOM REFS
@@ -528,9 +530,8 @@ function renderItems(items, currentShelf, isMusic, isTheatre) {
       <div class="p-5 flex-grow flex flex-col">
         <h3 class="text-white font-bold text-lg leading-tight mb-1 line-clamp-2">${title}</h3>
         <p class="text-[#00C49A] text-sm font-semibold mb-2">${subtitle}</p>
-        ${
-          canComplete
-            ? `
+        ${canComplete
+        ? `
         <button onclick="moveItem('${id}', '${currentShelf}', '${config.completionShelf}', ${isMusic}, ${isTheatre}, '${safeTitle}')"
           class="mt-auto text-xs text-white/25 hover:text-[#00C49A] transition-colors font-semibold flex items-center gap-1.5 w-fit pt-2">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -538,14 +539,14 @@ function renderItems(items, currentShelf, isMusic, isTheatre) {
           </svg>
           Mark as done
         </button>`
-            : `
+        : `
         <div class="mt-auto flex items-center gap-1.5 pt-2">
           <svg class="w-3.5 h-3.5 text-[#00C49A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
           </svg>
           <span class="text-xs text-[#00C49A] font-semibold">Completed</span>
         </div>`
-        }
+      }
       </div>`;
 
     grid.appendChild(card);

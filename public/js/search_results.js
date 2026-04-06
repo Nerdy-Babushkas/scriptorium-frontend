@@ -69,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (currentType === type) return;
 
     currentType = type;
+    currentPage = 1;
     updateTabs(type);
     toggleAdvancedFields(type);
 
@@ -181,15 +182,17 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `${API_BASE}/${type === "movies" ? "movies" : type}/search?q=${encodeURIComponent(query)}`,
+        `${API_BASE}/${type === "movies" ? "movies" : type}/search?q=${encodeURIComponent(query)}&page=${currentPage}`,
         { headers: { Authorization: `jwt ${token}` } },
       );
       const data = await res.json();
       loading.classList.add("hidden");
 
       const items = data.tracks || data.movies || data.books || [];
-      if (items.length > 0) renderItems(items, type);
-      else empty.classList.remove("hidden");
+      if (items.length > 0) {
+        renderItems(items, type);
+        renderPagination(data.totalResults || 20);
+      } else empty.classList.remove("hidden");
     } catch (err) {
       console.error(err);
       loading.classList.add("hidden");
@@ -201,11 +204,15 @@ document.addEventListener("DOMContentLoaded", () => {
     empty.classList.add("hidden");
     loading.classList.remove("hidden");
 
+    const pageLimits = { movies: 10, music: 25, books: 20 };
+    const limit = pageLimits[type];
     try {
       const token = localStorage.getItem("token");
-      const query = new URLSearchParams(params);
-      let url = `${API_BASE}/${type}/advanced/search?${query.toString()}`;
+      const queryParams = new URLSearchParams(params);
+      queryParams.set("page", currentPage); // set() never duplicates
+      if (type === "music") queryParams.set("limit", limit); // only music needs this
 
+      const url = `${API_BASE}/${type}/advanced/search?${queryParams.toString()}`;
       const res = await fetch(url, {
         headers: { Authorization: `jwt ${token}` },
       });
@@ -217,8 +224,10 @@ document.addEventListener("DOMContentLoaded", () => {
       else if (type === "movies") items = data.movies || [];
       else items = data.books || [];
 
-      if (items.length > 0) renderItems(items, type);
-      else empty.classList.remove("hidden");
+      if (items.length > 0) {
+        renderItems(items, type);
+        renderPagination(data.totalResults || 0, limit);
+      } else empty.classList.remove("hidden");
     } catch (err) {
       console.error(err);
       loading.classList.add("hidden");
@@ -332,4 +341,87 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("closeModal").onclick = () =>
     modal.classList.add("hidden");
+
+  function renderPagination(totalResults, limit = 20) {
+    const container = document.getElementById("pagination");
+    container.innerHTML = "";
+    const totalPages = Math.ceil(totalResults / limit);
+
+    if (totalPages <= 1) {
+      container.classList.add("hidden");
+      return;
+    }
+
+    container.classList.remove("hidden");
+
+    const btnClass = (active) =>
+      `px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+        active
+          ? "bg-[#00C49A]/20 text-[#00C49A] border-[#00C49A]"
+          : "text-white/50 border-white/10 hover:text-white hover:border-white/30"
+      }`;
+
+    // Build page window: always show first, last, current ±2
+    const pages = new Set([1, totalPages]);
+    for (
+      let i = Math.max(1, currentPage - 2);
+      i <= Math.min(totalPages, currentPage + 2);
+      i++
+    ) {
+      pages.add(i);
+    }
+    const sorted = [...pages].sort((a, b) => a - b);
+
+    // Prev button
+    const prev = document.createElement("button");
+    prev.textContent = "←";
+    prev.className = btnClass(false);
+    prev.disabled = currentPage === 1;
+    prev.onclick = () => {
+      currentPage--;
+      changePage();
+    };
+    container.appendChild(prev);
+
+    let lastPage = 0;
+    for (const p of sorted) {
+      if (lastPage && p - lastPage > 1) {
+        const ellipsis = document.createElement("span");
+        ellipsis.textContent = "…";
+        ellipsis.className = "text-white/30 px-2";
+        container.appendChild(ellipsis);
+      }
+
+      const btn = document.createElement("button");
+      btn.textContent = p;
+      btn.className = btnClass(p === currentPage);
+      btn.onclick = () => {
+        currentPage = p;
+        changePage();
+      };
+      container.appendChild(btn);
+      lastPage = p;
+    }
+
+    // Next button
+    const next = document.createElement("button");
+    next.textContent = "→";
+    next.className = btnClass(false);
+    next.disabled = currentPage === totalPages;
+    next.onclick = () => {
+      currentPage++;
+      changePage();
+    };
+    container.appendChild(next);
+  }
+
+  function changePage() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    const query = new URLSearchParams(window.location.search).get("q");
+    if (Object.keys(currentQueryParams).length > 0) {
+      executeAdvancedSearch(currentQueryParams, currentType);
+    } else if (query) {
+      executeSearch(query, currentType);
+    }
+  }
 });

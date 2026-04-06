@@ -219,6 +219,68 @@
         line-height: 1.4;
     }
 
+    /* ---------- YARN CARD ---------- */
+    .yarn-card {
+        background: rgba(15,25,30,0.7);
+        backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 20px; padding: 24px 28px;
+        margin-bottom: 2.5rem;
+    }
+    .yarn-card-header {
+        display: flex; align-items: center; gap: 10px;
+        margin-bottom: 10px;
+    }
+    .yarn-card-header-title {
+        font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+        text-transform: uppercase; color: rgba(255,255,255,0.4);
+    }
+    .yarn-card-header-lifetime {
+        margin-left: auto;
+        font-size: 0.72rem; color: rgba(255,196,80,0.4); font-weight: 500;
+    }
+    .yarn-balance-row {
+        display: flex; align-items: baseline; gap: 8px;
+        margin-bottom: 20px;
+    }
+    .yarn-balance-value {
+        font-size: 2.8rem; font-weight: 800; line-height: 1;
+        background: linear-gradient(135deg, #ffd54f, #ffb300);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .yarn-balance-label {
+        font-size: 0.78rem; color: rgba(255,255,255,0.35); font-weight: 500;
+    }
+    .yarn-divider {
+        height: 1px; background: rgba(255,255,255,0.06); margin-bottom: 16px;
+    }
+    .yarn-rates-title {
+        font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em;
+        text-transform: uppercase; color: rgba(255,255,255,0.2);
+        margin-bottom: 10px;
+    }
+    .yarn-rates-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 32px;
+    }
+    .yarn-rate-row {
+        display: flex; align-items: center;
+        justify-content: space-between; gap: 8px;
+    }
+    .yarn-rate-label {
+        font-size: 0.78rem; color: rgba(255,255,255,0.5);
+    }
+    .yarn-rate-pill {
+        font-size: 0.7rem; font-weight: 700;
+        color: #ffd54f;
+        background: rgba(255,196,80,0.1);
+        border: 1px solid rgba(255,196,80,0.2);
+        padding: 2px 9px; border-radius: 999px;
+        flex-shrink: 0;
+    }
+
     /* ---------- BADGE GRID ---------- */
     .badges-section { margin-bottom: 2.5rem; }
     .badge-filter-row {
@@ -535,7 +597,7 @@
                 <div style="display:flex;flex-direction:column;gap:5px;">
                     <h1 class="text-3xl font-dancing text-white" style="margin:0;">Rewards</h1>
                     <span style="font-size:0.68rem;color:rgba(255,255,255,0.35);font-weight:500;letter-spacing:0.04em;">
-                        Streaks · Badges · Progress
+                        Streaks · Yarns · Badges · Progress
                     </span>
                 </div>
             </div>
@@ -577,6 +639,46 @@
                 Do either once per day to keep your streak alive.
             </p>
         </div>
+
+                <!-- ══ YARNS ═══════════════════════════════════════════════════════════ -->
+        <p class="section-title">Yarns</p>
+
+        <div class="yarn-card">
+            <div class="yarn-card-header">
+                <span style="font-size:16px;">🧶</span>
+                <span class="yarn-card-header-title">Balance</span>
+                <span class="yarn-card-header-lifetime" id="yarnLifetime"></span>
+            </div>
+            <div class="yarn-balance-row">
+                <span class="yarn-balance-value" id="yarnBalance">—</span>
+                <span class="yarn-balance-label">to spend</span>
+            </div>
+            <div class="yarn-divider"></div>
+            <div class="yarn-rates-title">How to earn</div>
+            <div class="yarn-rates-grid">
+                <div class="yarn-rate-row">
+                    <span class="yarn-rate-label">Write a reflection</span>
+                    <span class="yarn-rate-pill">+10</span>
+                </div>
+                <div class="yarn-rate-row">
+                    <span class="yarn-rate-label">7-day streak</span>
+                    <span class="yarn-rate-pill">+15</span>
+                </div>
+                <div class="yarn-rate-row">
+                    <span class="yarn-rate-label">Update goal progress</span>
+                    <span class="yarn-rate-pill">+5</span>
+                </div>
+                <div class="yarn-rate-row">
+                    <span class="yarn-rate-label">Earn a badge</span>
+                    <span class="yarn-rate-pill">+20</span>
+                </div>
+                <div class="yarn-rate-row">
+                    <span class="yarn-rate-label">Complete a goal</span>
+                    <span class="yarn-rate-pill">+25</span>
+                </div>
+            </div>
+        </div>
+        
         <!-- ══ PROGRESS ════════════════════════════════════════════════════════ -->
         <div class="progress-section">
             <p class="section-title">Progress</p>

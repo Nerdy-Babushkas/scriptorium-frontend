@@ -53,6 +53,42 @@
       .custom-scroll::-webkit-scrollbar-thumb:hover {
         background: #00a07d;
       }
+
+      @keyframes yarnFloat {
+        0% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(0px) scale(0.8);
+        }
+        20% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(-8px) scale(1);
+        }
+        80% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(-40px) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(-58px) scale(0.9);
+        }
+      }
+      @keyframes goalCompletePop {
+        0% {
+          opacity: 0;
+          transform: translateX(-50%) scale(0.5);
+        }
+        40% {
+          opacity: 1;
+          transform: translateX(-50%) scale(1.15);
+        }
+        70% {
+          transform: translateX(-50%) scale(0.95);
+        }
+        100% {
+          opacity: 1;
+          transform: translateX(-50%) scale(1);
+        }
+      }
     </style>
   </head>
   <body
@@ -235,22 +271,22 @@
 </div>
          
           <div class="relative">
-  <label class="block text-white/70 text-sm mb-1 font-medium"
-    >Attach a piece of media</label
-  >
-  <input
-    type="text"
-    id="modal-media-search"
-    class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
-    placeholder="N/A"
-    value="N/A"
-    autocomplete="off"
-  />
-  <div
-    id="media-search-results"
-    class="hidden absolute z-50 mt-2 w-full max-h-56 overflow-y-auto rounded-lg border border-white/10 bg-[#081014] shadow-xl"
-  ></div>
-</div>
+            <label class="block text-white/70 text-sm mb-1 font-medium"
+              >Attach a piece of media</label
+            >
+            <input
+              type="text"
+              id="modal-media-search"
+              class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
+              placeholder="N/A"
+              value="N/A"
+              autocomplete="off"
+            />
+            <div
+              id="media-search-results"
+              class="hidden absolute z-50 mt-2 w-full max-h-56 overflow-y-auto rounded-lg border border-white/10 bg-[#081014] shadow-xl"
+            ></div>
+          </div>
         </div>
 
         <div class="flex justify-end gap-3 mt-8">
@@ -949,5 +985,6 @@ console.log("Saving media:", media);
       document.getElementById("modal-tracking").addEventListener("change", updateTrackingUI);
 document.getElementById("modal-type").addEventListener("change", updateTrackingUI);
     </script>
+    <script src="/js/progress.js"></script>
   </body>
 </html>

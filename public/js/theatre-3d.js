@@ -239,12 +239,6 @@ function animate() {
   if (controls) controls.update();
   renderer.render(scene, camera);
   
-  // TEMP: log camera position every 2 seconds
-  if (Math.floor(Date.now() / 2000) !== animate._lastLog) {
-    animate._lastLog = Math.floor(Date.now() / 2000);
-    console.log('Camera pos:', camera.position.x.toFixed(2), camera.position.y.toFixed(2), camera.position.z.toFixed(2));
-    console.log('Target:', controls.target.x.toFixed(2), controls.target.y.toFixed(2), controls.target.z.toFixed(2));
-  }
 }
 
 init();

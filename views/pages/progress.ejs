@@ -322,7 +322,7 @@
         movies: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>`,
       };
 
-      function createBurst(x, y) {
+    function createBurst(x, y) {
   const burstContainer = document.createElement("div");
   burstContainer.style.position = "absolute";
   burstContainer.style.left = `${x}px`;
@@ -330,6 +330,7 @@
   burstContainer.style.pointerEvents = "none";
   burstContainer.style.width = "0";
   burstContainer.style.height = "0";
+  burstContainer.style.zIndex = "1000";
   document.body.appendChild(burstContainer);
 
   const colors = ["#FFDA6D", "#00C49A", "#D90429", "#FFFFFF"];
@@ -356,8 +357,10 @@
     burstContainer.appendChild(particle);
 
     requestAnimationFrame(() => {
-      particle.style.transform = `translate(${Math.cos(angle) * speed}px, ${Math.sin(angle) * speed}px) scale(0.5)`;
-      particle.style.opacity = "0";
+      requestAnimationFrame(() => {
+        particle.style.transform = `translate(${Math.cos(angle) * speed}px, ${Math.sin(angle) * speed}px) scale(0.5)`;
+        particle.style.opacity = "0";
+      });
     });
   }
 

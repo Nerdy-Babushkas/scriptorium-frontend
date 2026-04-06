@@ -1,6 +1,3 @@
-// ============================================================
-// SHELF CONFIG — define all shelves + API endpoints per media type
-// ============================================================
 const SHELF_CONFIG = {
   book: {
     shelves: [

@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pill.textContent = `+${amount} 🧶`;
     pill.style.cssText = `
       position: fixed;
-      left: ${rect.left + rect.width / 2}px;
+      left: ${Math.min(rect.left + rect.width / 2, window.innerWidth - 80)}px;
       top: ${rect.top}px;
       transform: translateX(-50%);
       background: rgba(255,196,80,0.15);

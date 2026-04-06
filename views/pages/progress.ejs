@@ -222,7 +222,17 @@
   <option value="1">Conquered</option>
 </select>
           </div>
-
+<div id="current-progress-container" class="flex flex-col gap-2">
+  <label class="block text-white/70 text-sm mb-1 font-medium">
+    Current Progress
+  </label>
+  <input
+    type="number"
+    id="modal-current-progress"
+    class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
+    placeholder="Enter current progress"
+  />
+</div>
          
           <div class="relative">
   <label class="block text-white/70 text-sm mb-1 font-medium"
@@ -283,23 +293,22 @@ function updateTrackingUI() {
 
   const currentNumber = document.getElementById("modal-current-number");
   const currentBinary = document.getElementById("modal-current-binary");
+  const currentProgressContainer = document.getElementById("current-progress-container");
 
-  // Hide everything by default
+  // Hide all fields by default
   targetInput.style.display = "none";
   currentNumber.style.display = "none";
   currentBinary.style.display = "none";
+  currentProgressContainer.style.display = "none";
 
   if (tracking === "binary") {
     // One-time goal: show only binary select
     currentBinary.style.display = "block";
     targetLabel.textContent = "Completion";
-  } else if (tracking === "countable") {
-    // Countable goal: show only target value
+  } else if (tracking === "countable" || tracking === "custom") {
+    // Countable or Custom goal: show target value and current progress
     targetInput.style.display = "block";
-    targetLabel.textContent = "Target Value";
-  } else if (tracking === "custom") {
-    // Custom goal: show only target value
-    targetInput.style.display = "block";
+    currentProgressContainer.style.display = "flex";
     targetLabel.textContent = "Target Value";
   }
 }
@@ -715,9 +724,9 @@ class="edit-goal absolute -top-5 -right-6 bg-black/70 hover:bg-teal-neon text-wh
   if (tracking === "binary") {
     document.getElementById("modal-current-binary").value = goal.current ? "1" : "0";
   } else {
-    document.getElementById("modal-target").value = goal.total ?? "";
-    document.getElementById("modal-current-number").value = goal.current ?? 0;
-  }
+  document.getElementById("modal-target").value = goal.total ?? "";
+  document.getElementById("modal-current-progress").value = goal.current ?? 0;
+}
 
 updateTrackingUI();
 
@@ -786,8 +795,9 @@ if (tracking === "binary") {
   current = Number(document.getElementById("modal-current-binary").value);
 } else {
   total = Number(document.getElementById("modal-target").value);
+
   current = Number(
-    document.getElementById("modal-current-number").value || 0,
+    document.getElementById("modal-current-progress").value || 0
   );
 }
 

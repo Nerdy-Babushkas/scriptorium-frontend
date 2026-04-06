@@ -284,22 +284,21 @@ function updateTrackingUI() {
   const currentNumber = document.getElementById("modal-current-number");
   const currentBinary = document.getElementById("modal-current-binary");
 
-  // Reset all first
+  // Hide everything by default
   targetInput.style.display = "none";
   currentNumber.style.display = "none";
   currentBinary.style.display = "none";
 
   if (tracking === "binary") {
-    // One-time: hide target, show binary select
+    // One-time goal: show only binary select
     currentBinary.style.display = "block";
     targetLabel.textContent = "Completion";
   } else if (tracking === "countable") {
-    // Countable: show target, hide current
+    // Countable goal: show only target value
     targetInput.style.display = "block";
     targetLabel.textContent = "Target Value";
-    currentNumber.style.display = "block";
   } else if (tracking === "custom") {
-    // Custom: show target, hide current
+    // Custom goal: show only target value
     targetInput.style.display = "block";
     targetLabel.textContent = "Target Value";
   }
@@ -709,7 +708,7 @@ class="edit-goal absolute -top-5 -right-6 bg-black/70 hover:bg-teal-neon text-wh
 
   document.getElementById("modal-title").value = goal.title || "";
   document.getElementById("modal-type").value = goal.type || "book";
-  
+
   const tracking = goal.tracking || (goal.total === 1 ? "binary" : "countable");
   document.getElementById("modal-tracking").value = tracking;
 

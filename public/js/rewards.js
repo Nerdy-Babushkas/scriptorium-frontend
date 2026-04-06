@@ -17,6 +17,7 @@ let allBadges = []; // earned Badge docs from the server
 let fullCatalogue = []; // all possible badges (catalogue)
 let streakData = null; // streak doc from server
 let activeFilter = "all";
+let yarnData = null;
 
 /* ─── BADGE CATEGORY PROGRESS CONFIG ─────────────────────────────────────────
    Thresholds must match badge-service.js on the backend exactly.            */
@@ -50,10 +51,11 @@ const PROGRESS_CONFIG = [
 /* ─── FETCH ──────────────────────────────────────────────────────────────────── */
 async function fetchAll() {
   try {
-    const [streakRes, badgesRes, catalogueRes] = await Promise.all([
+    const [streakRes, badgesRes, catalogueRes, yarnRes] = await Promise.all([
       fetch(`${BASE_URL}/streaks`, { headers: getAuthHeaders() }),
       fetch(`${BASE_URL}/badges`, { headers: getAuthHeaders() }),
       fetch(`${BASE_URL}/badges/catalogue`, { headers: getAuthHeaders() }),
+      fetch(`${BASE_URL}/yarns`, { headers: getAuthHeaders() }),
     ]);
 
     if (!streakRes.ok || !badgesRes.ok || !catalogueRes.ok) {
@@ -63,10 +65,12 @@ async function fetchAll() {
     streakData = await streakRes.json();
     const badgePayload = await badgesRes.json();
     const catPayload = await catalogueRes.json();
+    yarnData = yarnRes.ok ? await yarnRes.json() : null;
 
     allBadges = badgePayload.badges || [];
     fullCatalogue = catPayload.catalogue || [];
 
+    renderYarns();
     renderStreak();
     renderProgress();
     renderBadges();
@@ -74,6 +78,19 @@ async function fetchAll() {
     console.error("Rewards fetch error:", err);
     showErrorState();
   }
+}
+
+/* ─── YARN RENDER ────────────────────────────────────────────────────────────── */
+function renderYarns() {
+  const balanceEl = document.getElementById("yarnBalance");
+  const lifetimeEl = document.getElementById("yarnLifetime");
+  if (!balanceEl) return;
+
+  const balance = yarnData?.balance ?? 0;
+  const lifetimeEarned = yarnData?.lifetimeEarned ?? 0;
+
+  balanceEl.textContent = balance.toLocaleString();
+  lifetimeEl.textContent = `${lifetimeEarned.toLocaleString()} earned total`;
 }
 
 /* ─── STREAK RENDER ──────────────────────────────────────────────────────────── */

@@ -72,13 +72,20 @@
          (function() {
            const token = localStorage.getItem("token");
            if (!token) return;
+
+           // Apply cached key immediately — no flicker on every page
+           const cached = localStorage.getItem("equippedAvatar");
+           const img = document.getElementById("navbar-avatar-img");
+           if (cached && img) img.src = "/assets/avatars/" + cached + ".png";
+
+           // Then verify with the server and update cache if it changed
            fetch("https://scriptorium-backend-six.vercel.app/api/avatars", {
              headers: { Authorization: "JWT " + token }
            })
            .then(r => r.ok ? r.json() : null)
            .then(data => {
              if (!data?.equipped) return;
-             const img = document.getElementById("navbar-avatar-img");
+             localStorage.setItem("equippedAvatar", data.equipped);
              if (img) img.src = "/assets/avatars/" + data.equipped + ".png";
            })
            .catch(() => {});

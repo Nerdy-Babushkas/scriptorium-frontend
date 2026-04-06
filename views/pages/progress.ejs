@@ -709,17 +709,16 @@ class="edit-goal absolute -top-5 -right-6 bg-black/70 hover:bg-teal-neon text-wh
 
   document.getElementById("modal-title").value = goal.title || "";
   document.getElementById("modal-type").value = goal.type || "book";
-  document.getElementById("modal-target").value = goal.total ?? "";
+  
+  const tracking = goal.tracking || (goal.total === 1 ? "binary" : "countable");
+  document.getElementById("modal-tracking").value = tracking;
 
-  const isBinary = goal.total === 1;
-
-document.getElementById("modal-tracking").value = isBinary ? "binary" : "countable";
-
-if (isBinary) {
-  document.getElementById("modal-current-binary").value = goal.current ? "1" : "0";
-} else {
-  document.getElementById("modal-current-number").value = goal.current ?? 0;
-}
+  if (tracking === "binary") {
+    document.getElementById("modal-current-binary").value = goal.current ? "1" : "0";
+  } else {
+    document.getElementById("modal-target").value = goal.total ?? "";
+    document.getElementById("modal-current-number").value = goal.current ?? 0;
+  }
 
 updateTrackingUI();
 

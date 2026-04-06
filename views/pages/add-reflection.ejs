@@ -94,6 +94,76 @@
         .fill-flash {
             animation: flashBorder 0.8s ease forwards;
         }
+
+        /* ── Penguin tip ── */
+        #penguinTip {
+            position: fixed;
+            bottom: 28px;
+            left: 28px;
+            z-index: 200;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+        }
+        #penguinTip.hidden { display: none; }
+        #penguinBtn {
+            width: 58px; height: 58px;
+            border-radius: 50%; border: none;
+            background: transparent; cursor: pointer;
+            padding: 0; flex-shrink: 0;
+            transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+            position: relative;
+        }
+        #penguinBtn:hover { transform: scale(1.12) rotate(-6deg); }
+        #penguinBtn img { width: 100%; height: 100%; object-fit: contain; }
+        #penguinBtn::after {
+            content: '';
+            position: absolute; inset: -4px;
+            border-radius: 50%;
+            border: 2px solid rgba(0,196,154,0.45);
+            animation: rPulse 2.2s ease-in-out infinite;
+        }
+        #penguinBtn.open::after { display: none; }
+        @keyframes rPulse {
+            0%,100% { transform: scale(1); opacity: 0.5; }
+            50%      { transform: scale(1.2); opacity: 0; }
+        }
+        #tipBubble {
+            background: rgba(10,20,24,0.96);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0,196,154,0.2);
+            border-radius: 18px;
+            padding: 16px 18px 14px;
+            max-width: 280px;
+            width: calc(100vw - 110px);
+            transform-origin: bottom left;
+            animation: rBubblePop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+        }
+        #tipBubble.hidden { display: none; }
+        @keyframes rBubblePop {
+            from { transform: scale(0.85) translateY(10px); opacity: 0; }
+            to   { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .tip-step { display: none; }
+        .tip-step.active { display: block; }
+        .tip-eyebrow {
+            font-size: 0.57rem; font-weight: 700;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: #00C49A; margin-bottom: 5px;
+        }
+        .tip-title  { font-size: 0.9rem; font-weight: 800; color: #fff; margin: 0 0 5px; line-height: 1.25; }
+        .tip-body   { font-size: 0.75rem; color: rgba(255,255,255,0.58); line-height: 1.5; margin: 0 0 12px; }
+        .tip-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .tip-dots   { display: flex; gap: 5px; }
+        .tip-dot    { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.18); transition: background 0.2s; }
+        .tip-dot.active { background: #00C49A; }
+        .tip-btn-row { display: flex; gap: 7px; }
+        .tip-btn    { padding: 6px 14px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; cursor: pointer; border: none; transition: all 0.18s; }
+        .tip-btn-next { background: #00C49A; color: #000; }
+        .tip-btn-next:hover { background: #33d4b0; }
+        .tip-btn-skip { background: transparent; color: rgba(255,255,255,0.28); border: 1px solid rgba(255,255,255,0.1); }
+        .tip-btn-skip:hover { color: rgba(255,255,255,0.55); }
     </style>
 </head>
 <body class="bg-[#2C1810] min-h-screen relative overflow-x-hidden font-outfit text-white">
@@ -235,6 +305,57 @@
 
     </div>
 
+
+    <!-- Penguin tip guide -->
+    <div id="penguinTip" class="hidden">
+        <button id="penguinBtn" title="How this works">
+            <img src="/assets/penguin.gif" alt="Guide" />
+        </button>
+        <div id="tipBubble" class="hidden">
+
+            <div class="tip-step active" data-step="0">
+                <p class="tip-eyebrow">✦ Step 1 of 3</p>
+                <p class="tip-title">Pick what you're reflecting on 📚</p>
+                <p class="tip-body">Use the <strong style="color:#00C49A;">dropdown</strong> at the top to choose a book, film or track from your shelves. No item selected — no reflection saved.</p>
+                <div class="tip-footer">
+                    <div class="tip-dots"></div>
+                    <div class="tip-btn-row">
+                        <button class="tip-btn tip-btn-skip" id="tipSkip">Don't show again</button>
+                        <button class="tip-btn tip-btn-next" id="tipNext">Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-step" data-step="1">
+                <p class="tip-eyebrow">✦ Step 2 of 3</p>
+                <p class="tip-title">Templates &amp; history ✍️</p>
+                <p class="tip-body">Stuck on where to start? Hit <strong style="color:#00C49A;">Templates</strong> for guided prompts. The <strong style="color:#00C49A;">History panel</strong> on the right shows your past reflections — click any card to read it in full.</p>
+                <div class="tip-footer">
+                    <div class="tip-dots"></div>
+                    <div class="tip-btn-row">
+                        <button class="tip-btn tip-btn-skip" id="tipSkip">Don't show again</button>
+                        <button class="tip-btn tip-btn-next" id="tipNext">Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-step" data-step="2">
+                <p class="tip-eyebrow">✦ Step 3 of 3</p>
+                <p class="tip-title">Earn yarns for every reflection 🧶</p>
+                <p class="tip-body">Each reflection earns you <strong style="color:#ffd54f;">+10 yarns</strong>. Check your balance on the <strong style="color:#ffd54f;">Rewards</strong> page and spend them to unlock new avatars in <strong style="color:#ffd54f;">Customise</strong>.</p>
+                <div class="tip-footer">
+                    <div class="tip-dots"></div>
+                    <div class="tip-btn-row">
+                        <button class="tip-btn tip-btn-skip" id="tipSkip">Don't show again</button>
+                        <button class="tip-btn tip-btn-next" id="tipNext">Got it! 🐧</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <script src="/js/reflection.js"></script>
+
 </body>
 </html>

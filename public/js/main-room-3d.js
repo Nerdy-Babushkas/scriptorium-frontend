@@ -387,6 +387,122 @@ async function initGamification() {
   );
 }
 
+// ─── PENGUIN TIP GUIDE ────────────────────────────────────────────────────────
+const TIP_ID = "room-intro";
+const TOTAL_STEPS = 4;
+const BASE_URL_TIP = "https://scriptorium-backend-six.vercel.app/api";
+
+let tipStep = 0;
+let tipOpen = false;
+
+function getTipAuthHeaders() {
+  return {
+    "Content-Type": "application/json",
+    Authorization: `JWT ${localStorage.getItem("token")}`,
+  };
+}
+
+async function initTip() {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+    const res = await fetch(`${BASE_URL_TIP}/user/tips`, {
+      headers: getTipAuthHeaders(),
+    });
+    if (!res.ok) return;
+    const { seenTips, tipsDisabled } = await res.json();
+    if (tipsDisabled || seenTips.includes(TIP_ID)) return;
+  } catch {
+    return;
+  }
+
+  const wrap = document.getElementById("penguinTip");
+  if (!wrap) return;
+  wrap.classList.remove("hidden");
+
+  buildDots();
+  setTimeout(() => openTipBubble(), 1800);
+
+  document.getElementById("penguinBtn").addEventListener("click", () => {
+    if (tipOpen) closeTipBubble();
+    else openTipBubble();
+  });
+
+  document.getElementById("tipBubble").addEventListener("click", (e) => {
+    if (e.target.id === "tipNext") handleNext();
+    if (e.target.id === "tipSkip") handleSkipGlobal();
+  });
+}
+
+function buildDots() {
+  document.querySelectorAll(".tip-dots").forEach((container) => {
+    container.innerHTML = "";
+    for (let i = 0; i < TOTAL_STEPS; i++) {
+      const d = document.createElement("div");
+      d.className = "tip-dot" + (i === 0 ? " active" : "");
+      container.appendChild(d);
+    }
+  });
+}
+
+function updateDots() {
+  document.querySelectorAll(".tip-dot").forEach((d, i) => {
+    d.classList.toggle("active", i === tipStep);
+  });
+}
+
+function showStep(n) {
+  document
+    .querySelectorAll(".tip-step")
+    .forEach((s) => s.classList.remove("active"));
+  const step = document.querySelector(`.tip-step[data-step="${n}"]`);
+  if (step) step.classList.add("active");
+  updateDots();
+}
+
+function openTipBubble() {
+  tipOpen = true;
+  document.getElementById("tipBubble").classList.remove("hidden");
+  document.getElementById("penguinBtn").classList.add("open");
+  showStep(tipStep);
+}
+
+function closeTipBubble() {
+  tipOpen = false;
+  document.getElementById("tipBubble").classList.add("hidden");
+  document.getElementById("penguinBtn").classList.remove("open");
+}
+
+function handleNext() {
+  if (tipStep < TOTAL_STEPS - 1) {
+    tipStep++;
+    showStep(tipStep);
+  } else {
+    dismissTip(false);
+  }
+}
+
+function handleSkipGlobal() {
+  // "Don't show again" — disables tips globally then dismisses
+  fetch(`${BASE_URL_TIP}/user/tips/disable`, {
+    method: "POST",
+    headers: getTipAuthHeaders(),
+    body: JSON.stringify({ disabled: true }),
+  }).catch(() => {});
+  dismissTip(true);
+}
+
+function dismissTip(skipOnly) {
+  closeTipBubble();
+  document.getElementById("penguinTip").classList.add("hidden");
+  fetch(`${BASE_URL_TIP}/user/tips/seen`, {
+    method: "POST",
+    headers: getTipAuthHeaders(),
+    body: JSON.stringify({ tipId: TIP_ID }),
+  }).catch(() => {});
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 function init() {
@@ -450,6 +566,7 @@ function init() {
 
       // Non-blocking — show badges/streak toasts after room is visible
       initGamification();
+      initTip();
     },
     (progress) => {
       console.log(

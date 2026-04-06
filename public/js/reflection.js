@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!token) window.location.href = "/login";
 
   // --- 1. INITIALIZATION ---
-  loadDropdownItems();
+  loadDropdownItems().then(() => initReflectionTip());
   loadHistory();
 
   // --- 2. DROPDOWN POPULATION ---
@@ -690,6 +690,118 @@ document.addEventListener("DOMContentLoaded", () => {
         textArea.setSelectionRange(firstBlank, firstBlank + 3);
       }
     }, 280);
+  }
+
+  // ─── PENGUIN TIP GUIDE ──────────────────────────────────────────────────────
+  const R_TIP_ID = "reflection-guide";
+  const R_TOTAL_STEPS = 3;
+  const R_BASE = "https://scriptorium-backend-six.vercel.app/api";
+
+  const rAuthHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `JWT ${token}`,
+  });
+
+  let rTipStep = 0;
+  let rTipOpen = false;
+
+  async function initReflectionTip() {
+    if (!token) return;
+    try {
+      const res = await fetch(`${R_BASE}/user/tips`, {
+        headers: rAuthHeaders(),
+      });
+      if (!res.ok) return;
+      const { seenTips, tipsDisabled } = await res.json();
+      if (tipsDisabled || seenTips.includes(R_TIP_ID)) return;
+    } catch {
+      return;
+    }
+
+    const wrap = document.getElementById("penguinTip");
+    if (!wrap) return;
+    wrap.classList.remove("hidden");
+
+    rBuildDots();
+    setTimeout(() => rOpenBubble(), 1200);
+
+    document.getElementById("penguinBtn").addEventListener("click", () => {
+      if (rTipOpen) rCloseBubble();
+      else rOpenBubble();
+    });
+
+    document.getElementById("tipBubble").addEventListener("click", (e) => {
+      if (e.target.id === "tipNext") rHandleNext();
+      if (e.target.id === "tipSkip") rHandleSkip();
+    });
+  }
+
+  function rBuildDots() {
+    document.querySelectorAll(".tip-dots").forEach((container) => {
+      container.innerHTML = "";
+      for (let i = 0; i < R_TOTAL_STEPS; i++) {
+        const d = document.createElement("div");
+        d.className = "tip-dot" + (i === 0 ? " active" : "");
+        container.appendChild(d);
+      }
+    });
+  }
+
+  function rUpdateDots() {
+    document.querySelectorAll(".tip-dot").forEach((d, i) => {
+      d.classList.toggle("active", i === rTipStep);
+    });
+  }
+
+  function rShowStep(n) {
+    document
+      .querySelectorAll(".tip-step")
+      .forEach((s) => s.classList.remove("active"));
+    document
+      .querySelector(`.tip-step[data-step="${n}"]`)
+      ?.classList.add("active");
+    rUpdateDots();
+  }
+
+  function rOpenBubble() {
+    rTipOpen = true;
+    document.getElementById("tipBubble").classList.remove("hidden");
+    document.getElementById("penguinBtn").classList.add("open");
+    rShowStep(rTipStep);
+  }
+
+  function rCloseBubble() {
+    rTipOpen = false;
+    document.getElementById("tipBubble").classList.add("hidden");
+    document.getElementById("penguinBtn").classList.remove("open");
+  }
+
+  function rHandleNext() {
+    if (rTipStep < R_TOTAL_STEPS - 1) {
+      rTipStep++;
+      rShowStep(rTipStep);
+    } else {
+      rDismiss();
+    }
+  }
+
+  function rHandleSkip() {
+    fetch(`${R_BASE}/user/tips/disable`, {
+      method: "POST",
+      headers: rAuthHeaders(),
+      body: JSON.stringify({ disabled: true }),
+    }).catch(() => {});
+    rDismiss();
+  }
+
+  function rDismiss() {
+    rCloseBubble();
+    document.getElementById("penguinTip").classList.add("hidden");
+    fetch(`${R_BASE}/user/tips/seen`, {
+      method: "POST",
+      headers: rAuthHeaders(),
+      body: JSON.stringify({ tipId: R_TIP_ID }),
+    }).catch(() => {});
   }
 
   templateBtn?.addEventListener("click", openDrawer);

@@ -1,4 +1,46 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // ─── YARN BURST ANIMATION ────────────────────────────────────────────────────
+  // Spawns a floating "+N 🧶" pill that rises from an element and fades out.
+  function yarnBurst(anchorEl, amount) {
+    if (!amount || amount <= 0) return;
+    const rect = anchorEl.getBoundingClientRect();
+    const pill = document.createElement("div");
+    pill.textContent = `+${amount} 🧶`;
+    pill.style.cssText = `
+      position: fixed;
+      left: ${rect.left + rect.width / 2}px;
+      top: ${rect.top}px;
+      transform: translateX(-50%);
+      background: rgba(255,196,80,0.15);
+      border: 1px solid rgba(255,196,80,0.4);
+      color: #ffd54f;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 99999;
+      white-space: nowrap;
+      animation: yarnFloat 1.4s ease forwards;
+    `;
+    document.body.appendChild(pill);
+    pill.addEventListener("animationend", () => pill.remove());
+  }
+
+  if (!document.getElementById("_yarnBurstStyle")) {
+    const s = document.createElement("style");
+    s.id = "_yarnBurstStyle";
+    s.textContent = `
+      @keyframes yarnFloat {
+        0%   { opacity: 0; transform: translateX(-50%) translateY(0px) scale(0.8); }
+        20%  { opacity: 1; transform: translateX(-50%) translateY(-8px) scale(1); }
+        80%  { opacity: 1; transform: translateX(-50%) translateY(-36px) scale(1); }
+        100% { opacity: 0; transform: translateX(-50%) translateY(-52px) scale(0.9); }
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
   // --- ELEMENTS ---
   const itemSelect = document.getElementById("itemSelect");
   const moodBtns = document.querySelectorAll(".mood-btn");
@@ -232,11 +274,21 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (res.ok) {
+        const data = await res.json();
         showToast(
           "Success",
           editingId ? "Reflection updated" : "Reflection saved",
           "success",
         );
+
+        // ── Yarn burst ─────────────────────────────────────────────────────
+        // _newBadges and _yarns are non-schema properties on the Mongoose doc
+        // and get stripped by JSON serialization. So we fire the burst
+        // unconditionally on a successful new save (editing doesn't earn yarns).
+        if (!editingId) {
+          yarnBurst(saveBtn, 10);
+        }
+
         resetForm();
         loadHistory();
       } else {

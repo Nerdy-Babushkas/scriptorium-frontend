@@ -86,7 +86,7 @@ router.get("/rewards", requireAuth, (req, res) => {
 });
 
 router.get("/customise", requireAuth, (req, res) => {
-  res.render("pages/placeholder", { pageName: "Customise" });
+  res.render("pages/customize");
 });
 
 router.get("/progress", requireAuth, (req, res) => {

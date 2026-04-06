@@ -108,13 +108,7 @@ function renderGrid() {
       <img src="${AVATAR_IMG(def.key)}" alt="${def.name}" class="avatar-img" />
       <span class="avatar-name">${def.name}</span>
       <span class="avatar-tier-pill tier-${def.tier}">${TIER_LABEL[def.tier] || def.tier}</span>
-      ${
-        def.cost > 0 && !isOwned
-          ? `<span style="font-size:0.68rem;color:rgba(255,255,255,0.25);">${def.cost} yarns</span>`
-          : def.cost === 0
-            ? `<span style="font-size:0.68rem;color:rgba(0,196,154,0.4);">Free</span>`
-            : ""
-      }
+
       ${btnHtml}
     `;
 

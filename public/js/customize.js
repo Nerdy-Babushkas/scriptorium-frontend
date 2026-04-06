@@ -47,6 +47,9 @@ async function fetchAll() {
     equipped = avatarData.equipped || "hatchling";
     balance = yarnData.balance || 0;
 
+    // Cache equipped key so next load is instant
+    localStorage.setItem("equippedAvatar", equipped);
+
     renderEquipped();
     renderGrid();
   } catch (err) {
@@ -149,17 +152,15 @@ async function equip(key) {
       return showToast(err.message || "Couldn't equip avatar", "error");
     }
 
+    const name = catalogue.find((a) => a.key === key)?.name;
     equipped = key;
-    // Update catalogue equipped flag
+    localStorage.setItem("equippedAvatar", key);
     catalogue = catalogue.map((a) => ({ ...a, equipped: a.key === key }));
 
     renderEquipped();
     renderGrid();
     updateNavbarAvatar(key);
-    showToast(
-      `${catalogue.find((a) => a.key === key)?.name} equipped! 🎉`,
-      "success",
-    );
+    showToast(`${name || key} equipped! 🎉`, "success");
   } catch (err) {
     showToast("Network error", "error");
   }
@@ -273,5 +274,13 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "/login";
     return;
   }
+
+  // Apply cached avatar immediately — no flicker while the fetch loads
+  const cached = localStorage.getItem("equippedAvatar");
+  if (cached) {
+    const img = document.getElementById("equippedImg");
+    if (img) img.src = AVATAR_IMG(cached);
+  }
+
   fetchAll();
 });

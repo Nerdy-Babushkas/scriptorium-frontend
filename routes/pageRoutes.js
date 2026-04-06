@@ -174,6 +174,10 @@ router.get("/reflection/:id", requireAuth, (req, res) => {
   res.render("pages/reflection-detail", { reflectionId: req.params.id });
 });
 
+router.get("/help", (req, res) => {
+  res.render("pages/help");
+});
+
 router.use((req, res) => {
   res.status(404).render("pages/404");
 });

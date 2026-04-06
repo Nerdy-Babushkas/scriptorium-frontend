@@ -188,7 +188,7 @@ function renderStreak() {
 
     <div class="scarf-bar">
       <div class="scarf-label">
-        <span>Masha's scarf</span>
+        <span>Your streak</span>
         <span>${current} / 30 stripes</span>
       </div>
       <div class="scarf-stripes">${scarfHtml}</div>
@@ -475,34 +475,31 @@ function showErrorState() {
 
 /* ─── ANIMAL HELPERS ─────────────────────────────────────────────────────────── */
 function getAnimalSrc(streak) {
-  if (streak === 0) return "/assets/masha-sad.gif";
-  if (streak < 3) return "/assets/masha-cosy.gif";
-  if (streak < 7) return "/assets/masha-happy.gif";
-  if (streak < 14) return "/assets/masha-knitting.gif";
-  return "/assets/masha-dancing.gif";
+  if (streak === 0) return "/assets/streak-idle.gif";
+  if (streak < 3) return "/assets/streak-cosy.gif";
+  if (streak < 14) return "/assets/streak-happy.gif";
+  return "/assets/streak-excited.gif";
 }
 
 function getAnimalAlt(streak) {
-  if (streak === 0) return "Masha looks sad — no streak yet";
-  if (streak < 3) return "Masha is warming up";
-  if (streak < 7) return "Masha is happy";
-  if (streak < 14) return "Masha is knitting happily";
-  return "Masha is dancing!";
+  if (streak === 0) return "Idle";
+  if (streak < 4) return "Cosy";
+  if (streak < 14) return "Happy";
+  return "Excited";
 }
 
 function getMoodMessage(streak) {
   if (streak === 0)
-    return "Masha's cup is empty. Come back today to start your streak.";
+    return "The shelves are quiet. Come back today to start something.";
   if (streak === 1)
-    return "Masha's pouring the first cup. A journey of a thousand days starts here.";
-  if (streak < 3)
-    return "Masha is warming up. Keep going — she believes in you.";
-  if (streak < 7)
-    return "Masha is knitting steadily. A few more days for a real scarf.";
-  if (streak < 14) return "Masha is happy! The scarf is growing nicely.";
+    return "First page turned. Every great habit starts with a single day.";
+  if (streak < 3) return "Getting into the rhythm. Keep showing up.";
+  if (streak < 7) return "A week taking shape. Your shelves are watching.";
+  if (streak < 14)
+    return "One full week. The room feels a little more lived-in.";
   if (streak < 30)
-    return "Masha is dancing between the shelves. Don't break her heart.";
-  return "30 stripes! Masha's scarf is magnificent. Legendary.";
+    return "Two weeks strong. You're building something real here.";
+  return "30 days. You've made this place yours.";
 }
 
 /* ─── DATE HELPERS ───────────────────────────────────────────────────────────── */

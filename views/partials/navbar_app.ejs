@@ -3,12 +3,19 @@
     <div class="absolute right-0 top-[40%] w-[600px] h-[600px] bg-scriptorium-gold-light rounded-full opacity-15 blur-[130px]"></div>
 </div>
 
-<nav class="relative z-20 px-6 lg:px-12 py-4 flex items-center justify-between gap-8 bg-[#2C1810]/90 backdrop-blur-sm border-b border-white/5">
+<nav class="relative z-20 px-6 lg:px-12 py-4 flex items-center justify-between gap-4 bg-[#2C1810]/90 backdrop-blur-sm border-b border-white/5">
     
-    <a href="/room" class="font-dancing font-bold text-3xl text-white tracking-wide hover:opacity-80 transition-opacity whitespace-nowrap">
-        Scriptorium
-    </a>
+    <!-- Logo + info -->
+    <div class="flex items-center gap-2 whitespace-nowrap flex-shrink-0">
+        <a href="/room" class="font-dancing font-bold text-3xl text-white tracking-wide hover:opacity-80 transition-opacity">
+            Scriptorium
+        </a>
+        <a href="/help" title="Help" class="mb-2 flex-shrink-0 opacity-40 hover:opacity-90 transition-opacity duration-200">
+            <img src="/assets/info.png" alt="Help" class="w-5 h-5 object-contain" style="filter:brightness(0) invert(1);" />
+        </a>
+    </div>
 
+    <!-- Search bar — hidden on small, visible md+ -->
     <div class="hidden md:flex flex-grow max-w-2xl">
         <%- include('./search_bar', { 
         query: typeof query !== 'undefined' ? query : '', 
@@ -16,101 +23,184 @@
         }) %>
     </div>
 
-    <div class="flex items-center gap-6 lg:gap-8 whitespace-nowrap">
-        <div class="hidden lg:flex items-center gap-6">
-            <a href="/progress" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Progress</a>
-            <a href="/rewards" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Rewards</a>
-            <a href="/customise" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Customise</a>
-            <a href="/about" class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">About</a>
+    <!-- Desktop nav links — hidden below lg -->
+    <div class="hidden lg:flex items-center gap-6 whitespace-nowrap">
+        <a href="/progress"      class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Progress</a>
+        <a href="/rewards"       class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Rewards</a>
+        <a href="/customise"     class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">Customise</a>
+        <a href="/about"         class="text-lg font-medium text-white/90 hover:text-scriptorium-gold transition-colors">About</a>
+        <a href="/add-reflection" title="New Reflection" class="group flex items-center justify-center transition-all duration-200">
+            <img src="/assets/pencil.png" alt="New Reflection" class="pencil-icon w-6 h-6 object-contain transition-all duration-200" />
+        </a>
+    </div>
 
-            <!-- Pencil button -->
-            <a href="/add-reflection"
-               title="New Reflection"
-               class="group flex items-center justify-center transition-all duration-200">
-                <img src="/assets/pencil.png"
-                     alt="New Reflection"
-                     class="pencil-icon w-6 h-6 object-contain transition-all duration-200" />
-            </a>
+    <!-- Right side: avatar + hamburger -->
+    <div class="flex items-center gap-3 flex-shrink-0">
+
+        <!-- Avatar / profile -->
+        <div class="relative">
+            <button id="profile-menu-btn" class="block w-10 h-10 rounded-full bg-white/20 overflow-hidden border border-white/30 hover:border-scriptorium-gold transition-colors focus:outline-none">
+                <img src="/assets/avatars/hatchling.png" alt="Profile" id="navbar-avatar-img" class="w-full h-full object-cover" style="object-fit:contain;padding:4px;">
+            </button>
+            <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-[#3E2723] rounded-xl shadow-2xl border border-white/10 overflow-hidden z-50 animate-fade-in-down">
+                <a href="/account" class="block px-5 py-3 text-white font-outfit text-base hover:bg-white/10 transition-colors">My Account</a>
+                <div class="h-[1px] bg-white/10 w-full"></div>
+                <form action="/logout" method="POST" class="block w-full">
+                    <button type="submit" class="w-full text-left px-5 py-3 text-[#FF6B6B] hover:text-[#ff8585] font-outfit text-base font-medium hover:bg-white/5 transition-colors">
+                        Logout
+                    </button>
+                </form>
+            </div>
         </div>
 
-        <!-- <div class="flex items-center gap-4">
-            <button class="p-2 text-white hover:bg-white/10 rounded-lg transition-colors">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        <!-- Hamburger — visible below lg -->
+        <button id="hamburger-btn" class="lg:hidden flex flex-col justify-center items-center w-9 h-9 rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 transition-colors gap-1.5 focus:outline-none" aria-label="Open menu">
+            <span class="block w-5 h-0.5 bg-white/80 rounded-full"></span>
+            <span class="block w-5 h-0.5 bg-white/80 rounded-full"></span>
+            <span class="block w-5 h-0.5 bg-white/80 rounded-full"></span>
+        </button>
+
+    </div>
+</nav>
+
+<!-- Mobile drawer -->
+<div id="mobile-menu" class="lg:hidden fixed inset-0 z-30 pointer-events-none">
+    <!-- Backdrop -->
+    <div id="mobile-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+
+    <!-- Panel slides in from the right -->
+    <div id="mobile-panel" class="absolute top-0 right-0 h-full w-72 max-w-[85vw] bg-[#1a0d08] border-l border-white/10 flex flex-col shadow-2xl translate-x-full transition-transform duration-300 ease-in-out">
+        
+        <!-- Panel header -->
+        <div class="flex items-center justify-between px-6 py-5 border-b border-white/10">
+            <span class="font-dancing text-2xl text-white">Menu</span>
+            <button id="mobile-close" class="w-8 h-8 flex items-center justify-center rounded-lg border border-white/15 text-white/50 hover:text-white hover:border-white/30 transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
-            </button> -->
-        <div class="flex items-center gap-4">
-                    
-                    <div class="relative">
-                        <button id="profile-menu-btn" class="block w-10 h-10 rounded-full bg-white/20 overflow-hidden border border-white/30 hover:border-scriptorium-gold transition-colors focus:outline-none">
-                            <img src="/assets/avatars/hatchling.png" alt="Profile" id="navbar-avatar-img" class="w-full h-full object-cover" style="object-fit:contain;padding:4px;">
-                        </button>
+            </button>
+        </div>
 
-                        <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-[#3E2723] rounded-xl shadow-2xl border border-white/10 overflow-hidden z-50 animate-fade-in-down">
-                            
-                            <a href="/account" class="block px-5 py-3 text-white font-outfit text-base hover:bg-white/10 transition-colors">
-                                My Account
-                            </a>
-                            
-                            <div class="h-[1px] bg-white/10 w-full"></div>
+        <!-- Mobile search (only shown when md search bar is hidden) -->
+        <div class="px-5 py-4 border-b border-white/10 md:hidden">
+            <%- include('./search_bar', { 
+            query: typeof query !== 'undefined' ? query : '', 
+            type: typeof type !== 'undefined' ? type : '' 
+            }) %>
+        </div>
 
-                            <form action="/logout" method="POST" class="block w-full">
-                                <button type="submit" class="w-full text-left px-5 py-3 text-[#FF6B6B] hover:text-[#ff8585] font-outfit text-base font-medium hover:bg-white/5 transition-colors">
-                                    Logout
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+        <!-- Nav links -->
+        <nav class="flex flex-col px-4 py-4 gap-1 flex-grow overflow-y-auto">
+            <a href="/progress"       class="mobile-nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white transition-all font-medium">
+                <span class="text-lg">📈</span> Progress
+            </a>
+            <a href="/rewards"        class="mobile-nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white transition-all font-medium">
+                <span class="text-lg">🏅</span> Rewards
+            </a>
+            <a href="/customise"      class="mobile-nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white transition-all font-medium">
+                <span class="text-lg">🎨</span> Customise
+            </a>
+            <a href="/about"          class="mobile-nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white transition-all font-medium">
+                <span class="text-lg">📖</span> About
+            </a>
+            <a href="/add-reflection" class="mobile-nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white transition-all font-medium">
+                <span class="text-lg">✍️</span> New Reflection
+            </a>
+            <a href="/help"           class="mobile-nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white transition-all font-medium">
+                <span class="text-lg">❓</span> Help
+            </a>
         </nav>
 
+        <!-- Bottom: account + logout -->
+        <div class="px-4 py-4 border-t border-white/10 flex flex-col gap-1">
+            <a href="/account" class="mobile-nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/80 hover:text-white transition-all font-medium">
+                <span class="text-lg">👤</span> My Account
+            </a>
+            <form action="/logout" method="POST">
+                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[#FF6B6B] hover:text-[#ff8585] hover:bg-white/5 transition-all font-medium">
+                    <span class="text-lg">🚪</span> Logout
+                </button>
+            </form>
+        </div>
 
-       <script src="/js/navbar.js"></script>
-       <script>
-         (function() {
-           const token = localStorage.getItem("token");
-           if (!token) return;
+    </div>
+</div>
 
-           // Apply cached key immediately — no flicker on every page
-           const cached = localStorage.getItem("equippedAvatar");
-           const img = document.getElementById("navbar-avatar-img");
-           if (cached && img) img.src = "/assets/avatars/" + cached + ".png";
 
-           // Then verify with the server and update cache if it changed
-           fetch("https://scriptorium-backend-six.vercel.app/api/avatars", {
-             headers: { Authorization: "JWT " + token }
-           })
-           .then(r => r.ok ? r.json() : null)
-           .then(data => {
-             if (!data?.equipped) return;
-             localStorage.setItem("equippedAvatar", data.equipped);
-             if (img) img.src = "/assets/avatars/" + data.equipped + ".png";
-           })
-           .catch(() => {});
-         })();
-       </script>
+<script src="/js/navbar.js"></script>
+<script>
+  (function() {
+    // ── Avatar sync ──────────────────────────────────────────────
+    const token = localStorage.getItem("token");
+    if (token) {
+      const cached = localStorage.getItem("equippedAvatar");
+      const img = document.getElementById("navbar-avatar-img");
+      if (cached && img) img.src = "/assets/avatars/" + cached + ".png";
 
-        <style>
-            @keyframes fadeInDown {
-                from { opacity: 0; transform: translateY(-10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            .animate-fade-in-down {
-                animation: fadeInDown 0.2s ease-out forwards;
-            }
+      fetch("https://scriptorium-backend-six.vercel.app/api/avatars", {
+        headers: { Authorization: "JWT " + token }
+      })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data?.equipped) return;
+        localStorage.setItem("equippedAvatar", data.equipped);
+        if (img) img.src = "/assets/avatars/" + data.equipped + ".png";
+      })
+      .catch(() => {});
+    }
 
-            /* Pencil icon — white/dim at rest, gold glow on hover */
-            .pencil-icon {
-                filter: brightness(0) invert(1);
-                opacity: 0.5;
-            }
-            a:hover .pencil-icon {
-                filter: brightness(0) invert(1)
-                        sepia(1) saturate(4) hue-rotate(5deg) brightness(1.15)
-                        drop-shadow(0 0 6px rgba(212,175,55,0.8));
-                opacity: 1;
-                transform: scale(1.12) rotate(-8deg);
-            }
-        </style>
+    // ── Hamburger ────────────────────────────────────────────────
+    const btn      = document.getElementById("hamburger-btn");
+    const closeBtn = document.getElementById("mobile-close");
+    const menu     = document.getElementById("mobile-menu");
+    const backdrop = document.getElementById("mobile-backdrop");
+    const panel    = document.getElementById("mobile-panel");
+
+    function openMenu() {
+      menu.classList.remove("pointer-events-none");
+      backdrop.classList.remove("opacity-0");
+      backdrop.classList.add("opacity-100");
+      panel.classList.remove("translate-x-full");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeMenu() {
+      backdrop.classList.remove("opacity-100");
+      backdrop.classList.add("opacity-0");
+      panel.classList.add("translate-x-full");
+      document.body.style.overflow = "";
+      setTimeout(() => menu.classList.add("pointer-events-none"), 310);
+    }
+
+    btn?.addEventListener("click", openMenu);
+    closeBtn?.addEventListener("click", closeMenu);
+    backdrop?.addEventListener("click", closeMenu);
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenu(); });
+  })();
+</script>
+
+<style>
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-down {
+        animation: fadeInDown 0.2s ease-out forwards;
+    }
+
+    .pencil-icon {
+        filter: brightness(0) invert(1);
+        opacity: 0.5;
+    }
+    a:hover .pencil-icon {
+        filter: brightness(0) invert(1)
+                sepia(1) saturate(4) hue-rotate(5deg) brightness(1.15)
+                drop-shadow(0 0 6px rgba(212,175,55,0.8));
+        opacity: 1;
+        transform: scale(1.12) rotate(-8deg);
+    }
+
+    .mobile-nav-link:hover {
+        background: rgba(255,255,255,0.07);
+    }
+</style>

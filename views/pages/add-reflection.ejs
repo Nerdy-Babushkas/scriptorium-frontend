@@ -249,12 +249,27 @@
         .tip-btn-next:hover { background: #33d4b0; }
         .tip-btn-skip { background: transparent; color: rgba(255,255,255,0.28); border: 1px solid rgba(255,255,255,0.1); }
         .tip-btn-skip:hover { color: rgba(255,255,255,0.55); }
+
+        /* ── Mobile responsive ── */
+        @media (max-width: 640px) {
+            #penguinTip {
+                bottom: 16px;
+                left: 16px;
+            }
+            #tipBubble {
+                max-width: calc(100vw - 100px);
+            }
+            #templateDrawer {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
-<body class="bg-[#2C1810] min-h-screen relative overflow-x-hidden font-outfit text-white">
+<body class="bg-[#2C1810] min-h-screen relative overflow-x-hidden overflow-y-auto font-outfit text-white">
 
     <%- include('../partials/navbar_app') %>
-
+  
     <main class="relative z-10 container mx-auto px-4 py-8 max-w-6xl">
         <div class="room-nav">
     <a href="/library" class="nav-pill">Library</a>
@@ -281,9 +296,9 @@
     </div>
 </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 h-[calc(100vh-200px)]">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 lg:h-[calc(100vh-220px)]">
             
-            <div class="lg:col-span-7 bg-[#0f191e]/90 backdrop-blur-xl border border-[#00C49A]/30 rounded-3xl p-8 flex flex-col shadow-2xl relative overflow-hidden animate-slide-up">
+            <div class="lg:col-span-7 bg-[#0f191e]/90 backdrop-blur-xl border border-[#00C49A]/30 rounded-3xl p-5 md:p-8 flex flex-col shadow-2xl relative overflow-hidden animate-slide-up">
                 
                 <div class="absolute top-0 right-0 w-64 h-64 bg-[#00C49A] rounded-full opacity-5 blur-[100px] pointer-events-none"></div>
 
@@ -326,27 +341,27 @@
                         </button>
                     </div>
                     <div class="flex-grow relative min-h-0">
-                        <textarea id="reflectionText" class="w-full h-full bg-black/20 border border-white/10 rounded-xl p-4 text-white placeholder-white/30 focus:border-[#00C49A] focus:outline-none resize-none transition-all custom-scroll" style="min-height: 180px;" placeholder="Write your thoughts here... (Min 30 chars)"></textarea>
+                        <textarea id="reflectionText" class="w-full h-full bg-black/20 border border-white/10 rounded-xl p-4 text-white placeholder-white/30 focus:border-[#00C49A] focus:outline-none resize-none transition-all custom-scroll" style="min-height: 160px;" placeholder="Write your thoughts here... (Min 30 chars)"></textarea>
                         <div id="charCount" class="absolute bottom-3 right-4 text-xs text-white/30">0 chars</div>
                     </div>
                 </div>
 
-                <div class="flex justify-between items-center">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <div class="text-xs text-white/40">
                         <span id="editModeIndicator" class="hidden text-[#FFDA6D] font-bold">⚠️ Editing Mode</span>
                     </div>
-                    <div class="flex gap-3">
+                    <div class="flex gap-3 w-full sm:w-auto">
                         <button id="cancelEditBtn" class="hidden px-6 py-2 rounded-full border border-white/10 text-white/60 hover:text-white hover:bg-white/5 transition-all text-sm font-bold">
                             Cancel
                         </button>
-                        <button id="saveBtn" class="px-8 py-3 rounded-full bg-[#00C49A] text-black font-bold hover:bg-white hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,196,154,0.3)]">
+                        <button id="saveBtn" class="px-8 py-3 rounded-full bg-[#00C49A] text-black font-bold hover:bg-white hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,196,154,0.3)] w-full sm:w-auto">
                             Save Reflection
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-5 bg-[#0f191e]/80 backdrop-blur-md border border-white/5 rounded-3xl p-6 flex flex-col h-full animate-slide-up" style="animation-delay: 0.1s;">
+            <div class="lg:col-span-5 bg-[#0f191e]/80 backdrop-blur-md border border-white/5 rounded-3xl p-5 md:p-6 flex flex-col lg:h-full animate-slide-up min-h-[320px]" style="animation-delay: 0.1s;">
                 <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
                     <span class="text-[#00C49A]">📜</span> History
                 </h3>
@@ -375,7 +390,7 @@
         </div>
     </main>
 
-    <div id="toast" class="fixed bottom-8 right-8 flex items-center gap-4 px-6 py-4 rounded-xl shadow-2xl transform translate-y-40 transition-transform duration-500 z-[100] border-l-4">
+    <div id="toast" class="fixed bottom-4 right-4 md:bottom-8 md:right-8 flex items-center gap-4 px-4 md:px-6 py-3 md:py-4 rounded-xl shadow-2xl transform translate-y-40 transition-transform duration-500 z-[100] border-l-4 max-w-[calc(100vw-2rem)]">
         <div id="toastIcon" class="text-2xl"></div>
         <div>
             <h4 id="toastTitle" class="font-bold text-lg"></h4>

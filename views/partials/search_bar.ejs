@@ -32,7 +32,34 @@
     <input
       type="hidden"
       name="type"
+      id="searchTypeInput"
       value="<%= typeof type !== 'undefined' ? type : 'movies' %>"
     />
   </div>
 </form>
+<script>
+  (function () {
+    var form = document.currentScript.previousElementSibling;
+    var input = form.querySelector("#searchTypeInput");
+
+    // On the search results page the URL already has the correct type —
+    // honour it and keep localStorage in sync.
+    var urlType = new URLSearchParams(window.location.search).get("type");
+    if (urlType) {
+      input.value = urlType;
+      localStorage.setItem("lastSearchType", urlType);
+      return;
+    }
+
+    // On every other page, restore the last used type so the form
+    // submits with it instead of the default 'movies'.
+    var saved = localStorage.getItem("lastSearchType");
+    if (saved) input.value = saved;
+
+    // Also update on submit so it can never be stale.
+    form.addEventListener("submit", function () {
+      var latest = localStorage.getItem("lastSearchType");
+      if (latest) input.value = latest;
+    });
+  })();
+</script>

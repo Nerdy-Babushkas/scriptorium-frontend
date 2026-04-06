@@ -198,7 +198,7 @@
     <option value="custom">Custom</option>
   </select>
 </div>
-          <div>
+          <div id="tracking-fields" class="flex flex-col gap-2 min-h-[72px]">
             <label id="target-label" class="block text-white/70 text-sm mb-1 font-medium">
   Target Value
 </label>
@@ -277,7 +277,6 @@
       };
 function updateTrackingUI() {
   const tracking = document.getElementById("modal-tracking").value;
-  const type = document.getElementById("modal-type").value;
 
   const targetInput = document.getElementById("modal-target");
   const targetLabel = document.getElementById("target-label");
@@ -285,27 +284,24 @@ function updateTrackingUI() {
   const currentNumber = document.getElementById("modal-current-number");
   const currentBinary = document.getElementById("modal-current-binary");
 
+  // Reset all first
+  targetInput.style.display = "none";
+  currentNumber.style.display = "none";
+  currentBinary.style.display = "none";
+
   if (tracking === "binary") {
-    targetInput.disabled = true;
-
-    currentNumber.classList.add("hidden");
-    currentBinary.classList.remove("hidden");
-
+    // One-time: hide target, show binary select
+    currentBinary.style.display = "block";
     targetLabel.textContent = "Completion";
-  }
-  else if (tracking === "custom") {
-  targetLabel.textContent = "Target Value";
-} 
-   else {
-    targetInput.disabled = false;
-
-    currentNumber.classList.remove("hidden");
-    currentBinary.classList.add("hidden");
-
-    if (type === "music") targetLabel.textContent = "Number of Songs";
-    else if (type === "movies") targetLabel.textContent = "Number of Movies";
-    else if (type === "book") targetLabel.textContent = "Number of Chapters";
-    else targetLabel.textContent = "Target Value";
+  } else if (tracking === "countable") {
+    // Countable: show target, hide current
+    targetInput.style.display = "block";
+    targetLabel.textContent = "Target Value";
+    currentNumber.style.display = "block";
+  } else if (tracking === "custom") {
+    // Custom: show target, hide current
+    targetInput.style.display = "block";
+    targetLabel.textContent = "Target Value";
   }
 }
 

@@ -591,7 +591,7 @@ function setupInlineMediaSearch() {
       function render() {
         const container = document.getElementById("goals-container");
         container.innerHTML = "";
-        const pct = goal.total > 0 ? Math.round((goal.current / goal.total) * 100) : 0;
+        
         goals = goals.map((g) => {
           const total = Number(g.total || 0);
           const current = Number(g.current || 0);

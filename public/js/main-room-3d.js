@@ -419,7 +419,7 @@ function init() {
   controls.dampingFactor = 0.05;
   controls.minDistance = 0.1;
   controls.maxDistance = 50;
-  controls.enablePan = false;
+  controls.enablePan = true;
 
   // --- DRACO LOADER (fixes the compression error) ---
   const dracoLoader = new DRACOLoader();
@@ -442,8 +442,8 @@ function init() {
 
       const box = new THREE.Box3().setFromObject(model);
       const center = box.getCenter(new THREE.Vector3());
-      camera.position.set(center.x, center.y + 2, center.z + 10);
-      controls.target.copy(center);
+      camera.position.set(36.39, 112.17, 43.24);
+      controls.target.set(3.83, 101.31, 6.88);
       controls.update();
 
       console.log("3D Room Initialized.");

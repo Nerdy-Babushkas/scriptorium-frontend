@@ -744,9 +744,12 @@ updateTrackingUI();
 }
 
      function openModal() {
+      
   const modal = document.getElementById("goal-modal");
   modal.classList.remove("hidden");
   modal.classList.add("flex");
+  
+document.getElementById("modal-current-progress").value = "";
 
   if (!editingGoalId) {
     document.getElementById("modal-title").value = "";

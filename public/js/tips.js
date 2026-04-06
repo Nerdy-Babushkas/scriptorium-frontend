@@ -64,12 +64,13 @@ export function initTips({ tips }) {
         }, 300);
     }
 
-    // ✅ NEW: get user identifier
-    const user = localStorage.getItem("userEmail") || "guest";
+    // ✅ UPDATED: use token instead of email (more reliable)
+    const token = localStorage.getItem("token") || "guest";
+    const userKey = `showTips_${token}`;
 
     function checkTips() {
-        // ✅ UPDATED: user-specific key
-        const showTips = localStorage.getItem(`showTips_${user}`);
+        // ✅ UPDATED: user-specific storage
+        const showTips = localStorage.getItem(userKey);
 
         if (showTips !== "false") {
             openModal();
@@ -95,7 +96,7 @@ export function initTips({ tips }) {
 
     // ✅ UPDATED: save per user
     disableBtn.onclick = () => {
-        localStorage.setItem(`showTips_${user}`, "false");
+        localStorage.setItem(userKey, "false");
         closeModal();
     };
 

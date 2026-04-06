@@ -43,7 +43,7 @@
                     
                     <div class="relative">
                         <button id="profile-menu-btn" class="block w-10 h-10 rounded-full bg-white/20 overflow-hidden border border-white/30 hover:border-scriptorium-gold transition-colors focus:outline-none">
-                            <img src="/assets/account.png" alt="Profile" class="w-full h-full object-cover">
+                            <img src="/assets/avatars/hatchling.png" alt="Profile" id="navbar-avatar-img" class="w-full h-full object-cover" style="object-fit:contain;padding:4px;">
                         </button>
 
                         <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-[#3E2723] rounded-xl shadow-2xl border border-white/10 overflow-hidden z-50 animate-fade-in-down">
@@ -68,6 +68,22 @@
 
 
        <script src="/js/navbar.js"></script>
+       <script>
+         (function() {
+           const token = localStorage.getItem("token");
+           if (!token) return;
+           fetch("https://scriptorium-backend-six.vercel.app/api/avatars", {
+             headers: { Authorization: "JWT " + token }
+           })
+           .then(r => r.ok ? r.json() : null)
+           .then(data => {
+             if (!data?.equipped) return;
+             const img = document.getElementById("navbar-avatar-img");
+             if (img) img.src = "/assets/avatars/" + data.equipped + ".png";
+           })
+           .catch(() => {});
+         })();
+       </script>
 
         <style>
             @keyframes fadeInDown {

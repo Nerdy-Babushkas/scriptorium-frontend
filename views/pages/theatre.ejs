@@ -14,6 +14,33 @@
         #container3d { width: 100%; height: 100vh; display: block; }
         @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .animate-zoom-in { animation: zoomIn 0.3s ease-out forwards; }
+
+        /* ── Penguin tip ── */
+        #penguinTip { position:fixed; bottom:24px; left:24px; z-index:200; display:flex; align-items:flex-end; gap:10px; }
+        #penguinTip.hidden { display:none; }
+        #penguinBtn { width:56px; height:56px; border-radius:50%; border:none; background:transparent; cursor:pointer; padding:0; flex-shrink:0; position:relative; transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+        #penguinBtn:hover { transform:scale(1.12) rotate(-6deg); }
+        #penguinBtn img { width:100%; height:100%; object-fit:contain; }
+        #penguinBtn::after { content:''; position:absolute; inset:-4px; border-radius:50%; border:2px solid rgba(255,218,109,0.5); animation:tipPulse 2.2s ease-in-out infinite; }
+        #penguinBtn.open::after { display:none; }
+        @keyframes tipPulse { 0%,100%{transform:scale(1);opacity:0.5;} 50%{transform:scale(1.2);opacity:0;} }
+        #tipBubble { background:rgba(10,20,24,0.96); backdrop-filter:blur(16px); border:1px solid rgba(255,218,109,0.2); border-radius:18px; padding:16px 18px 14px; max-width:280px; width:calc(100vw - 110px); transform-origin:bottom left; animation:bubblePop 0.3s cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 16px 48px rgba(0,0,0,0.6); }
+        #tipBubble.hidden { display:none; }
+        @keyframes bubblePop { from{transform:scale(0.85) translateY(10px);opacity:0;} to{transform:scale(1) translateY(0);opacity:1;} }
+        .tip-step{display:none;} .tip-step.active{display:block;}
+        .tip-eyebrow{font-size:0.57rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#FFDA6D;margin-bottom:5px;}
+        .tip-title{font-size:0.9rem;font-weight:800;color:#fff;margin:0 0 5px;line-height:1.25;}
+        .tip-body{font-size:0.75rem;color:rgba(255,255,255,0.58);line-height:1.5;margin:0 0 12px;}
+        .tip-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+        .tip-dots{display:flex;gap:5px;}
+        .tip-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.18);transition:background 0.2s;}
+        .tip-dot.active{background:#FFDA6D;}
+        .tip-btn-row{display:flex;gap:7px;}
+        .tip-btn{padding:6px 14px;border-radius:999px;font-size:0.72rem;font-weight:700;cursor:pointer;border:none;transition:all 0.18s;}
+        .tip-btn-next{background:#FFDA6D;color:#1a0f0a;}
+        .tip-btn-next:hover{background:#ffe89a;}
+        .tip-btn-skip{background:transparent;color:rgba(255,255,255,0.28);border:1px solid rgba(255,255,255,0.1);}
+        .tip-btn-skip:hover{color:rgba(255,255,255,0.55);}
     </style>
 </head>
 <body class="bg-[#0f0a1a] min-h-screen overflow-hidden font-outfit text-white">
@@ -81,5 +108,81 @@
     </script>
     <script src="/js/library.js"></script>
     <script type="module" src="/js/theatre-3d.js"></script>
+
+    <!-- Penguin tip guide -->
+    <div id="penguinTip" class="hidden">
+        <button id="penguinBtn" title="How this works">
+            <img src="/assets/penguin.gif" alt="Guide" />
+        </button>
+        <div id="tipBubble" class="hidden">
+            <div class="tip-step active" data-step="0">
+                <p class="tip-eyebrow">✦ Step 1 of 2</p>
+                <p class="tip-title">Movie posters and the TV 🎬</p>
+                <p class="tip-body">The <strong style='color:#8b5cf6;'>posters on the walls</strong> are your Watchlist and Favourites. The <strong style='color:#8b5cf6;'>TV screen</strong> opens Currently Watching. Hover to see the glow.</p>
+                <div class="tip-footer">
+                    <div class="tip-dots"></div>
+                    <div class="tip-btn-row">
+                        <button class="tip-btn tip-btn-skip" id="tipSkip">Don't show again</button>
+                        <button class="tip-btn tip-btn-next" id="tipNext">Next →</button>
+                    </div>
+                </div>
+            </div>
+            <div class="tip-step" data-step="1">
+                <p class="tip-eyebrow">✦ Step 2 of 2</p>
+                <p class="tip-title">Inside each shelf 📺</p>
+                <p class="tip-body">Click any film to see your reflections on it. Use <strong style='color:#8b5cf6;'>Move</strong> to shift it between shelves, or <strong style='color:#8b5cf6;'>Mark as done</strong> to add it to your Watched archive.</p>
+                <div class="tip-footer">
+                    <div class="tip-dots"></div>
+                    <div class="tip-btn-row">
+                        <button class="tip-btn tip-btn-skip" id="tipSkip">Don't show again</button>
+                        <button class="tip-btn tip-btn-next" id="tipNext">Got it! 🐧</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    (function() {
+      const TIP_ID = "theatre-guide";
+      const TOTAL  = 2;
+      const BASE   = "https://scriptorium-backend-six.vercel.app/api";
+      const token  = localStorage.getItem("token");
+      if (!token) return;
+
+      let step = 0, open = false;
+
+      const headers = { "Content-Type":"application/json", Authorization:"JWT "+token };
+
+      fetch(BASE+"/user/tips", { headers })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => {
+          if (!d || d.tipsDisabled || d.seenTips.includes(TIP_ID)) return;
+          const wrap = document.getElementById("penguinTip");
+          if (!wrap) return;
+          wrap.classList.remove("hidden");
+          buildDots();
+          setTimeout(openBubble, 2000);
+          document.getElementById("penguinBtn").addEventListener("click", () => open ? closeBubble() : openBubble());
+          document.getElementById("tipBubble").addEventListener("click", e => {
+            if (e.target.id === "tipNext") handleNext();
+            if (e.target.id === "tipSkip") handleSkip();
+          });
+        }).catch(() => {});
+
+      function buildDots() {
+        document.querySelectorAll(".tip-dots").forEach(c => {
+          c.innerHTML = "";
+          for (let i=0;i<TOTAL;i++) { const d=document.createElement("div"); d.className="tip-dot"+(i===0?" active":""); c.appendChild(d); }
+        });
+      }
+      function updateDots() { document.querySelectorAll(".tip-dot").forEach((d,i) => d.classList.toggle("active", i===step)); }
+      function showStep(n) { document.querySelectorAll(".tip-step").forEach(s=>s.classList.remove("active")); document.querySelector(`.tip-step[data-step="${n}"]`)?.classList.add("active"); updateDots(); }
+      function openBubble() { open=true; document.getElementById("tipBubble").classList.remove("hidden"); document.getElementById("penguinBtn").classList.add("open"); showStep(step); }
+      function closeBubble() { open=false; document.getElementById("tipBubble").classList.add("hidden"); document.getElementById("penguinBtn").classList.remove("open"); }
+      function handleNext() { if (step<TOTAL-1) { step++; showStep(step); } else dismiss(); }
+      function handleSkip() { fetch(BASE+"/user/tips/disable",{method:"POST",headers,body:JSON.stringify({disabled:true})}).catch(()=>{}); dismiss(); }
+      function dismiss() { closeBubble(); document.getElementById("penguinTip").classList.add("hidden"); fetch(BASE+"/user/tips/seen",{method:"POST",headers,body:JSON.stringify({tipId:TIP_ID})}).catch(()=>{}); }
+    })();
+    </script>
 </body>
 </html>

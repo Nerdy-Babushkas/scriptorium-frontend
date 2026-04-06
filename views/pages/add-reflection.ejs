@@ -3,6 +3,91 @@
 <head>
     <%- include('../partials/head', { title: 'Reflections - Scriptorium' }) %>
     <style>
+
+        .page-controls {
+    display: flex; 
+    align-items: center;
+    justify-content: space-between; 
+    gap: 12px; 
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.page-controls-left { 
+    display: flex; 
+    align-items: center; 
+    gap: 20px; 
+}
+
+/* Ensure the button looks consistent */
+.btn-back {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 16px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.7);
+    font-size: 0.82rem; font-weight: 500; cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.btn-back:hover { background: rgba(255,255,255,0.1); color:#fff; transform: translateX(-2px); }
+
+        /* Navigation Overlay - Floating on the right */
+.room-nav {
+    position: fixed;
+    top: 120px;
+    right: 32px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 16px;
+    pointer-events: auto;
+}
+
+.nav-pill {
+    padding: 12px 28px;
+    background: rgba(15, 25, 30, 0.85);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 99px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    min-width: 120px;
+}
+
+.nav-pill:hover {
+    border-color: #FFDA6D;
+    color: #FFDA6D;
+    transform: translateX(-8px);
+    background: rgba(15, 25, 30, 0.95);
+}
+
+.ai-btn-container {
+    margin-top: 8px;
+    pointer-events: auto;
+}
+
+/* Back Button styling for the top left */
+.btn-back {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 16px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.7);
+    font-size: 0.82rem; font-weight: 500; cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+    text-decoration: none;
+}
+.btn-back:hover { background: rgba(255,255,255,0.1); color:#fff; transform: translateX(-2px); }
+.btn-back svg { width:14px; height:14px; flex-shrink:0; }
         /* Mood Selection Styles */
         .mood-btn.selected {
             background-color: #00C49A;
@@ -184,13 +269,32 @@
 <body class="bg-[#2C1810] min-h-screen relative overflow-x-hidden overflow-y-auto font-outfit text-white">
 
     <%- include('../partials/navbar_app') %>
-
-    <main class="relative z-10 container mx-auto px-4 py-6 max-w-6xl pb-16">
+  
+    <main class="relative z-10 container mx-auto px-4 py-8 max-w-6xl">
+        <div class="room-nav">
+    <a href="/library" class="nav-pill">Library</a>
+    <a href="/music" class="nav-pill">Music Room</a>
+    <a href="/theatre" class="nav-pill">Theatre</a>
+    <div class="ai-btn-container">
+        <%- include('../partials/ai_button') %>
+    </div>
+</div>
         
-        <div class="text-center mb-10">
-            <h1 class="font-dancing text-4xl md:text-5xl text-white mb-2">Reflection Journal</h1>
-            <p class="text-white/50 text-sm">Capture your thoughts on your journey</p>
+        <div class="page-controls">
+    <div class="page-controls-left">
+        <a href="/room" class="btn-back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
+                <path d="M19 12H5M12 5l-7 7 7 7"/>
+            </svg>
+            Back to Room
+        </a>
+
+        <div style="display:flex; flex-direction:column; gap:2px;">
+            <h1 class="text-3xl font-dancing text-white" style="margin:0; line-height:1;">Reflection Journal</h1>
+            <p class="text-white/40" style="font-size:0.75rem; margin:0;">Capture your thoughts on your journey</p>
         </div>
+    </div>
+</div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 lg:h-[calc(100vh-220px)]">
             

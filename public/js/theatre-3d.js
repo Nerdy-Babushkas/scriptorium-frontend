@@ -5,15 +5,10 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 // --- CLICKABLE MESH CONFIG ---
 const interactiveObjects = {
-  'finished':  { action: 'shelf', key: 'finished',  label: '✅ Finished Archive' },
-  'reading':   { action: 'shelf', key: 'reading',   label: '📖 Currently Reading' },
-  'favorites': { action: 'shelf', key: 'favorites', label: '⭐ My Favorites'      },
-  'wishlist':  { action: 'shelf', key: 'wishlist',  label: '📋 Wishlist'          },
-  // 'shelf1': { action: 'none', label: 'Coming Soon' },
-  // 'shelf2': { action: 'none', label: 'Coming Soon' },
-  // 'shelf4': { action: 'none', label: 'Coming Soon' },
-  // 'shelf6': { action: 'none', label: 'Coming Soon' },
-  // 'shelf8': { action: 'none', label: 'Coming Soon' },
+  'watched':   { action: 'shelf', key: 'watched',   label: '✅ Watched History' },
+  'favorites': { action: 'shelf', key: 'favorites', label: '⭐ My Favorites'    },
+  'watchlist': { action: 'shelf', key: 'watchlist', label: '📋 Watchlist'       },
+  'watching':  { action: 'shelf', key: 'watching',  label: '📺 Currently Watching' },
 };
 
 let scene, camera, renderer, controls;
@@ -25,14 +20,14 @@ let outlineMesh = null;
 const tooltip = document.createElement('div');
 tooltip.style.cssText = `
   position: fixed;
-  background: rgba(10, 26, 20, 0.92);
+  background: rgba(10, 5, 26, 0.92);
   color: #f5e6c8;
   padding: 8px 16px;
   border-radius: 6px;
   font-family: serif;
   font-size: 15px;
   pointer-events: none;
-  border: 1px solid #00C49A;
+  border: 1px solid #8b5cf6;
   opacity: 0;
   transition: opacity 0.15s;
   z-index: 49;
@@ -47,7 +42,7 @@ const mouse = new THREE.Vector2();
 
 // --- OUTLINE MATERIAL ---
 const outlineMaterial = new THREE.MeshBasicMaterial({
-  color: 0x00C49A,
+  color: 0x8b5cf6,
   side: THREE.BackSide,
 });
 
@@ -74,24 +69,30 @@ function removeOutline() {
   }
 }
 
+function isModalOpen() {
+  return !document.getElementById('shelfViewModal').classList.contains('hidden');
+}
+
+function hideTooltip() {
+  tooltip.style.opacity = '0';
+  removeOutline();
+  hoveredObject = null;
+  document.body.style.cursor = 'default';
+}
+
 function registerClickableObjects(model) {
   model.traverse((node) => {
-    // Check if this node OR any of its ancestors is in interactiveObjects
     const config = interactiveObjects[node.name];
-
     if (config) {
-      // This is a named interactive group/object
-      // Register ALL leaf meshes under it, tagging them with this config
       node.traverse((child) => {
         if (child.isMesh) {
           child.userData.config = config;
           clickableMeshes.push(child);
-          console.log(`✓ Registered child mesh of "${node.name}": ${child.name}`);
+          console.log(`✓ Registered child of "${node.name}": ${child.name}`);
         }
       });
     }
   });
-
   console.log(`Total clickable meshes: ${clickableMeshes.length}`);
 }
 
@@ -114,7 +115,7 @@ function getHitTarget(intersects) {
 
 function init() {
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0f191e);
+  scene.background = new THREE.Color(0x0a0515);
 
   camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -131,12 +132,12 @@ function init() {
   scene.add(pointLight);
 
   // --- CONTROLS ---
-  controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.05;
-  controls.minDistance = 0.5;
-  controls.maxDistance = 3;
-  controls.enablePan = true;
+controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.minDistance = 0.3;   // can get close
+controls.maxDistance = 2;     // can't zoom out too far — keeps them in the room
+controls.enablePan = true;
 
   // --- DRACO + GLTF LOADER ---
   const dracoLoader = new DRACOLoader();
@@ -145,24 +146,23 @@ function init() {
   loader.setDRACOLoader(dracoLoader);
 
   loader.load(
-    'https://res.cloudinary.com/dtonhoq70/image/upload/v1775421692/library_mcrptr.glb',
+    'https://res.cloudinary.com/dtonhoq70/image/upload/v1775427448/theatre_gy10du.glb',
     (gltf) => {
       const model = gltf.scene;
       scene.add(model);
 
       registerClickableObjects(model);
 
-      // Position camera INSIDE the room looking at the bookshelves
       const box = new THREE.Box3().setFromObject(model);
       const center = box.getCenter(new THREE.Vector3());
       const size = box.getSize(new THREE.Vector3());
 
-      // Place camera near the front-center of the room, at eye level
-      camera.position.set(1.30, -0.28, 1.05);
-controls.target.set(0.17, -0.31, -0.01);
+      // Angled view from the left side like image 3
+      camera.position.set(1.16, 0.84, 0.48);
+controls.target.set(0.10, 0.60, 0.11);
 controls.update();
 
-      console.log('Library 3D Initialized. Room size:', size);
+      console.log('Theatre 3D Initialized.');
     },
     (progress) => {
       if (progress.total > 0) {
@@ -174,6 +174,13 @@ controls.update();
     }
   );
 
+  // Hide tooltip whenever modal opens
+  const modal = document.getElementById('shelfViewModal');
+  const observer = new MutationObserver(() => {
+    if (isModalOpen()) hideTooltip();
+  });
+  observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+
   window.addEventListener('mousemove', onMouseMove);
   window.addEventListener('click', onMouseClick);
   window.addEventListener('resize', onWindowResize);
@@ -182,7 +189,7 @@ controls.update();
 }
 
 function onMouseMove(e) {
-  if (!document.getElementById('shelfViewModal').classList.contains('hidden')) return;
+  if (isModalOpen()) return;
 
   getCanvasRelativeMouse(e);
   tooltip.style.left = e.clientX + 16 + 'px';
@@ -209,18 +216,15 @@ function onMouseMove(e) {
 }
 
 function onMouseClick(e) {
-  if (!document.getElementById('shelfViewModal').classList.contains('hidden')) return;
+  if (isModalOpen()) return;
 
   getCanvasRelativeMouse(e);
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(clickableMeshes, false);
   const target = getHitTarget(intersects);
 
-  if (target?.userData.config) {
-    const config = target.userData.config;
-    if (config.action === 'shelf') {
-      openShelf(config.key, config.label);
-    }
+  if (target?.userData.config?.action === 'shelf') {
+    openShelf(target.userData.config.key, target.userData.config.label);
   }
 }
 
@@ -234,6 +238,7 @@ function animate() {
   requestAnimationFrame(animate);
   if (controls) controls.update();
   renderer.render(scene, camera);
+  
 }
 
 init();

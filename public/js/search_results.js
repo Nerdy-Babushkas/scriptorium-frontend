@@ -306,8 +306,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (type === "music") {
           btnSpecial.dataset.shelf = "listening";
           btnSpecialText.textContent = "Currently Listening";
-         // btnWishlist.dataset.shelf = "wishlist";
-         // btnWishlistText.textContent = "Wishlist";
+          btnWishlist.dataset.shelf = "wishlist";
+          btnWishlistText.textContent = "Wishlist";
           btnFinished.dataset.shelf = "finished";
           btnFinishedText.textContent = "Finished";
         } else {

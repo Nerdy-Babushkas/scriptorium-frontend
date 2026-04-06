@@ -17,6 +17,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const accordionIcon = document.getElementById("accordionIcon");
   const advancedBtn = document.getElementById("advancedSearchBtn");
 
+  const btnWishlist = document.getElementById("btn-wishlist");
+  const btnWishlistText = document.getElementById("btn-wishlist-text");
+  const btnFinished = document.getElementById("btn-finished");
+  const btnFinishedText = document.getElementById("btn-finished-text");
+
   const API_BASE = "https://scriptorium-backend-six.vercel.app/api";
   let currentPage = 1;
   let currentQueryParams = {};
@@ -294,12 +299,24 @@ document.addEventListener("DOMContentLoaded", () => {
         if (type === "movies") {
           btnSpecial.dataset.shelf = "watching";
           btnSpecialText.textContent = "Currently Watching";
+          btnWishlist.dataset.shelf = "watchlist";
+          btnWishlistText.textContent = "Watchlist";
+          btnFinished.dataset.shelf = "watched";
+          btnFinishedText.textContent = "Watched";
         } else if (type === "music") {
           btnSpecial.dataset.shelf = "listening";
           btnSpecialText.textContent = "Currently Listening";
+          btnWishlist.dataset.shelf = "wishlist";
+          btnWishlistText.textContent = "Wishlist";
+          btnFinished.dataset.shelf = "finished";
+          btnFinishedText.textContent = "Finished";
         } else {
           btnSpecial.dataset.shelf = "reading";
           btnSpecialText.textContent = "Currently Reading";
+          btnWishlist.dataset.shelf = "wishlist";
+          btnWishlistText.textContent = "Wishlist";
+          btnFinished.dataset.shelf = "finished";
+          btnFinishedText.textContent = "Finished";
         }
       };
     });

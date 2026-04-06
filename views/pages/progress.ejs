@@ -321,6 +321,45 @@
         music: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>`,
         movies: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>`,
       };
+
+  function burstAtCoords(x, y, type) {
+  const isComplete = type === "complete";
+
+  const pill = document.createElement("div");
+  pill.textContent = isComplete ? "Goal complete! +25 🧶" : "+5 🧶";
+
+  pill.style.position = "fixed";
+  pill.style.left = `${x}px`;
+  pill.style.top = `${y}px`;
+  pill.style.transform = "translateX(-50%) translateY(0)";
+  pill.style.padding = "6px 12px";
+  pill.style.borderRadius = "999px";
+  pill.style.fontSize = "12px";
+  pill.style.fontWeight = "600";
+  pill.style.background = "rgba(0,0,0,0.85)";
+  pill.style.color = "#00C49A";
+  pill.style.border = "1px solid rgba(0,196,154,0.4)";
+  pill.style.boxShadow = "0 0 12px rgba(0,196,154,0.35)";
+  pill.style.pointerEvents = "none";
+  pill.style.opacity = "0";
+  pill.style.zIndex = "9999";
+
+  document.body.appendChild(pill);
+
+  requestAnimationFrame(() => {
+    pill.style.transition =
+      "opacity 0.18s ease, transform 1.3s cubic-bezier(0.2, 1, 0.4, 1)";
+    pill.style.opacity = "1";
+    pill.style.transform = `translateX(-50%) translateY(-${isComplete ? 64 : 48}px)`;
+
+    setTimeout(() => {
+      pill.style.transition = "opacity 0.35s ease";
+      pill.style.opacity = "0";
+      setTimeout(() => pill.remove(), 380);
+    }, isComplete ? 950 : 850);
+  });
+}
+
 function updateTrackingUI() {
   const tracking = document.getElementById("modal-tracking").value;
   const goalType = document.getElementById("modal-type").value;
@@ -547,7 +586,7 @@ function setupInlineMediaSearch() {
       function render() {
         const container = document.getElementById("goals-container");
         container.innerHTML = "";
-
+        
         goals = goals.map((g) => {
           const total = Number(g.total || 0);
           const current = Number(g.current || 0);
@@ -640,6 +679,8 @@ class="edit-goal absolute -top-5 -right-6 bg-black/70 hover:bg-teal-neon text-wh
   </div>
 `;
 
+
+
           item.addEventListener("click", (e) => {
             if (e.target.closest(".goal-bar")) return;
             selectedGoalId = id;
@@ -704,28 +745,42 @@ class="edit-goal absolute -top-5 -right-6 bg-black/70 hover:bg-teal-neon text-wh
         });
 
         bar.addEventListener("pointerup", async (e) => {
-          if (!dragState.active) return;
+  if (!dragState.active) return;
 
-          bar.releasePointerCapture(e.pointerId);
-          dragState.active = false;
+  bar.releasePointerCapture(e.pointerId);
+  dragState.active = false;
 
-          const id = dragState.id;
-          const goal = goals.find((g) => (g._id || g.id) === id);
-          if (!goal) return;
+  const id = dragState.id;
+  const goal = goals.find((g) => (g._id || g.id) === id);
+  if (!goal) return;
 
-          const newCurrent = Number(goal.current);
-          await updateGoalProgress(id, newCurrent);
+  const rect = bar.getBoundingClientRect();
+  const burstX = rect.left + rect.width / 2;
+  const burstY = rect.top;
 
-          const idx = goals.findIndex((g) => (g._id || g.id) === id);
-          if (idx !== -1) {
-            const total = Number(goals[idx].total || 0);
-            const current = Number(goals[idx].current || 0);
-            goals[idx].status =
-              total > 0 && current >= total ? "completed" : "active";
-          }
+  const wasCompleted = goal.status === "completed";
+  const newCurrent = Number(goal.current);
 
-          render();
-        });
+  await updateGoalProgress(id, newCurrent);
+
+  const updatedGoal = goals.find((g) => (g._id || g.id) === id);
+  if (!updatedGoal) return;
+
+  const total = Number(updatedGoal.total || 0);
+  const current = Number(updatedGoal.current || 0);
+
+  const nowCompleted = total > 0 && current >= total;
+
+  burstAtCoords(
+    burstX,
+    burstY,
+    !wasCompleted && nowCompleted ? "complete" : "progress",
+  );
+
+  updatedGoal.status = nowCompleted ? "completed" : "active";
+
+  render();
+});
       }
 
       function updateBarFromPointer(e) {

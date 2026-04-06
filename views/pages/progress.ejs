@@ -177,7 +177,7 @@
               >Goal Type</label
             >
             <select
-              id="modal-type"
+              id="modal-type" onchange="updateTrackingUI();"
               class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
             >
               <option value="book">Book</option>
@@ -185,34 +185,45 @@
               <option value="movies">Movies</option>
             </select>
           </div>
-
+<div>
+  <label class="block text-white/70 text-sm mb-1 font-medium">
+    How do you track this goal?
+  </label>
+  <select
+    id="modal-tracking" onchange="updateTrackingUI()"
+    class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
+  >
+    <option value="countable">Countable (Progress-based)</option>
+    <option value="binary">One-time (Complete/Incomplete)</option>
+    <option value="custom">Custom</option>
+  </select>
+</div>
           <div>
-            <label class="block text-white/70 text-sm mb-1 font-medium"
-              >Target Value</label
-            >
-            <input
-              type="number"
-              id="modal-target"
-              min="0"
-              step="1"
-              class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
-              placeholder="e.g. 10"
-            />
+            <label id="target-label" class="block text-white/70 text-sm mb-1 font-medium">
+  Target Value
+</label>
+<input
+  type="number"
+  id="modal-target"
+  class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
+  placeholder="Enter target value"
+/>
+         <input
+  type="number"
+  id="modal-current-number"
+  class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
+/>
+
+<select
+  id="modal-current-binary"
+  class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white hidden focus:border-teal-neon focus:outline-none transition-colors"
+>
+  <option value="0">Incomplete</option>
+  <option value="1">Conquered</option>
+</select>
           </div>
 
-          <div>
-            <label class="block text-white/70 text-sm mb-1 font-medium"
-              >Current Progress</label
-            >
-            <input
-              type="number"
-              id="modal-current"
-              min="0"
-              step="1"
-              class="w-full bg-input-bg border border-white/10 rounded-lg px-4 py-2 text-white focus:border-teal-neon focus:outline-none transition-colors"
-              placeholder="e.g. 0"
-            />
-          </div>
+         
           <div class="relative">
   <label class="block text-white/70 text-sm mb-1 font-medium"
     >Attach a piece of media</label
@@ -264,6 +275,39 @@
         music: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>`,
         movies: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>`,
       };
+function updateTrackingUI() {
+  const tracking = document.getElementById("modal-tracking").value;
+  const type = document.getElementById("modal-type").value;
+
+  const targetInput = document.getElementById("modal-target");
+  const targetLabel = document.getElementById("target-label");
+
+  const currentNumber = document.getElementById("modal-current-number");
+  const currentBinary = document.getElementById("modal-current-binary");
+
+  if (tracking === "binary") {
+    targetInput.disabled = true;
+
+    currentNumber.classList.add("hidden");
+    currentBinary.classList.remove("hidden");
+
+    targetLabel.textContent = "Completion";
+  }
+  else if (tracking === "custom") {
+  targetLabel.textContent = "Target Value";
+} 
+   else {
+    targetInput.disabled = false;
+
+    currentNumber.classList.remove("hidden");
+    currentBinary.classList.add("hidden");
+
+    if (type === "music") targetLabel.textContent = "Number of Songs";
+    else if (type === "movies") targetLabel.textContent = "Number of Movies";
+    else if (type === "book") targetLabel.textContent = "Number of Chapters";
+    else targetLabel.textContent = "Target Value";
+  }
+}
 
       function getGoalId(goal) {
         return goal._id || goal.id;
@@ -670,7 +714,19 @@ class="edit-goal absolute -top-5 -right-6 bg-black/70 hover:bg-teal-neon text-wh
   document.getElementById("modal-title").value = goal.title || "";
   document.getElementById("modal-type").value = goal.type || "book";
   document.getElementById("modal-target").value = goal.total ?? "";
-  document.getElementById("modal-current").value = goal.current ?? 0;
+
+  const isBinary = goal.total === 1;
+
+document.getElementById("modal-tracking").value = isBinary ? "binary" : "countable";
+
+if (isBinary) {
+  document.getElementById("modal-current-binary").value = goal.current ? "1" : "0";
+} else {
+  document.getElementById("modal-current-number").value = goal.current ?? 0;
+}
+
+updateTrackingUI();
+
 
   selectedMediaItem = goal.media || null;
   document.getElementById("modal-media-search").value =
@@ -693,9 +749,15 @@ class="edit-goal absolute -top-5 -right-6 bg-black/70 hover:bg-teal-neon text-wh
     document.getElementById("modal-title").value = "";
     document.getElementById("modal-type").value = "book";
     document.getElementById("modal-target").value = "";
-    document.getElementById("modal-current").value = "";
     document.getElementById("modal-media-search").value = "N/A";
     document.getElementById("media-search-results").classList.add("hidden");
+    document.getElementById("modal-tracking").value = "countable";
+    document.getElementById("modal-current-number").value = "";
+    document.getElementById("modal-current-binary").value = "0";
+
+updateTrackingUI();
+
+
     selectedMediaItem = null;
   }
 }
@@ -710,7 +772,6 @@ class="edit-goal absolute -top-5 -right-6 bg-black/70 hover:bg-teal-neon text-wh
   document.getElementById("modal-title").value = "";
   document.getElementById("modal-type").value = "book";
   document.getElementById("modal-target").value = "";
-  document.getElementById("modal-current").value = "";
   document.getElementById("modal-media-search").value = "N/A";
   document.getElementById("media-search-results").innerHTML = "";
   document.getElementById("media-search-results").classList.add("hidden");
@@ -721,10 +782,21 @@ class="edit-goal absolute -top-5 -right-6 bg-black/70 hover:bg-teal-neon text-wh
   const title = document.getElementById("modal-title").value.trim();
   const type = document.getElementById("modal-type").value;
 
-  let total = Number(document.getElementById("modal-target").value);
-  let current = Number(
-    document.getElementById("modal-current").value || 0,
+const tracking = document.getElementById("modal-tracking").value;
+
+let total;
+let current;
+
+if (tracking === "binary") {
+  total = 1;
+  current = Number(document.getElementById("modal-current-binary").value);
+} else {
+  total = Number(document.getElementById("modal-target").value);
+  current = Number(
+    document.getElementById("modal-current-number").value || 0,
   );
+}
+
 
   const mediaInput = document.getElementById("modal-media-search").value.trim();
   const media = mediaInput && mediaInput !== "N/A" ? selectedMediaItem : null;
@@ -732,8 +804,11 @@ if (mediaInput && mediaInput !== "N/A" && !selectedMediaItem) {
   return alert("Please select a media item from the search results.");
 }
   if (!title) return alert("Please fill in a title.");
+  if (tracking !== "binary") {
   if (!Number.isFinite(total) || total <= 0)
     return alert("Target value must be a positive number.");
+}
+
   if (!Number.isFinite(current) || current < 0)
     return alert("Current progress cannot be negative.");
 
@@ -854,6 +929,8 @@ console.log("Saving media:", media);
       }
       setupInlineMediaSearch();
       loadGoals();
+      document.getElementById("modal-tracking").addEventListener("change", updateTrackingUI);
+document.getElementById("modal-type").addEventListener("change", updateTrackingUI);
     </script>
   </body>
 </html>

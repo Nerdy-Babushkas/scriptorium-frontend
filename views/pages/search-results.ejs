@@ -92,10 +92,10 @@
                 <p class="text-white/50 text-sm">Select a shelf for <span id="modalBookTitle" class="text-[#00C49A] font-bold">this item</span></p>
             </div>
             <div class="space-y-3">
-                <button class="shelf-btn w-full p-4 rounded-xl bg-white/5 hover:bg-[#00C49A]/10 flex items-center gap-4 group" data-shelf="favorites">⭐ <span class="font-bold text-white group-hover:text-[#00C49A]">Favorites</span></button>
-                <button class="shelf-btn w-full p-4 rounded-xl bg-white/5 hover:bg-[#00C49A]/10 flex items-center gap-4 group" data-shelf="wishlist">🔖 <span class="font-bold text-white group-hover:text-[#00C49A]">Watchlist</span></button>
+                <button id="btn-favourites"class="shelf-btn w-full p-4 rounded-xl bg-white/5 hover:bg-[#00C49A]/10 flex items-center gap-4 group" data-shelf="favorites">⭐ <span class="font-bold text-white group-hover:text-[#00C49A]">Favorites</span></button>
+                <button id="btn-wishlist" class="shelf-btn w-full p-4 rounded-xl bg-white/5 hover:bg-[#00C49A]/10 flex items-center gap-4 group" data-shelf="wishlist">🔖 <span id="btn-wishlist-text" class="font-bold text-white group-hover:text-[#00C49A]">Watchlist</span></button>
                 <button id="btn-reading" class="shelf-btn w-full p-4 rounded-xl bg-white/5 hover:bg-[#00C49A]/10 flex items-center gap-4 group" data-shelf="watching">🎬 <span id="btn-reading-text" class="font-bold text-white group-hover:text-[#00C49A]">Currently Watching</span></button>
-                <button class="shelf-btn w-full p-4 rounded-xl bg-white/5 hover:bg-[#00C49A]/10 flex items-center gap-4 group" data-shelf="watched">✅ <span class="font-bold text-white group-hover:text-[#00C49A]">Finished</span></button>
+                <button id="btn-finished" class="shelf-btn w-full p-4 rounded-xl bg-white/5 hover:bg-[#00C49A]/10 flex items-center gap-4 group" data-shelf="watched">✅ <span id="btn-finished-text" class="font-bold text-white group-hover:text-[#00C49A]">Finished</span></button>
             </div>
             <button id="closeModal" class="mt-8 w-full py-3 rounded-full bg-red-600 text-white font-bold uppercase">Cancel</button>
         </div>

@@ -136,7 +136,7 @@ controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.minDistance = 0.3;   // can get close
-controls.maxDistance = 5;     // can't zoom out too far — keeps them in the room
+controls.maxDistance = 2;     // can't zoom out too far — keeps them in the room
 controls.enablePan = true;
 
   // --- DRACO + GLTF LOADER ---

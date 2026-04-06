@@ -534,7 +534,7 @@ function init() {
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
   controls.minDistance = 0.1;
-  controls.maxDistance = 50;
+  controls.maxDistance = 120;
   controls.enablePan = true;
 
   // --- DRACO LOADER (fixes the compression error) ---

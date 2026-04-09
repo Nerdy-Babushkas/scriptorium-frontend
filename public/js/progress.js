@@ -60,6 +60,67 @@ function dismissToast(item) {
   item.addEventListener("transitionend", () => item.remove(), { once: true });
 }
 
+/* ─── YARN REWARDS ───────────────────────────────────────────────────────────── */
+async function awardYarns(amount) {
+  try {
+    await fetch(`${API_BASE}/api/yarns/award`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount }),
+    });
+  } catch (err) {
+    console.error("Yarn award failed (non-fatal):", err);
+  }
+}
+
+function floatingYarnPill(anchorEl, amount) {
+  const rect = anchorEl.getBoundingClientRect();
+  const x = rect.left + rect.width / 2;
+  const y = rect.top;
+
+  const pill = document.createElement("div");
+  pill.textContent =
+    amount >= 25 ? `+${amount} 🧶 Goal complete!` : `+${amount} 🧶`;
+
+  Object.assign(pill.style, {
+    position: "fixed",
+    left: `${x}px`,
+    top: `${y}px`,
+    transform: "translateX(-50%) translateY(0)",
+    padding: "6px 14px",
+    borderRadius: "999px",
+    fontSize: "12px",
+    fontWeight: "700",
+    background: "rgba(0,0,0,0.88)",
+    color: amount >= 25 ? "#ffd54f" : "#00C49A",
+    border: `1px solid ${amount >= 25 ? "rgba(255,196,80,0.5)" : "rgba(0,196,154,0.4)"}`,
+    boxShadow: `0 0 14px ${amount >= 25 ? "rgba(255,196,80,0.35)" : "rgba(0,196,154,0.3)"}`,
+    pointerEvents: "none",
+    opacity: "0",
+    zIndex: "9999",
+    whiteSpace: "nowrap",
+  });
+
+  document.body.appendChild(pill);
+
+  requestAnimationFrame(() => {
+    pill.style.transition =
+      "opacity 0.2s ease, transform 1.2s cubic-bezier(0.2, 1, 0.4, 1)";
+    pill.style.opacity = "1";
+    pill.style.transform = `translateX(-50%) translateY(-${amount >= 25 ? 64 : 48}px)`;
+
+    setTimeout(
+      () => {
+        pill.style.transition = "opacity 0.35s ease";
+        pill.style.opacity = "0";
+        setTimeout(() => pill.remove(), 400);
+      },
+      amount >= 25 ? 1000 : 850,
+    );
+  });
+}
+
 /* ─── FETCH GOALS ────────────────────────────────────────────────────────────── */
 async function loadGoals() {
   try {
@@ -197,7 +258,10 @@ function render() {
 
     // Select on click
     card.addEventListener("click", (e) => {
-      if (e.target.closest(".btn-increment, .btn-edit-goal, .btn-complete-binary")) return;
+      if (
+        e.target.closest(".btn-increment, .btn-edit-goal, .btn-complete-binary")
+      )
+        return;
       selectedGoalId = id;
       render();
     });
@@ -240,6 +304,10 @@ async function incrementGoal(id) {
 
   const newCurrent = goal.current + 1;
 
+  // Find the button for the floating pill anchor
+  const card = document.querySelector(`.goal-card[data-id="${id}"]`);
+  const anchorEl = card?.querySelector(".btn-inc") || card;
+
   const ok = await updateGoalProgress(id, newCurrent);
   if (!ok) return;
 
@@ -247,9 +315,13 @@ async function incrementGoal(id) {
   const nowComplete = newCurrent >= goal.total;
 
   if (wasActive && nowComplete) {
+    awardYarns(25);
+    floatingYarnPill(anchorEl, 25);
     showCelebration(goal);
   } else {
-    showToast(`+1 progress on "${goal.title}"`, "success");
+    awardYarns(5);
+    floatingYarnPill(anchorEl, 5);
+    showToast(`+1 progress on "${goal.title}" · +5 🧶`, "success");
   }
 
   render();
@@ -260,9 +332,14 @@ async function completeGoalBinary(id) {
   const goal = goals.find((g) => getGoalId(g) === id);
   if (!goal) return;
 
+  const card = document.querySelector(`.goal-card[data-id="${id}"]`);
+  const anchorEl = card?.querySelector(".btn-complete-binary") || card;
+
   const ok = await updateGoalProgress(id, 1);
   if (!ok) return;
 
+  awardYarns(25);
+  floatingYarnPill(anchorEl, 25);
   showCelebration(goal);
   render();
 }
@@ -297,9 +374,10 @@ async function updateGoalProgress(id, current) {
 /* ─── CELEBRATION ────────────────────────────────────────────────────────────── */
 function showCelebration(goal) {
   const modal = document.getElementById("celebrateModal");
-  document.getElementById("celebrateTitle").textContent = "Goal Complete!";
+  document.getElementById("celebrateTitle").textContent =
+    "Goal Complete! +25 🧶";
   document.getElementById("celebrateDesc").textContent =
-    `You finished "${goal.title}" — amazing work! How about capturing your thoughts with a reflection?`;
+    `You finished "${goal.title}" and earned 25 yarns! How about capturing your thoughts with a reflection?`;
   modal.classList.add("open");
 }
 
@@ -341,8 +419,7 @@ function openEditModal(goal) {
   document.getElementById("modal-title").value = goal.title || "";
   document.getElementById("modal-type").value = goal.type || "book";
 
-  const tracking =
-    goal.tracking || (goal.total === 1 ? "binary" : "countable");
+  const tracking = goal.tracking || (goal.total === 1 ? "binary" : "countable");
   document.getElementById("modal-tracking").value = tracking;
 
   if (tracking === "binary") {
@@ -392,11 +469,13 @@ async function saveGoalFromModal() {
   }
 
   const mediaInput = document.getElementById("modal-media-search").value.trim();
-  const media =
-    mediaInput && mediaInput !== "N/A" ? selectedMediaItem : null;
+  const media = mediaInput && mediaInput !== "N/A" ? selectedMediaItem : null;
 
   if (mediaInput && mediaInput !== "N/A" && !selectedMediaItem) {
-    return showToast("Please select a media item from search results.", "error");
+    return showToast(
+      "Please select a media item from search results.",
+      "error",
+    );
   }
   if (!title) return showToast("Please fill in a goal name.", "error");
   if (tracking !== "binary") {
@@ -406,15 +485,12 @@ async function saveGoalFromModal() {
 
   try {
     if (editingGoalId) {
-      const res = await fetch(
-        `${API_BASE}/api/goals/update/${editingGoalId}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, type, total, current, media }),
-        },
-      );
+      const res = await fetch(`${API_BASE}/api/goals/update/${editingGoalId}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, type, total, current, media }),
+      });
       if (!res.ok) {
         console.error("Failed to update goal:", await res.text());
         return showToast("Failed to update goal.", "error");
@@ -440,10 +516,7 @@ async function saveGoalFromModal() {
 
     closeModal();
     render();
-    showToast(
-      editingGoalId ? "Goal updated!" : "Goal created! 🎯",
-      "success",
-    );
+    showToast(editingGoalId ? "Goal updated!" : "Goal created! 🎯", "success");
   } catch (err) {
     showToast("Network error", "error");
   }
@@ -457,13 +530,10 @@ async function deleteSelectedGoal() {
   if (!confirm(`Delete "${goal?.title || "this goal"}"?`)) return;
 
   try {
-    const res = await fetch(
-      `${API_BASE}/api/goals/delete/${selectedGoalId}`,
-      {
-        method: "DELETE",
-        credentials: "include",
-      },
-    );
+    const res = await fetch(`${API_BASE}/api/goals/delete/${selectedGoalId}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
 
     if (!res.ok) {
       console.error("Failed to delete goal:", await res.text());

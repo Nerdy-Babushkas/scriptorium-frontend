@@ -171,6 +171,10 @@ function openConfirm(def) {
     `This will spend ${def.cost} yarns from your balance.`;
   document.getElementById("confirmCost").textContent =
     `${def.cost} 🧶  →  ${balance - def.cost} remaining`;
+  const okBtn = document.getElementById("confirmOk");
+  okBtn.disabled = false;
+  okBtn.textContent = "Unlock";
+
   document.getElementById("confirmModal").classList.add("open");
 }
 

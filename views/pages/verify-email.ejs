@@ -1,62 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
-    <title>Email Verification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify Email - Scriptorium</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body
-    class="bg-scriptorium-dark text-white min-h-screen flex items-center justify-center"
-  >
-    <div class="max-w-md text-center p-6 bg-gray-900 rounded-xl shadow-lg">
-      <h1 class="text-3xl font-bold mb-4">Verifying your email…</h1>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              dancing: ['"Dancing Script"', "cursive"],
+              outfit: ['"Outfit"', "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      <!-- Spinner -->
-      <div id="spinner" class="flex justify-center mb-4">
-        <div
-          class="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"
-        ></div>
-      </div>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at 50% 0%, #1a0f4c 0%, #05181c 100%);
+            background-color: #05181c;
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; color: #fff;
+        }
 
-      <p id="message" class="text-lg opacity-80"></p>
+        /* Orbs */
+        .bg-orb {
+            position: fixed; border-radius: 50%;
+            filter: blur(90px); pointer-events: none;
+            z-index: 0; opacity: 0.18;
+            animation: orbDrift 12s ease-in-out infinite alternate;
+        }
+        .bg-orb-1 { width:460px; height:460px; background:#1a0f4c; top:-100px; left:-80px; }
+        .bg-orb-2 { width:360px; height:360px; background:#00C49A; bottom:10%; right:-60px; animation-delay:-4s; }
+        .bg-orb-3 { width:260px; height:260px; background:#4c1a0f; bottom:30%; left:25%; animation-delay:-8s; }
+        @keyframes orbDrift {
+            from { transform: translateY(0px) scale(1); }
+            to   { transform: translateY(30px) scale(1.08); }
+        }
+
+        /* Card */
+        .verify-card {
+            position: relative; z-index: 1;
+            background: rgba(15,25,30,0.75);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 28px;
+            padding: 48px 36px 40px;
+            max-width: 420px; width: 90%;
+            text-align: center;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.45);
+            overflow: hidden;
+        }
+        .verify-card::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(ellipse at 50% -20%, rgba(0,196,154,0.07) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        /* Icon circle */
+        .icon-circle {
+            width: 80px; height: 80px; border-radius: 50%;
+            margin: 0 auto 24px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem;
+            transition: all 0.4s ease;
+        }
+        .icon-circle.loading {
+            background: rgba(0,196,154,0.08);
+            border: 2px solid rgba(0,196,154,0.2);
+            box-shadow: 0 0 32px rgba(0,196,154,0.1);
+        }
+        .icon-circle.success {
+            background: rgba(0,196,154,0.12);
+            border: 2px solid rgba(0,196,154,0.35);
+            box-shadow: 0 0 40px rgba(0,196,154,0.2);
+        }
+        .icon-circle.error {
+            background: rgba(239,68,68,0.08);
+            border: 2px solid rgba(239,68,68,0.2);
+            box-shadow: 0 0 32px rgba(239,68,68,0.1);
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 36px; height: 36px;
+            border: 3px solid rgba(0,196,154,0.2);
+            border-top-color: #00C49A;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .verify-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2rem; font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        .verify-subtitle {
+            font-size: 0.88rem; font-weight: 400;
+            color: rgba(255,255,255,0.4);
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        /* Status message */
+        .status-msg {
+            font-size: 0.92rem; font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 24px;
+            min-height: 24px;
+        }
+        .status-msg.success { color: #00C49A; }
+        .status-msg.error { color: #f87171; }
+        .status-msg.loading { color: rgba(255,255,255,0.5); }
+
+        /* CTA button */
+        .btn-login {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 32px; border-radius: 14px;
+            font-size: 0.88rem; font-weight: 700;
+            cursor: pointer; text-decoration: none;
+            background: rgba(0,196,154,0.12);
+            border: 1px solid rgba(0,196,154,0.3);
+            color: #00C49A;
+            transition: all 0.2s;
+        }
+        .btn-login:hover {
+            background: rgba(0,196,154,0.22);
+            border-color: rgba(0,196,154,0.5);
+            transform: translateY(-2px);
+        }
+        .btn-login svg { width: 16px; height: 16px; }
+
+        .btn-home {
+            display: inline-block;
+            margin-top: 12px;
+            font-size: 0.78rem; font-weight: 500;
+            color: rgba(255,255,255,0.3);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .btn-home:hover { color: rgba(255,255,255,0.6); }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+
+    <div class="verify-card">
+        <div class="icon-circle loading" id="iconCircle">
+            <div class="spinner" id="spinner"></div>
+        </div>
+
+        <h1 class="verify-title" id="title">Verifying your email</h1>
+        <p class="verify-subtitle" id="subtitle">Hang tight — we're confirming your account…</p>
+
+        <p class="status-msg loading" id="statusMsg">Checking verification link…</p>
+
+        <div id="actions" class="hidden">
+            <a href="/login" class="btn-login" id="loginBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                    <polyline points="10 17 15 12 10 7"/>
+                    <line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
+                Continue to Login
+            </a>
+            <br/>
+            <a href="/" class="btn-home">← Back to home</a>
+        </div>
     </div>
 
     <script>
-      const BACKEND_URL = "https://scriptorium-backend-six.vercel.app";
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get("token");
-      const messageEl = document.getElementById("message");
-      const spinner = document.getElementById("spinner");
+        const BACKEND_URL = "https://scriptorium-backend-six.vercel.app";
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("token");
 
-      if (!token) {
-        spinner.style.display = "none";
-        messageEl.textContent = "Invalid verification link.";
-        messageEl.classList.add("text-red-500");
-      } else {
-        messageEl.textContent = "Verifying… please wait";
+        const iconCircle = document.getElementById("iconCircle");
+        const spinner = document.getElementById("spinner");
+        const title = document.getElementById("title");
+        const subtitle = document.getElementById("subtitle");
+        const statusMsg = document.getElementById("statusMsg");
+        const actions = document.getElementById("actions");
 
-        fetch(`${BACKEND_URL}/api/user/verify?token=${token}`)
-          .then((res) =>
-            res.json().then((data) => ({ status: res.status, data })),
-          )
-          .then(({ status, data }) => {
-            spinner.style.display = "none";
-            if (status === 200) {
-              messageEl.innerHTML = `
-                <span class="text-green-400 font-semibold">${data.message}</span><br>
-                <a href="/login" class="underline text-blue-400 mt-2 inline-block">Go to login</a>
-              `;
-            } else {
-              messageEl.textContent = `Verification failed: ${data.message}`;
-              messageEl.classList.add("text-red-500 font-semibold");
-            }
-          })
-          .catch(() => {
-            spinner.style.display = "none";
-            messageEl.textContent = "Something went wrong.";
-            messageEl.classList.add("text-red-500 font-semibold");
-          });
-      }
+        function showSuccess(msg) {
+            spinner.classList.add("hidden");
+            iconCircle.className = "icon-circle success";
+            iconCircle.textContent = "✓";
+            iconCircle.style.fontSize = "2.2rem";
+
+            title.textContent = "You're all set!";
+            subtitle.textContent = "Your email has been verified successfully.";
+
+            statusMsg.textContent = msg || "Email verified — you can now log in.";
+            statusMsg.className = "status-msg success";
+
+            actions.classList.remove("hidden");
+        }
+
+        function showError(msg) {
+            spinner.classList.add("hidden");
+            iconCircle.className = "icon-circle error";
+            iconCircle.textContent = "✕";
+            iconCircle.style.fontSize = "2.2rem";
+
+            title.textContent = "Verification failed";
+            subtitle.textContent = "We couldn't verify your email with this link.";
+
+            statusMsg.textContent = msg || "The link may be expired or invalid.";
+            statusMsg.className = "status-msg error";
+
+            actions.classList.remove("hidden");
+            document.getElementById("loginBtn").textContent = "Go to Login";
+        }
+
+        if (!token) {
+            showError("Invalid verification link — no token was provided.");
+        } else {
+            fetch(`${BACKEND_URL}/api/user/verify?token=${token}`)
+                .then((res) => res.json().then((data) => ({ status: res.status, data })))
+                .then(({ status, data }) => {
+                    if (status === 200) {
+                        showSuccess(data.message);
+                    } else {
+                        showError(data.message || "Verification failed.");
+                    }
+                })
+                .catch(() => {
+                    showError("Something went wrong. Please try again later.");
+                });
+        }
     </script>
-  </body>
+</body>
 </html>

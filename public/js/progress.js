@@ -1,3 +1,16 @@
+/* =====================================================
+   📈 PROGRESS — Goal tracker
+===================================================== */
+
+const API_BASE = "";
+
+const icons = {
+  book: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>`,
+  music: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>`,
+  movies: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4M17 8h4M3 12h18M3 16h4M17 16h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"></path></svg>`,
+};
+
+/* ─── STATE ──────────────────────────────────────────────────────────────────── */
 let goals = [];
 let currentFilter = "active";
 let selectedGoalId = null;
@@ -5,14 +18,7 @@ let editingGoalId = null;
 let selectedMediaItem = null;
 let mediaSearchTimeout = null;
 
-const API_BASE = "";
-
-const icons = {
-  book: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>`,
-  music: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>`,
-  movies: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>`,
-};
-
+/* ─── HELPERS ────────────────────────────────────────────────────────────────── */
 function getGoalId(goal) {
   return goal._id || goal.id;
 }
@@ -25,35 +31,487 @@ function mapGoalTypeToSearchType(goalType) {
 }
 
 function getMediaDisplayText(item, type) {
-  if (!item) return "N/A";
-
-  if (type === "music") {
+  if (!item) return "";
+  if (type === "music")
     return `${item.title || "Untitled"}${item.artist?.name ? " — " + item.artist.name : ""}`;
-  }
-
-  if (type === "movies") {
+  if (type === "movies")
     return `${item.title || item.Title || "Untitled"}${item.year || item.Year ? " (" + (item.year || item.Year) + ")" : ""}`;
-  }
-
   return `${item.title || "Untitled"}${item.authors?.[0] ? " — " + item.authors[0] : ""}`;
 }
 
-function clearMediaSelection(resetInput = true) {
-  selectedMediaItem = null;
-  const input = document.getElementById("modal-media-search");
-  const results = document.getElementById("media-search-results");
+/* ─── TOAST ──────────────────────────────────────────────────────────────────── */
+function showToast(msg, type = "success") {
+  const stack = document.getElementById("toastStack");
+  const item = document.createElement("div");
+  item.className = `toast-item toast-${type}`;
+  item.innerHTML = `<span class="toast-msg">${msg}</span>`;
+  item.addEventListener("click", () => dismissToast(item));
+  stack.appendChild(item);
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => item.classList.add("visible")),
+  );
+  const t = setTimeout(() => dismissToast(item), 4000);
+  item._t = t;
+}
 
-  if (resetInput && input) input.value = "N/A";
-  if (results) {
-    results.innerHTML = "";
-    results.classList.add("hidden");
+function dismissToast(item) {
+  clearTimeout(item._t);
+  item.classList.remove("visible");
+  item.addEventListener("transitionend", () => item.remove(), { once: true });
+}
+
+/* ─── FETCH GOALS ────────────────────────────────────────────────────────────── */
+async function loadGoals() {
+  try {
+    const res = await fetch(`${API_BASE}/api/goals/user`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (res.status === 401) {
+      window.location.href = "/login";
+      return;
+    }
+
+    if (!res.ok) {
+      console.error("Failed to load goals:", await res.text());
+      goals = [];
+      render();
+      return;
+    }
+
+    goals = await res.json();
+    render();
+  } catch (err) {
+    console.error("Load goals error:", err);
+    showToast("Could not load goals", "error");
   }
 }
 
+/* ─── RENDER ─────────────────────────────────────────────────────────────────── */
+function render() {
+  const container = document.getElementById("goalsContainer");
+  container.innerHTML = "";
+
+  // Normalise
+  goals = goals.map((g) => {
+    const total = Number(g.total || 0);
+    const current = Number(g.current || 0);
+    const done = total > 0 && current >= total;
+    const status = g.status ? g.status : done ? "completed" : "active";
+    return { ...g, total, current, status };
+  });
+
+  // Stats
+  const activeCount = goals.filter((g) => g.status === "active").length;
+  const completedCount = goals.filter((g) => g.status === "completed").length;
+  document.getElementById("statActive").textContent = activeCount;
+  document.getElementById("statCompleted").textContent = completedCount;
+  document.getElementById("statTotal").textContent = goals.length;
+
+  // Filter
+  const filtered = goals.filter((g) => g.status === currentFilter);
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">${currentFilter === "active" ? "🎯" : "🏆"}</div>
+        <div class="empty-state-text">${
+          currentFilter === "active"
+            ? "No active goals yet. Add one to get started!"
+            : "No completed goals yet. Keep going!"
+        }</div>
+      </div>`;
+    return;
+  }
+
+  filtered.forEach((goal) => {
+    const id = getGoalId(goal);
+    const pct =
+      goal.total > 0 ? Math.round((goal.current / goal.total) * 100) : 0;
+    const isSelected = selectedGoalId === id;
+    const isCompleted = goal.status === "completed";
+    const isBinary = goal.total === 1;
+
+    const mediaLabel = goal.media
+      ? getMediaDisplayText(
+          goal.media,
+          mapGoalTypeToSearchType(goal.type || "book"),
+        )
+      : "";
+
+    const card = document.createElement("div");
+    card.className = [
+      "goal-card",
+      isSelected ? "selected" : "",
+      isCompleted ? "completed-card" : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+    card.dataset.id = id;
+
+    // Action buttons for active goals
+    let actionsHtml = "";
+    if (!isCompleted) {
+      if (isBinary) {
+        actionsHtml = `
+          <div class="goal-actions">
+            <button class="btn-increment btn-complete-binary" data-id="${id}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              Mark Complete
+            </button>
+            <button class="btn-edit-goal btn-edit" data-id="${id}">Edit</button>
+          </div>`;
+      } else {
+        const canIncrement = goal.current < goal.total;
+        actionsHtml = `
+          <div class="goal-actions">
+            <button class="btn-increment btn-inc" data-id="${id}" ${!canIncrement ? "disabled" : ""}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              +1
+            </button>
+            <button class="btn-edit-goal btn-edit" data-id="${id}">Edit</button>
+          </div>`;
+      }
+    }
+
+    card.innerHTML = `
+      <div class="goal-top">
+        <div class="goal-icon">${icons[goal.type] || icons.book}</div>
+        <div class="goal-meta">
+          <div class="goal-title">${goal.title}</div>
+          ${mediaLabel && mediaLabel !== "N/A" ? `<div class="goal-media-label">${mediaLabel}</div>` : ""}
+        </div>
+        <span class="goal-type-pill">${goal.type || "book"}</span>
+      </div>
+
+      <div class="goal-progress-row">
+        <div class="goal-bar-track">
+          <div class="goal-bar-fill ${pct >= 100 ? "complete" : ""}" style="width:${pct}%"></div>
+        </div>
+        <span class="goal-count">${goal.current}/${goal.total} · ${pct}%</span>
+      </div>
+
+      ${actionsHtml}
+    `;
+
+    // Select on click
+    card.addEventListener("click", (e) => {
+      if (e.target.closest(".btn-increment, .btn-edit-goal, .btn-complete-binary")) return;
+      selectedGoalId = id;
+      render();
+    });
+
+    // Wire up increment
+    const incBtn = card.querySelector(".btn-inc");
+    if (incBtn) {
+      incBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        incrementGoal(id);
+      });
+    }
+
+    // Wire up binary complete
+    const binBtn = card.querySelector(".btn-complete-binary");
+    if (binBtn) {
+      binBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        completeGoalBinary(id);
+      });
+    }
+
+    // Wire up edit
+    const editBtn = card.querySelector(".btn-edit");
+    if (editBtn) {
+      editBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openEditModal(goal);
+      });
+    }
+
+    container.appendChild(card);
+  });
+}
+
+/* ─── INCREMENT (+1) ─────────────────────────────────────────────────────────── */
+async function incrementGoal(id) {
+  const goal = goals.find((g) => getGoalId(g) === id);
+  if (!goal || goal.current >= goal.total) return;
+
+  const newCurrent = goal.current + 1;
+
+  const ok = await updateGoalProgress(id, newCurrent);
+  if (!ok) return;
+
+  const wasActive = goal.status !== "completed";
+  const nowComplete = newCurrent >= goal.total;
+
+  if (wasActive && nowComplete) {
+    showCelebration(goal);
+  } else {
+    showToast(`+1 progress on "${goal.title}"`, "success");
+  }
+
+  render();
+}
+
+/* ─── COMPLETE BINARY ────────────────────────────────────────────────────────── */
+async function completeGoalBinary(id) {
+  const goal = goals.find((g) => getGoalId(g) === id);
+  if (!goal) return;
+
+  const ok = await updateGoalProgress(id, 1);
+  if (!ok) return;
+
+  showCelebration(goal);
+  render();
+}
+
+/* ─── UPDATE PROGRESS API ────────────────────────────────────────────────────── */
+async function updateGoalProgress(id, current) {
+  try {
+    const res = await fetch(`${API_BASE}/api/goals/update/${id}/progress`, {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ current }),
+    });
+
+    if (!res.ok) {
+      console.error("Failed to update goal:", await res.text());
+      showToast("Failed to update progress", "error");
+      return false;
+    }
+
+    const data = await res.json();
+    const idx = goals.findIndex((g) => getGoalId(g) === id);
+    if (idx !== -1 && data.goal) goals[idx] = data.goal;
+
+    return true;
+  } catch (err) {
+    showToast("Network error", "error");
+    return false;
+  }
+}
+
+/* ─── CELEBRATION ────────────────────────────────────────────────────────────── */
+function showCelebration(goal) {
+  const modal = document.getElementById("celebrateModal");
+  document.getElementById("celebrateTitle").textContent = "Goal Complete!";
+  document.getElementById("celebrateDesc").textContent =
+    `You finished "${goal.title}" — amazing work! How about capturing your thoughts with a reflection?`;
+  modal.classList.add("open");
+}
+
+/* ─── FILTER ─────────────────────────────────────────────────────────────────── */
+function filterGoals(status) {
+  currentFilter = status;
+
+  document.querySelectorAll(".filter-pill").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.filter === status);
+  });
+
+  render();
+}
+
+/* ─── MODAL: open / close / save ─────────────────────────────────────────────── */
+function openModal() {
+  const modal = document.getElementById("goalModal");
+  modal.classList.add("open");
+
+  if (!editingGoalId) {
+    document.getElementById("modalHeading").textContent = "Create a new goal";
+    document.getElementById("modal-title").value = "";
+    document.getElementById("modal-type").value = "book";
+    document.getElementById("modal-tracking").value = "countable";
+    document.getElementById("modal-target").value = "";
+    document.getElementById("modal-current-binary").value = "0";
+    document.getElementById("modal-media-search").value = "N/A";
+    document.getElementById("media-search-results").classList.add("hidden");
+    selectedMediaItem = null;
+    updateTrackingUI();
+  }
+}
+
+function openEditModal(goal) {
+  editingGoalId = getGoalId(goal);
+  openModal();
+
+  document.getElementById("modalHeading").textContent = "Edit goal";
+  document.getElementById("modal-title").value = goal.title || "";
+  document.getElementById("modal-type").value = goal.type || "book";
+
+  const tracking =
+    goal.tracking || (goal.total === 1 ? "binary" : "countable");
+  document.getElementById("modal-tracking").value = tracking;
+
+  if (tracking === "binary") {
+    document.getElementById("modal-current-binary").value = goal.current
+      ? "1"
+      : "0";
+  } else {
+    document.getElementById("modal-target").value = goal.total ?? "";
+  }
+
+  updateTrackingUI();
+
+  selectedMediaItem = goal.media || null;
+  document.getElementById("modal-media-search").value = selectedMediaItem
+    ? getMediaDisplayText(
+        selectedMediaItem,
+        mapGoalTypeToSearchType(goal.type || "book"),
+      )
+    : "N/A";
+
+  document.getElementById("media-search-results").classList.add("hidden");
+}
+
+function closeModal() {
+  document.getElementById("goalModal").classList.remove("open");
+  editingGoalId = null;
+  selectedMediaItem = null;
+}
+
+async function saveGoalFromModal() {
+  const title = document.getElementById("modal-title").value.trim();
+  const type = document.getElementById("modal-type").value;
+  const tracking = document.getElementById("modal-tracking").value;
+
+  let total, current;
+
+  if (tracking === "binary") {
+    total = 1;
+    current = editingGoalId
+      ? Number(document.getElementById("modal-current-binary").value)
+      : 0;
+  } else {
+    total = Number(document.getElementById("modal-target").value);
+    current = editingGoalId
+      ? goals.find((g) => getGoalId(g) === editingGoalId)?.current || 0
+      : 0;
+  }
+
+  const mediaInput = document.getElementById("modal-media-search").value.trim();
+  const media =
+    mediaInput && mediaInput !== "N/A" ? selectedMediaItem : null;
+
+  if (mediaInput && mediaInput !== "N/A" && !selectedMediaItem) {
+    return showToast("Please select a media item from search results.", "error");
+  }
+  if (!title) return showToast("Please fill in a goal name.", "error");
+  if (tracking !== "binary") {
+    if (!Number.isFinite(total) || total <= 0)
+      return showToast("Target must be a positive number.", "error");
+  }
+
+  try {
+    if (editingGoalId) {
+      const res = await fetch(
+        `${API_BASE}/api/goals/update/${editingGoalId}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, type, total, current, media }),
+        },
+      );
+      if (!res.ok) {
+        console.error("Failed to update goal:", await res.text());
+        return showToast("Failed to update goal.", "error");
+      }
+      const data = await res.json();
+      const updated = data.goal || data;
+      const idx = goals.findIndex((g) => getGoalId(g) === editingGoalId);
+      if (idx !== -1) goals[idx] = updated;
+    } else {
+      const res = await fetch(`${API_BASE}/api/goals/add`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, type, current: 0, total, media }),
+      });
+      if (!res.ok) {
+        console.error("Failed to save goal:", await res.text());
+        return showToast("Failed to save goal.", "error");
+      }
+      const data = await res.json();
+      goals.unshift(data.goal);
+    }
+
+    closeModal();
+    render();
+    showToast(
+      editingGoalId ? "Goal updated!" : "Goal created! 🎯",
+      "success",
+    );
+  } catch (err) {
+    showToast("Network error", "error");
+  }
+}
+
+/* ─── DELETE ─────────────────────────────────────────────────────────────────── */
+async function deleteSelectedGoal() {
+  if (!selectedGoalId) return showToast("Select a goal first.", "error");
+
+  const goal = goals.find((g) => getGoalId(g) === selectedGoalId);
+  if (!confirm(`Delete "${goal?.title || "this goal"}"?`)) return;
+
+  try {
+    const res = await fetch(
+      `${API_BASE}/api/goals/delete/${selectedGoalId}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      },
+    );
+
+    if (!res.ok) {
+      console.error("Failed to delete goal:", await res.text());
+      return showToast("Failed to delete goal.", "error");
+    }
+
+    goals = goals.filter((g) => getGoalId(g) !== selectedGoalId);
+    selectedGoalId = null;
+    render();
+    showToast("Goal deleted", "success");
+  } catch (err) {
+    showToast("Network error", "error");
+  }
+}
+
+/* ─── TRACKING UI TOGGLE ─────────────────────────────────────────────────────── */
+function updateTrackingUI() {
+  const tracking = document.getElementById("modal-tracking").value;
+  const goalType = document.getElementById("modal-type").value;
+
+  const targetField = document.getElementById("targetField");
+  const binaryField = document.getElementById("binaryField");
+  const targetLabel = document.getElementById("target-label");
+
+  if (tracking === "binary") {
+    targetField.style.display = "none";
+    binaryField.style.display = editingGoalId ? "block" : "none";
+  } else {
+    targetField.style.display = "block";
+    binaryField.style.display = "none";
+
+    if (tracking === "countable") {
+      if (goalType === "book") targetLabel.textContent = "Number of Chapters";
+      else if (goalType === "movies")
+        targetLabel.textContent = "Number of Movies";
+      else if (goalType === "music")
+        targetLabel.textContent = "Number of Songs";
+      else targetLabel.textContent = "Target Value";
+    } else {
+      targetLabel.textContent = "Target Value";
+    }
+  }
+}
+
+/* ─── MEDIA SEARCH ───────────────────────────────────────────────────────────── */
 async function searchMediaInline(query) {
   const results = document.getElementById("media-search-results");
-  const typeSelect = document.getElementById("modal-type");
-  const goalType = typeSelect.value;
+  const goalType = document.getElementById("modal-type").value;
   const mediaType = mapGoalTypeToSearchType(goalType);
 
   if (
@@ -68,18 +526,13 @@ async function searchMediaInline(query) {
 
   try {
     const token = localStorage.getItem("token");
-
     const res = await fetch(
       `https://scriptorium-backend-six.vercel.app/api/${mediaType}/search?q=${encodeURIComponent(query.trim())}`,
-      {
-        headers: {
-          Authorization: `jwt ${token}`,
-        },
-      },
+      { headers: { Authorization: `jwt ${token}` } },
     );
 
     if (!res.ok) {
-      results.innerHTML = `<div class="px-4 py-3 text-sm text-red-400">Search failed (${res.status}).</div>`;
+      results.innerHTML = `<div class="media-result-row"><span class="media-result-title" style="color:#ef4444;">Search failed</span></div>`;
       results.classList.remove("hidden");
       return;
     }
@@ -88,7 +541,7 @@ async function searchMediaInline(query) {
     const items = data.tracks || data.movies || data.books || [];
 
     if (!items.length) {
-      results.innerHTML = `<div class="px-4 py-3 text-sm text-white/50">No media found.</div>`;
+      results.innerHTML = `<div class="media-result-row"><span class="media-result-sub">No results found.</span></div>`;
       results.classList.remove("hidden");
       return;
     }
@@ -96,13 +549,8 @@ async function searchMediaInline(query) {
     results.innerHTML = "";
 
     items.slice(0, 6).forEach((item) => {
-      const row = document.createElement("button");
-      row.type = "button";
-      row.className =
-        "w-full px-4 py-3 text-left border-b border-white/5 hover:bg-teal-neon/10 transition-colors";
-
-      let title = "";
-      let subtitle = "";
+      let title = "",
+        subtitle = "";
 
       if (mediaType === "music") {
         title = item.title || "Untitled";
@@ -115,25 +563,26 @@ async function searchMediaInline(query) {
         subtitle = item.authors?.[0] || "Unknown Author";
       }
 
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = "media-result-row";
       row.innerHTML = `
-  <div class="text-sm font-medium text-white">${title}</div>
-  <div class="text-xs text-teal-neon/80">${subtitle}</div>
-`;
-
+        <div class="media-result-title">${title}</div>
+        <div class="media-result-sub">${subtitle}</div>
+      `;
       row.onclick = () => {
         selectedMediaItem = item;
         document.getElementById("modal-media-search").value =
           getMediaDisplayText(item, mediaType);
         results.classList.add("hidden");
       };
-
       results.appendChild(row);
     });
 
     results.classList.remove("hidden");
   } catch (err) {
-    console.error("Inline media search failed:", err);
-    results.innerHTML = `<div class="px-4 py-3 text-sm text-red-400">Unable to load search results.</div>`;
+    console.error("Media search failed:", err);
+    results.innerHTML = `<div class="media-result-row"><span class="media-result-title" style="color:#ef4444;">Search error</span></div>`;
     results.classList.remove("hidden");
   }
 }
@@ -153,22 +602,23 @@ function setupInlineMediaSearch() {
         input.value = "N/A";
         selectedMediaItem = null;
       }
-    }, 150);
+    }, 200);
   });
 
   input.addEventListener("input", () => {
-    const value = input.value.trim();
-
     selectedMediaItem = null;
-
     clearTimeout(mediaSearchTimeout);
-    mediaSearchTimeout = setTimeout(() => {
-      searchMediaInline(value);
-    }, 300);
+    mediaSearchTimeout = setTimeout(
+      () => searchMediaInline(input.value.trim()),
+      300,
+    );
   });
 
   typeSelect.addEventListener("change", () => {
-    clearMediaSelection(true);
+    selectedMediaItem = null;
+    input.value = "N/A";
+    results.innerHTML = "";
+    results.classList.add("hidden");
   });
 
   document.addEventListener("click", (e) => {
@@ -178,488 +628,51 @@ function setupInlineMediaSearch() {
   });
 }
 
-async function loadGoals() {
-  const res = await fetch(`${API_BASE}/api/goals/user`, {
-    method: "GET",
-    credentials: "include",
+/* ─── INIT ───────────────────────────────────────────────────────────────────── */
+document.addEventListener("DOMContentLoaded", () => {
+  // Filter pills
+  document.querySelectorAll(".filter-pill").forEach((btn) => {
+    btn.addEventListener("click", () => filterGoals(btn.dataset.filter));
   });
 
-  if (res.status === 401) {
-    console.error("Goals API error:", await res.text());
-    window.location.href = "/login";
-    return;
-  }
+  // Bottom action buttons
+  document
+    .getElementById("btnAddGoal")
+    .addEventListener("click", () => openModal());
+  document
+    .getElementById("btnDeleteGoal")
+    .addEventListener("click", () => deleteSelectedGoal());
 
-  if (!res.ok) {
-    console.error("Failed to load goals:", await res.text());
-    goals = [];
-    render();
-    return;
-  }
-
-  goals = await res.json();
-  render();
-}
-
-function render() {
-  const container = document.getElementById("goals-container");
-  container.innerHTML = "";
-
-  goals = goals.map((g) => {
-    const total = Number(g.total || 0);
-    const current = Number(g.current || 0);
-    const done = total > 0 && current >= total;
-    const status = g.status ? g.status : done ? "completed" : "active";
-    return { ...g, total, current, status };
+  // Modal buttons
+  document.getElementById("modalCancel").addEventListener("click", closeModal);
+  document
+    .getElementById("modalSave")
+    .addEventListener("click", saveGoalFromModal);
+  document.getElementById("goalModal").addEventListener("click", (e) => {
+    if (e.target === document.getElementById("goalModal")) closeModal();
   });
 
-  const filtered = goals.filter((g) => g.status === currentFilter);
+  // Tracking / type change
+  document
+    .getElementById("modal-tracking")
+    .addEventListener("change", updateTrackingUI);
+  document
+    .getElementById("modal-type")
+    .addEventListener("change", updateTrackingUI);
 
-  filtered.forEach((goal) => {
-    const id = getGoalId(goal);
-    const pct =
-      goal.total > 0 ? Math.round((goal.current / goal.total) * 100) : 0;
-
-    const item = document.createElement("div");
-    item.dataset.id = id;
-
-    const isSelected = selectedGoalId === id;
-
-    item.className =
-      `group relative flex items-center gap-3 border rounded-xl py-4 p-3 transition-colors shrink-0 ` +
-      (goal.status === "completed"
-        ? "bg-white/5 border-white/5 opacity-80"
-        : "bg-teal-dark/30 hover:bg-teal-dark/50 border-white/5 ") +
-      (isSelected
-        ? " outline outline-1 outline-teal-neon/80 outline-offset-[-2px]"
-        : "");
-
-    const mediaLabel =
-      goal.media &&
-      getMediaDisplayText(goal.media, mapGoalTypeToSearchType(goal.type))
-        ? getMediaDisplayText(goal.media, mapGoalTypeToSearchType(goal.type))
-        : "";
-
-    item.innerHTML = `
-  <div class="relative w-10 h-10 shrink-0">
-   <div class="w-10 h-10 rounded-full bg-teal-neon flex items-center justify-center text-teal-dark shadow-sm shrink-0">
-  ${icons[goal.type] || icons.book}
-</div>
-
-    ${
-      goal.status === "active"
-        ? `
-    <button 
-class="edit-goal absolute -top-5 -right-6 bg-black/70 hover:bg-teal-neon text-white hover:text-black rounded-full p-1.5 transition-all opacity-0 group-hover:opacity-100"
-title="Edit goal"
-    >
-<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-  <path d="M12 20h9"/>
-  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
-</svg>
-    </button>
-    `
-        : ""
+  // Celebrate dismiss
+  document.getElementById("celebrateDismiss").addEventListener("click", () => {
+    document.getElementById("celebrateModal").classList.remove("open");
+  });
+  document.getElementById("celebrateModal").addEventListener("click", (e) => {
+    if (e.target === document.getElementById("celebrateModal")) {
+      document.getElementById("celebrateModal").classList.remove("open");
     }
-  </div>
-
-  <div class="flex-grow flex flex-col justify-center overflow-visible">
-
-    ${
-      mediaLabel && mediaLabel !== "N/A"
-        ? `
-  <div class="text-[12px] text-scriptorium-gold text-center font-semibold mb-1 drop-shadow-[0_0_6px_rgba(255,218,109,1)]">
-    ${mediaLabel}
-  </div>
-  `
-        : ""
-    }
-
-    <div class="text-sm font-medium text-white mb-2 break-words">
-${goal.title}
-    </div>
-
-    <div 
-class="goal-bar w-full h-2 bg-black/40 rounded-full overflow-hidden ${
-      goal.status === "active" ? "cursor-ew-resize" : ""
-    }"
-data-id="${id}"
-data-total="${goal.total}"
-data-status="${goal.status}"
-    >
-<div class="goal-fill h-full bg-teal-neon rounded-full" style="width:${pct}%"></div>
-    </div>
-
-  </div>
-
-  <div class="text-right shrink-0 min-w-[70px] ml-2">
-    <div class="goal-count text-sm font-bold text-white">${goal.current}/${goal.total}</div>
-    <div class="goal-pct text-xs text-teal-neon/80">${pct}%</div>
-  </div>
-`;
-
-    item.addEventListener("click", (e) => {
-      if (e.target.closest(".goal-bar")) return;
-      selectedGoalId = id;
-      render();
-    });
-
-    item.addEventListener("dblclick", (e) => {
-      if (e.target.closest(".goal-bar")) return;
-
-      selectedGoalId = id;
-
-      if (goal.status === "active") {
-        openEditModal(goal);
-        console.log("Opening goal for edit:", goal);
-      }
-      render();
-    });
-
-    const bar = item.querySelector(".goal-bar");
-    const editBtn = item.querySelector(".edit-goal");
-    if (editBtn && goal.status === "active") {
-      editBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        openEditModal(goal);
-      });
-    }
-    if (goal.status === "active") {
-      attachBarDrag(bar, item);
-    }
-
-    container.appendChild(item);
-  });
-}
-
-let dragState = {
-  active: false,
-  id: null,
-  total: 0,
-  item: null,
-};
-
-function attachBarDrag(bar, item) {
-  bar.addEventListener("pointerdown", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const id = bar.dataset.id;
-    const total = Number(bar.dataset.total);
-
-    dragState.active = true;
-    dragState.id = id;
-    dragState.total = total;
-    dragState.item = item;
-
-    bar.setPointerCapture(e.pointerId);
-    updateBarFromPointer(e);
   });
 
-  bar.addEventListener("pointermove", (e) => {
-    if (!dragState.active) return;
-    updateBarFromPointer(e);
-  });
+  // Media search
+  setupInlineMediaSearch();
 
-  bar.addEventListener("pointerup", async (e) => {
-    if (!dragState.active) return;
-
-    bar.releasePointerCapture(e.pointerId);
-    dragState.active = false;
-
-    // Capture position NOW — render() will remove this element from the DOM
-    const barRect = bar.getBoundingClientRect();
-    const burstX = barRect.left + barRect.width / 2;
-    const burstY = barRect.top;
-
-    const id = dragState.id;
-    const goal = goals.find((g) => (g._id || g.id) === id);
-    if (!goal) return;
-
-    const wasCompleted = goal.status === "completed";
-    const newCurrent = Number(goal.current);
-    await updateGoalProgress(id, newCurrent, wasCompleted, burstX, burstY);
-
-    const idx = goals.findIndex((g) => (g._id || g.id) === id);
-    if (idx !== -1) {
-      const total = Number(goals[idx].total || 0);
-      const current = Number(goals[idx].current || 0);
-      goals[idx].status =
-        total > 0 && current >= total ? "completed" : "active";
-    }
-
-    render();
-  });
-}
-
-function updateBarFromPointer(e) {
-  const item = dragState.item;
-  if (!item) return;
-
-  const bar = item.querySelector(".goal-bar");
-  const fill = item.querySelector(".goal-fill");
-  const countEl = item.querySelector(".goal-count");
-  const pctEl = item.querySelector(".goal-pct");
-
-  const rect = bar.getBoundingClientRect();
-  let pct = (e.clientX - rect.left) / rect.width;
-  pct = Math.max(0, Math.min(1, pct));
-
-  const current = Math.max(
-    0,
-    Math.min(dragState.total, Math.round(pct * dragState.total)),
-  );
-
-  const pctDisplay = Math.round(pct * 100);
-
-  fill.style.width = `${pctDisplay}%`;
-  countEl.textContent = `${current}/${dragState.total}`;
-  pctEl.textContent = `${pctDisplay}%`;
-
-  const idx = goals.findIndex((g) => (g._id || g.id) === dragState.id);
-  if (idx !== -1) goals[idx].current = current;
-}
-
-function openEditModal(goal) {
-  editingGoalId = getGoalId(goal);
-
-  openModal();
-
-  document.getElementById("modal-title").value = goal.title || "";
-  document.getElementById("modal-type").value = goal.type || "book";
-  document.getElementById("modal-target").value = goal.total ?? "";
-  document.getElementById("modal-current").value = goal.current ?? 0;
-
-  selectedMediaItem = goal.media || null;
-  document.getElementById("modal-media-search").value = selectedMediaItem
-    ? getMediaDisplayText(
-        selectedMediaItem,
-        mapGoalTypeToSearchType(goal.type || "book"),
-      )
-    : "N/A";
-
-  document.getElementById("media-search-results").classList.add("hidden");
-}
-
-function openModal() {
-  const modal = document.getElementById("goal-modal");
-  modal.classList.remove("hidden");
-  modal.classList.add("flex");
-
-  if (!editingGoalId) {
-    document.getElementById("modal-title").value = "";
-    document.getElementById("modal-type").value = "book";
-    document.getElementById("modal-target").value = "";
-    document.getElementById("modal-current").value = "";
-    document.getElementById("modal-media-search").value = "N/A";
-    document.getElementById("media-search-results").classList.add("hidden");
-    selectedMediaItem = null;
-  }
-}
-
-function closeModal() {
-  const modal = document.getElementById("goal-modal");
-  modal.classList.add("hidden");
-  modal.classList.remove("flex");
-
-  editingGoalId = null;
-
-  document.getElementById("modal-title").value = "";
-  document.getElementById("modal-type").value = "book";
-  document.getElementById("modal-target").value = "";
-  document.getElementById("modal-current").value = "";
-  document.getElementById("modal-media-search").value = "N/A";
-  document.getElementById("media-search-results").innerHTML = "";
-  document.getElementById("media-search-results").classList.add("hidden");
-  selectedMediaItem = null;
-}
-
-async function saveGoalFromModal() {
-  const title = document.getElementById("modal-title").value.trim();
-  const type = document.getElementById("modal-type").value;
-
-  let total = Number(document.getElementById("modal-target").value);
-  let current = Number(document.getElementById("modal-current").value || 0);
-
-  const mediaInput = document.getElementById("modal-media-search").value.trim();
-  const media = mediaInput && mediaInput !== "N/A" ? selectedMediaItem : null;
-  if (mediaInput && mediaInput !== "N/A" && !selectedMediaItem) {
-    return alert("Please select a media item from the search results.");
-  }
-  if (!title) return alert("Please fill in a title.");
-  if (!Number.isFinite(total) || total <= 0)
-    return alert("Target value must be a positive number.");
-  if (!Number.isFinite(current) || current < 0)
-    return alert("Current progress cannot be negative.");
-
-  if (current > total) current = total;
-  console.log("Saving media:", media);
-  if (editingGoalId) {
-    const res = await fetch(`${API_BASE}/api/goals/update/${editingGoalId}`, {
-      method: "PUT",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, type, total, current, media }),
-    });
-
-    if (!res.ok) {
-      console.error("Failed to update goal:", await res.text());
-      return alert("Failed to update goal.");
-    }
-
-    const data = await res.json();
-    console.log("Saved goal response:", data);
-    const updated = data.goal || data;
-
-    const idx = goals.findIndex((g) => (g._id || g.id) === editingGoalId);
-    if (idx !== -1) goals[idx] = updated;
-
-    closeModal();
-    render();
-    return;
-  }
-
-  const res = await fetch(`${API_BASE}/api/goals/add`, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, type, current, total, media }),
-  });
-
-  if (!res.ok) {
-    console.error("Failed to save goal:", await res.text());
-    return alert("Failed to save goal.");
-  }
-
-  const data = await res.json();
-  goals.unshift(data.goal);
-
-  closeModal();
-  render();
-}
-
-async function deleteSelectedActiveGoal(e) {
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-
-  if (!selectedGoalId) return alert("Select an active goal first.");
-
-  const res = await fetch(`${API_BASE}/api/goals/delete/${selectedGoalId}`, {
-    method: "DELETE",
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    console.error("Failed to delete goal:", await res.text());
-    return alert("Failed to delete goal.");
-  }
-
-  goals = goals.filter((g) => (g._id || g.id) !== selectedGoalId);
-  selectedGoalId = null;
-  render();
-}
-
-async function updateGoalProgress(
-  id,
-  current,
-  wasCompleted = false,
-  burstX = null,
-  burstY = null,
-) {
-  const res = await fetch(`${API_BASE}/api/goals/update/${id}/progress`, {
-    method: "PUT",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ current }),
-  });
-
-  if (!res.ok) {
-    console.error("Failed to update goal:", await res.text());
-    return false;
-  }
-
-  const data = await res.json();
-  const idx = goals.findIndex((g) => (g._id || g.id) === id);
-  if (idx !== -1 && data.goal) goals[idx] = data.goal;
-
-  // ── Yarn burst using pre-captured coords ──────────────────────────────
-  if (burstX !== null) {
-    const justCompleted = !wasCompleted && data.goal?.status === "completed";
-    burstAtCoords(burstX, burstY, justCompleted ? "complete" : "progress");
-  }
-
-  return true;
-}
-
-function filterGoals(status) {
-  currentFilter = status;
-
-  const activeBtn = document.getElementById("btn-active");
-  const completedBtn = document.getElementById("btn-completed");
-  const activeClass = "bg-teal-neon/20 text-teal-neon border border-teal-neon";
-  const inactiveClass = "text-white/50 hover:text-white border-transparent";
-
-  if (status === "active") {
-    activeBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${activeClass}`;
-    completedBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${inactiveClass}`;
-  } else {
-    completedBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${activeClass}`;
-    activeBtn.className = `px-6 py-1.5 rounded-full font-medium text-sm transition-all ${inactiveClass}`;
-  }
-
-  render();
-}
-
-// ─── YARN BURST ANIMATION ────────────────────────────────────────────────
-// ─── YARN BURST ───────────────────────────────────────────────────────────────
-// Uses raw pixel coords captured before render() so the DOM element being
-// removed doesn't affect positioning. type: "progress" | "complete"
-function burstAtCoords(x, y, type) {
-  const isComplete = type === "complete";
-
-  const pill = document.createElement("div");
-  pill.textContent = isComplete ? "Goal complete! +25 🧶" : "+5 🧶";
-  pill.style.cssText = [
-    "position:fixed",
-    `left:${x}px`,
-    `top:${y - (isComplete ? 16 : 0)}px`,
-    "transform:translateX(-50%) translateY(0)",
-    `background:${isComplete ? "rgba(0,196,154,0.18)" : "rgba(255,196,80,0.12)"}`,
-    `border:1px solid ${isComplete ? "rgba(0,196,154,0.5)" : "rgba(255,196,80,0.35)"}`,
-    `color:${isComplete ? "#7fffd4" : "#ffd54f"}`,
-    `font-size:${isComplete ? "0.9rem" : "0.82rem"}`,
-    "font-weight:700",
-    `padding:${isComplete ? "7px 18px" : "4px 12px"}`,
-    "border-radius:999px",
-    "pointer-events:none",
-    "z-index:99999",
-    "white-space:nowrap",
-    "opacity:0",
-    "transition:none",
-  ].join(";");
-
-  document.body.appendChild(pill);
-
-  // Animate with requestAnimationFrame so the element is painted before we move it
-  requestAnimationFrame(() => {
-    pill.style.transition =
-      "opacity 0.18s ease, transform 1.3s cubic-bezier(0.2, 1, 0.4, 1)";
-    pill.style.opacity = "1";
-    pill.style.transform = `translateX(-50%) translateY(-${isComplete ? 64 : 48}px)`;
-
-    // Fade out in the last 400ms
-    setTimeout(
-      () => {
-        pill.style.transition = "opacity 0.35s ease";
-        pill.style.opacity = "0";
-        setTimeout(() => pill.remove(), 380);
-      },
-      isComplete ? 950 : 850,
-    );
-  });
-}
-
-setupInlineMediaSearch();
-loadGoals();
+  // Load
+  loadGoals();
+});

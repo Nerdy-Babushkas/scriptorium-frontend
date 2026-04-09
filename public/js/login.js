@@ -56,6 +56,13 @@ document.addEventListener("DOMContentLoaded", () => {
     message.classList.remove("hidden");
   }
 
+  function showInfo(text) {
+    message.textContent = text;
+    message.className =
+      "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-blue-500/10 border-blue-400 text-blue-300";
+    message.classList.remove("hidden");
+  }
+
   // 4. Main Submit Logic
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -121,11 +128,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
         showSuccess("Login successful! Redirecting...");
         window.location.href = "/room";
+      } else if (
+        data.message &&
+        data.message.toLowerCase().includes("verif")
+      ) {
+        // Email not verified — show friendly info, not a red error
+        showInfo(
+          "Your email isn't verified yet. We've sent a new verification link — please check your inbox.",
+        );
 
-        // Wait 4 seconds then redirect
-        // setTimeout(() => {
-        //
-        // }, 4000);
+        // Trigger resend in the background
+        fetch(
+          "https://scriptorium-backend-six.vercel.app/api/user/resend-verification",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          },
+        ).catch(() => {});
       } else {
         showError(
           data.message || "Login failed. Please check your credentials.",

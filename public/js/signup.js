@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (response.ok) {
         showSuccess("Account created! Redirecting to login...");
         setTimeout(() => {
-          window.location.href = "/login";
+          window.location.href = "/login?registered=true";
         }, 1500);
       } else {
         showError(data.message || "Signup failed.");

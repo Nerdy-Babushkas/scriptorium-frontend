@@ -26,6 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentPage = 1;
   let currentQueryParams = {};
   let currentItemData = null;
+
+  // --- FIX 1: Remember last used search type across searches ---
   const urlType = new URLSearchParams(window.location.search).get("type");
   let currentType =
     urlType || localStorage.getItem("lastSearchType") || "movies";
@@ -39,6 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Always persist the resolved type so the next search remembers it
   localStorage.setItem("lastSearchType", currentType);
+
+  // --- FIX 2: Page limits per type + hard cap of 10 pages max ---
+  const PAGE_LIMITS = { movies: 10, music: 25, books: 20 };
+  const MAX_PAGES = 10;
 
   const initialQuery = new URLSearchParams(window.location.search).get("q");
 
@@ -208,7 +214,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const items = data.tracks || data.movies || data.books || [];
       if (items.length > 0) {
         renderItems(items, type);
-        renderPagination(data.totalResults || 20);
+        const limit = PAGE_LIMITS[type] || 20;
+        // Cap total so we never render more than MAX_PAGES pages
+        const cappedTotal = Math.min(
+          data.totalResults || limit,
+          MAX_PAGES * limit,
+        );
+        renderPagination(cappedTotal, limit);
       } else empty.classList.remove("hidden");
     } catch (err) {
       console.error(err);
@@ -221,13 +233,12 @@ document.addEventListener("DOMContentLoaded", () => {
     empty.classList.add("hidden");
     loading.classList.remove("hidden");
 
-    const pageLimits = { movies: 10, music: 25, books: 20 };
-    const limit = pageLimits[type];
+    const limit = PAGE_LIMITS[type] || 20;
     try {
       const token = localStorage.getItem("token");
       const queryParams = new URLSearchParams(params);
-      queryParams.set("page", currentPage); // set() never duplicates
-      if (type === "music") queryParams.set("limit", limit); // only music needs this
+      queryParams.set("page", currentPage);
+      if (type === "music") queryParams.set("limit", limit);
 
       const url = `${API_BASE}/${type}/advanced/search?${queryParams.toString()}`;
       const res = await fetch(url, {
@@ -243,7 +254,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (items.length > 0) {
         renderItems(items, type);
-        renderPagination(data.totalResults || 0, limit);
+        // Cap total so we never render more than MAX_PAGES pages
+        const cappedTotal = Math.min(
+          data.totalResults || limit,
+          MAX_PAGES * limit,
+        );
+        renderPagination(cappedTotal, limit);
       } else empty.classList.remove("hidden");
     } catch (err) {
       console.error(err);

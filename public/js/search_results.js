@@ -26,9 +26,18 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentPage = 1;
   let currentQueryParams = {};
   let currentItemData = null;
+  const urlType = new URLSearchParams(window.location.search).get("type");
   let currentType =
-    new URLSearchParams(window.location.search).get("type") || "movies";
-  // Persist immediately so the navbar search bar stays in sync
+    urlType || localStorage.getItem("lastSearchType") || "movies";
+
+  // If type wasn't in the URL, inject it so the URL stays canonical
+  if (!urlType) {
+    const url = new URL(window.location);
+    url.searchParams.set("type", currentType);
+    window.history.replaceState({}, "", url);
+  }
+
+  // Always persist the resolved type so the next search remembers it
   localStorage.setItem("lastSearchType", currentType);
 
   const initialQuery = new URLSearchParams(window.location.search).get("q");

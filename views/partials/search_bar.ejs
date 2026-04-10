@@ -42,24 +42,23 @@
     var form = document.currentScript.previousElementSibling;
     var input = form.querySelector("#searchTypeInput");
 
-    // On the search results page the URL already has the correct type —
-    // honour it and keep localStorage in sync.
-    var urlType = new URLSearchParams(window.location.search).get("type");
-    if (urlType) {
-      input.value = urlType;
-      localStorage.setItem("lastSearchType", urlType);
-      return;
-    }
-
-    // On every other page, restore the last used type so the form
-    // submits with it instead of the default 'movies'.
-    var saved = localStorage.getItem("lastSearchType");
-    if (saved) input.value = saved;
-
-    // Also update on submit so it can never be stale.
+    // Always read the freshest type from localStorage on every submit.
+    // This is the only source of truth — it's kept up to date by
+    // both the tab switcher (search_results.js) and this script.
     form.addEventListener("submit", function () {
       var latest = localStorage.getItem("lastSearchType");
       if (latest) input.value = latest;
     });
+
+    // Seed the input immediately so it's correct even before submit,
+    // preferring the URL param (when on search page) then localStorage.
+    var urlType = new URLSearchParams(window.location.search).get("type");
+    if (urlType) {
+      input.value = urlType;
+      localStorage.setItem("lastSearchType", urlType);
+    } else {
+      var saved = localStorage.getItem("lastSearchType");
+      if (saved) input.value = saved;
+    }
   })();
 </script>

@@ -111,7 +111,7 @@ router.get("/ai-recommendations", requireAuth, (req, res) => {
 
 router.get("/search", requireAuth, (req, res) => {
   const query = req.query.q; // Capture query from URL
-  const type = req.query.type || "movies"; // Capture type (default to movies)
+  const type = req.query.type || ""; // Default is empty — client resolves from localStorage
   res.render("pages/search-results", { query, type }); // Pass both to view (optional, used in Navbar)
 });
 

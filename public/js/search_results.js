@@ -390,7 +390,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderPagination(totalResults, limit = 20) {
     const container = document.getElementById("pagination");
     container.innerHTML = "";
-    const totalPages = Math.ceil(totalResults / limit);
+    const totalPages = Math.min(Math.ceil(totalResults / limit), MAX_PAGES);
 
     if (totalPages <= 1) {
       container.classList.add("hidden");

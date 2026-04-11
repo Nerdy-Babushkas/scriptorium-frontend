@@ -34,7 +34,7 @@
 }
 .btn-back:hover { background: rgba(255,255,255,0.1); color:#fff; transform: translateX(-2px); }
 
-        /* Navigation Overlay - Floating on the right */
+        /* Navigation Overlay - Floating on the right, fixed only on large screens */
 .room-nav {
     position: fixed;
     top: 120px;
@@ -250,6 +250,45 @@
         .tip-btn-skip { background: transparent; color: rgba(255,255,255,0.28); border: 1px solid rgba(255,255,255,0.1); }
         .tip-btn-skip:hover { color: rgba(255,255,255,0.55); }
 
+        /* ── Small laptop / medium screen: un-fix the nav so it doesn't overlap content ── */
+        @media (max-width: 1200px) {
+            .room-nav {
+                position: static;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 8px;
+                margin-bottom: 1rem;
+            }
+            .nav-pill {
+                padding: 8px 16px;
+                font-size: 13px;
+                min-width: unset;
+            }
+            .nav-pill:hover {
+                transform: none;
+            }
+            .ai-btn-container {
+                margin-top: 0;
+            }
+        }
+
+        /* ── Medium screens: let grid grow naturally, no fixed viewport height ── */
+        @media (max-width: 1024px) {
+            .reflection-grid {
+                height: auto !important;
+            }
+            .reflection-panel-left,
+            .reflection-panel-right {
+                height: auto !important;
+                min-height: unset;
+            }
+            .reflection-panel-right {
+                min-height: 300px;
+            }
+        }
+
         /* ── Mobile responsive ── */
         @media (max-width: 640px) {
             #penguinTip {
@@ -271,34 +310,36 @@
     <%- include('../partials/navbar_app') %>
   
     <main class="relative z-10 container mx-auto px-4 py-8 max-w-6xl">
+
+        <!-- room-nav: fixed on large screens, inline on smaller ones (via CSS above) -->
         <div class="room-nav">
-    <a href="/library" class="nav-pill">Library</a>
-    <a href="/music" class="nav-pill">Music Room</a>
-    <a href="/theatre" class="nav-pill">Theatre</a>
-    <div class="ai-btn-container">
-        <%- include('../partials/ai_button') %>
-    </div>
-</div>
+            <a href="/library" class="nav-pill">Library</a>
+            <a href="/music" class="nav-pill">Music Room</a>
+            <a href="/theatre" class="nav-pill">Theatre</a>
+            <div class="ai-btn-container">
+                <%- include('../partials/ai_button') %>
+            </div>
+        </div>
         
         <div class="page-controls">
-    <div class="page-controls-left">
-        <a href="/room" class="btn-back">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
-                <path d="M19 12H5M12 5l-7 7 7 7"/>
-            </svg>
-            Back to Room
-        </a>
+            <div class="page-controls-left">
+                <a href="/room" class="btn-back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
+                        <path d="M19 12H5M12 5l-7 7 7 7"/>
+                    </svg>
+                    Back to Room
+                </a>
 
-        <div style="display:flex; flex-direction:column; gap:2px;">
-            <h1 class="text-3xl font-dancing text-white" style="margin:0; line-height:1;">Reflection Journal</h1>
-            <p class="text-white/40" style="font-size:0.75rem; margin:0;">Capture your thoughts on your journey</p>
+                <div style="display:flex; flex-direction:column; gap:2px;">
+                    <h1 class="text-3xl font-dancing text-white" style="margin:0; line-height:1;">Reflection Journal</h1>
+                    <p class="text-white/40" style="font-size:0.75rem; margin:0;">Capture your thoughts on your journey</p>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 lg:h-[calc(100vh-220px)]">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8" style="height: auto;">
             
-            <div class="lg:col-span-7 bg-[#0f191e]/90 backdrop-blur-xl border border-[#00C49A]/30 rounded-3xl p-5 md:p-8 flex flex-col shadow-2xl relative overflow-hidden animate-slide-up">
+            <div class="lg:col-span-7 bg-[#0f191e]/90 backdrop-blur-xl border border-[#00C49A]/30 rounded-3xl p-5 md:p-8 flex flex-col shadow-2xl relative animate-slide-up">
                 
                 <div class="absolute top-0 right-0 w-64 h-64 bg-[#00C49A] rounded-full opacity-5 blur-[100px] pointer-events-none"></div>
 
@@ -361,7 +402,7 @@
                 </div>
             </div>
 
-            <div class="lg:col-span-5 bg-[#0f191e]/80 backdrop-blur-md border border-white/5 rounded-3xl p-5 md:p-6 flex flex-col lg:h-full animate-slide-up min-h-[320px]" style="animation-delay: 0.1s;">
+            <div class="lg:col-span-5 bg-[#0f191e]/80 backdrop-blur-md border border-white/5 rounded-3xl p-5 md:p-6 flex flex-col animate-slide-up min-h-[300px]" style="animation-delay: 0.1s;">
                 <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
                     <span class="text-[#00C49A]">📜</span> History
                 </h3>

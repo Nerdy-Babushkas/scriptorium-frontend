@@ -34,46 +34,7 @@
 }
 .btn-back:hover { background: rgba(255,255,255,0.1); color:#fff; transform: translateX(-2px); }
 
-        /* Navigation Overlay - Floating on the right, fixed only on large screens */
-.room-nav {
-    position: fixed;
-    top: 120px;
-    right: 32px;
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 16px;
-    pointer-events: auto;
-}
 
-.nav-pill {
-    padding: 12px 28px;
-    background: rgba(15, 25, 30, 0.85);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 99px;
-    color: white;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    min-width: 120px;
-}
-
-.nav-pill:hover {
-    border-color: #FFDA6D;
-    color: #FFDA6D;
-    transform: translateX(-8px);
-    background: rgba(15, 25, 30, 0.95);
-}
-
-.ai-btn-container {
-    margin-top: 8px;
-    pointer-events: auto;
-}
 
 /* Back Button styling for the top left */
 .btn-back {
@@ -250,30 +211,6 @@
         .tip-btn-skip { background: transparent; color: rgba(255,255,255,0.28); border: 1px solid rgba(255,255,255,0.1); }
         .tip-btn-skip:hover { color: rgba(255,255,255,0.55); }
 
-        /* ── Small laptop / medium screen: un-fix the nav so it doesn't overlap content ── */
-        @media (max-width: 1200px) {
-            .room-nav {
-                position: static;
-                flex-direction: row;
-                flex-wrap: wrap;
-                align-items: center;
-                justify-content: flex-end;
-                gap: 8px;
-                margin-bottom: 1rem;
-            }
-            .nav-pill {
-                padding: 8px 16px;
-                font-size: 13px;
-                min-width: unset;
-            }
-            .nav-pill:hover {
-                transform: none;
-            }
-            .ai-btn-container {
-                margin-top: 0;
-            }
-        }
-
         /* ── Medium screens: let grid grow naturally, no fixed viewport height ── */
         @media (max-width: 1024px) {
             .reflection-grid {
@@ -311,15 +248,7 @@
   
     <main class="relative z-10 container mx-auto px-4 py-8 max-w-6xl">
 
-        <!-- room-nav: fixed on large screens, inline on smaller ones (via CSS above) -->
-        <div class="room-nav">
-            <a href="/library" class="nav-pill">Library</a>
-            <a href="/music" class="nav-pill">Music Room</a>
-            <a href="/theatre" class="nav-pill">Theatre</a>
-            <div class="ai-btn-container">
-                <%- include('../partials/ai_button') %>
-            </div>
-        </div>
+        <%- include('../partials/room_nav') %>
         
         <div class="page-controls">
             <div class="page-controls-left">

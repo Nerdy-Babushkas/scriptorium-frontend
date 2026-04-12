@@ -21,10 +21,41 @@
         to   { transform: translateY(28px) scale(1.07); }
     }
 
-    .help-wrap {
-        max-width: 740px;
+    /* Layout: sidebar + main content */
+    .help-layout {
+        display: flex;
+        align-items: flex-start;
+        gap: 2rem;
+        max-width: 1100px;
         margin: 0 auto;
         padding: 2.5rem 1.5rem 5rem;
+    }
+
+    .help-sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 2rem;
+    }
+
+    /* Balancing spacer — mirrors the sidebar width so the centre
+       column stays visually centred across the full layout */
+    .help-sidebar-spacer {
+        width: 220px;
+        flex-shrink: 0;
+    }
+
+    .help-wrap {
+        flex: 1;
+        min-width: 0;
+        max-width: 740px;
+    }
+
+    @media (max-width: 768px) {
+        .help-layout { flex-direction: column; }
+        .help-sidebar { width: 100%; position: static; }
+        .help-sidebar-spacer { display: none; }
+        .help-wrap { max-width: 100%; }
     }
 
     /* Page header */
@@ -152,144 +183,170 @@
     <%- include('../partials/navbar_app') %>
 
     <main class="relative z-10 mt-6">
-        <div class="help-wrap">
+        <div class="help-layout">
 
-            <a href="/room" class="btn-back">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 12H5M12 5l-7 7 7 7"/>
-                </svg>
-                Back to Room
-            </a>
+            <!-- Sidebar: other rooms -->
+            <aside class="help-sidebar">
+                <%- include('../partials/room_nav') %>
+            </aside>
 
-            <!-- Header -->
-            <div class="help-header">
-                <span class="help-eyebrow">✦ Help &amp; Guide</span>
-                <h1 class="help-title">How Scriptorium works</h1>
-                <p class="help-subtitle">
-                    Scriptorium is your personal space for the media that matters to you — books, films, and music.
-                    Not a streaming platform. You save what you discover, reflect on what you've experienced, and track how it connects to your growth.
-                </p>
-            </div>
+            <!-- Main content -->
+            <div class="help-wrap">
 
-            <!-- Your room -->
-            <div class="help-section">
-                <div class="help-section-header">
-                    <div class="help-section-icon">🏠</div>
-                    <h2 class="help-section-title">Your Room</h2>
-                </div>
-                <div class="help-body">
-                    <p>When you log in, you land in your <strong>3D room</strong>. This is your home base. Hold the left mouse button and drag to look around, and scroll to zoom in and out.</p>
-                    <p>The room has three clickable spots — hover over them to see them glow, then single-click to enter:</p>
-                </div>
-                <ul class="room-spots">
-                    <li class="room-spot">
-                        <span class="room-spot-icon">📚</span>
-                        The <strong>bookshelf</strong>
-                        <span class="room-spot-arrow">→ Library</span>
-                    </li>
-                    <li class="room-spot">
-                        <span class="room-spot-icon">🎵</span>
-                        The <strong>speakers</strong>
-                        <span class="room-spot-arrow">→ Music Room</span>
-                    </li>
-                    <li class="room-spot">
-                        <span class="room-spot-icon">🎬</span>
-                        The <strong>screen</strong>
-                        <span class="room-spot-arrow">→ Theatre</span>
-                    </li>
-                </ul>
-            </div>
+                <a href="/room" class="btn-back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5M12 5l-7 7 7 7"/>
+                    </svg>
+                    Back to Room
+                </a>
 
-            <!-- Inside each room -->
-            <div class="help-section">
-                <div class="help-section-header">
-                    <div class="help-section-icon">🗂️</div>
-                    <h2 class="help-section-title">Inside each room</h2>
+                <!-- Header -->
+                <div class="help-header">
+                    <span class="help-eyebrow">✦ Help &amp; Guide</span>
+                    <h1 class="help-title">How Scriptorium works</h1>
+                    <p class="help-subtitle">
+                        Scriptorium is your personal space for the media that matters to you — books, films, and music.
+                        Not a streaming platform. You save what you discover, reflect on what you've experienced, and track how it connects to your growth.
+                    </p>
                 </div>
-                <div class="help-body">
-                    <p>Once you're in a room, you'll see your <strong>shelves</strong> — items you've saved, organised by status: <span class="hl">Wishlist</span>, <span class="hl">Reading / Watching / Listening</span>, <span class="hl">Finished</span> and <span class="hl">Favourites</span>.</p>
-                    <p>Click any item on a shelf to see your reflections on it. You can also move items between shelves using the <strong>Move</strong> button, or mark them as done.</p>
-                </div>
-            </div>
 
-            <!-- Search -->
-            <div class="help-section">
-                <div class="help-section-header">
-                    <div class="help-section-icon">🔍</div>
-                    <h2 class="help-section-title">Finding and saving media</h2>
+                <!-- Your room -->
+                <div class="help-section">
+                    <div class="help-section-header">
+                        <div class="help-section-icon">🏠</div>
+                        <h2 class="help-section-title">Your Room</h2>
+                    </div>
+                    <div class="help-body">
+                        <p>When you log in, you land in your <strong>3D room</strong>. This is your home base. Hold the left mouse button and drag to look around, and scroll to zoom in and out.</p>
+                        <p>The room has three clickable spots — hover over them to see them glow, then single-click to enter:</p>
+                    </div>
+                    <ul class="room-spots">
+                        <li class="room-spot">
+                            <span class="room-spot-icon">📚</span>
+                            The <strong>bookshelf</strong>
+                            <span class="room-spot-arrow">→ Library</span>
+                        </li>
+                        <li class="room-spot">
+                            <span class="room-spot-icon">🎵</span>
+                            The <strong>speakers</strong>
+                            <span class="room-spot-arrow">→ Music Room</span>
+                        </li>
+                        <li class="room-spot">
+                            <span class="room-spot-icon">🎬</span>
+                            The <strong>screen</strong>
+                            <span class="room-spot-arrow">→ Theatre</span>
+                        </li>
+                    </ul>
                 </div>
-                <div class="help-body">
-                    <p>Use the <span class="hl">search bar</span> in the top navigation to find anything — a book, a film, a track. Switch between <strong>Books</strong>, <strong>Music</strong> and <strong>Movies</strong> using the tabs on the results page.</p>
-                    <p>When you find something, click <strong>Save to shelf</strong> and pick where it goes. It will appear in the matching room straight away.</p>
-                </div>
-            </div>
 
-            <!-- Reflections -->
-            <div class="help-section">
-                <div class="help-section-header">
-                    <div class="help-section-icon">✍️</div>
-                    <h2 class="help-section-title">Reflections</h2>
+                <!-- Inside each room -->
+                <div class="help-section">
+                    <div class="help-section-header">
+                        <div class="help-section-icon">🗂️</div>
+                        <h2 class="help-section-title">Inside each room</h2>
+                    </div>
+                    <div class="help-body">
+                        <p>Once you're in a room, you'll see your <strong>shelves</strong> — items you've saved, organised by status: <span class="hl">Wishlist</span>, <span class="hl">Reading / Watching / Listening</span>, <span class="hl">Finished</span> and <span class="hl">Favourites</span>.</p>
+                        <p>Click any item on a shelf to see your reflections on it. You can also move items between shelves using the <strong>Move</strong> button, or mark them as done.</p>
+                    </div>
                 </div>
-                <div class="help-body">
-                    <p>A reflection is a short note you write about a piece of media. Go to <span class="hl">Reflections</span> from the navbar (the pencil icon), pick an item from your shelves using the dropdown, choose your mood, and write. Minimum 30 characters.</p>
-                    <p>Not sure where to start? Hit <strong>Templates</strong> for guided prompts — things like First Impressions, Emotional Journey, or Would I Recommend.</p>
-                    <p>The <strong>History panel</strong> on the right shows your recent reflections. Click any card to read it in full, or hit <strong>View Full History</strong> to see everything.</p>
-                </div>
-            </div>
 
-            <!-- Goals -->
-            <div class="help-section">
-                <div class="help-section-header">
-                    <div class="help-section-icon">🎯</div>
-                    <h2 class="help-section-title">Goals &amp; Progress</h2>
+                <!-- Search -->
+                <div class="help-section">
+                    <div class="help-section-header">
+                        <div class="help-section-icon">🔍</div>
+                        <h2 class="help-section-title">Finding and saving media</h2>
+                    </div>
+                    <div class="help-body">
+                        <p>Use the <span class="hl">search bar</span> in the top navigation to find anything — a book, a film, a track. Switch between <strong>Books</strong>, <strong>Music</strong> and <strong>Movies</strong> using the tabs on the results page.</p>
+                        <p>When you find something, click <strong>Save to shelf</strong> and pick where it goes. It will appear in the matching room straight away.</p>
+                    </div>
                 </div>
-                <div class="help-body">
-                    <p>Set a goal tied to a piece of media — for example, finishing a book or watching a series. Head to the <span class="hl">Progress</span> page from the navbar.</p>
-                    <p>Drag the <strong>progress bar</strong> left or right to update how far you've gotten. When you hit 100%, the goal is marked complete and you earn a completion bonus.</p>
-                </div>
-            </div>
 
-            <!-- Streaks -->
-            <div class="help-section">
-                <div class="help-section-header">
-                    <div class="help-section-icon">🔥</div>
-                    <h2 class="help-section-title">Daily streaks</h2>
+                <!-- AI Recommendations -->
+                <div class="help-section">
+                    <div class="help-section-header">
+                        <div class="help-section-icon">✨</div>
+                        <h2 class="help-section-title">AI Recommendations</h2>
+                    </div>
+                    <div class="help-body">
+                        <p>Scriptorium analyses your <span class="hl">Favourites</span> shelf across all three rooms — books, music, and films — to generate personalised recommendations just for you.</p>
+                        <p>The more you add to Favourites, the sharper the suggestions get. Head to <span class="hl">AI Recommendations</span> in the navbar to see what's been picked for you, refreshed each time based on what you love.</p>
+                        <p><strong>Tip:</strong> items you mark as Favourites carry the most weight — so if a recommendation misses the mark, check whether your favourites truly reflect your taste.</p>
+                    </div>
                 </div>
-                <div class="help-body">
-                    <p>Write a reflection <strong>or</strong> update a goal once a day to keep your streak alive. The longer your streak, the more badges you unlock. Check your streak on the <span class="hl">Rewards</span> page.</p>
-                </div>
-            </div>
 
-            <!-- Yarns -->
-            <div class="help-section">
-                <div class="help-section-header">
-                    <div class="help-section-icon">🧶</div>
-                    <h2 class="help-section-title">Yarns &amp; Rewards</h2>
+                <!-- Reflections -->
+                <div class="help-section">
+                    <div class="help-section-header">
+                        <div class="help-section-icon">✍️</div>
+                        <h2 class="help-section-title">Reflections</h2>
+                    </div>
+                    <div class="help-body">
+                        <p>A reflection is a short note you write about a piece of media. Go to <span class="hl">Reflections</span> from the navbar (the pencil icon), pick an item from your shelves using the dropdown, choose your mood, and write. Minimum 30 characters.</p>
+                        <p>Not sure where to start? Hit <strong>Templates</strong> for guided prompts — things like First Impressions, Emotional Journey, or Would I Recommend.</p>
+                        <p>The <strong>History panel</strong> on the right shows your recent reflections. Click any card to read it in full, or hit <strong>View Full History</strong> to see everything.</p>
+                    </div>
                 </div>
-                <div class="help-body">
-                    <p>Every action earns you <span class="hl-gold">yarns</span> — the in-app currency. Check your balance and badge collection on the <span class="hl">Rewards</span> page.</p>
-                </div>
-                <table class="yarn-table">
-                    <tr><td>Writing a reflection</td><td>+10 🧶</td></tr>
-                    <tr><td>Updating goal progress</td><td>+5 🧶</td></tr>
-                    <tr><td>Completing a goal</td><td>+25 🧶</td></tr>
-                    <tr><td>Hitting a 7-day streak</td><td>+15 🧶</td></tr>
-                    <tr><td>Earning a badge</td><td>+20 🧶</td></tr>
-                </table>
-            </div>
 
-            <!-- Customise -->
-            <div class="help-section">
-                <div class="help-section-header">
-                    <div class="help-section-icon">🐧</div>
-                    <h2 class="help-section-title">Customise</h2>
+                <!-- Goals -->
+                <div class="help-section">
+                    <div class="help-section-header">
+                        <div class="help-section-icon">🎯</div>
+                        <h2 class="help-section-title">Goals &amp; Progress</h2>
+                    </div>
+                    <div class="help-body">
+                        <p>Set a goal tied to a piece of media — for example, finishing a book or watching a series. Head to the <span class="hl">Progress</span> page from the navbar.</p>
+                        <p>Drag the <strong>progress bar</strong> left or right to update how far you've gotten. When you hit 100%, the goal is marked complete and you earn a completion bonus.</p>
+                    </div>
                 </div>
-                <div class="help-body">
-                    <p>Spend your yarns in the <span class="hl">Customise</span> page to unlock new animal avatars for your profile. Your avatar shows in the navigation bar and on your rewards screen. Rarer avatars cost more — start with the basics and work your way up.</p>
-                </div>
-            </div>
 
-        </div>
+                <!-- Streaks -->
+                <div class="help-section">
+                    <div class="help-section-header">
+                        <div class="help-section-icon">🔥</div>
+                        <h2 class="help-section-title">Daily streaks</h2>
+                    </div>
+                    <div class="help-body">
+                        <p>Write a reflection <strong>or</strong> update a goal once a day to keep your streak alive. The longer your streak, the more badges you unlock. Check your streak on the <span class="hl">Rewards</span> page.</p>
+                    </div>
+                </div>
+
+                <!-- Yarns -->
+                <div class="help-section">
+                    <div class="help-section-header">
+                        <div class="help-section-icon">🧶</div>
+                        <h2 class="help-section-title">Yarns &amp; Rewards</h2>
+                    </div>
+                    <div class="help-body">
+                        <p>Every action earns you <span class="hl-gold">yarns</span> — the in-app currency. Check your balance and badge collection on the <span class="hl">Rewards</span> page.</p>
+                    </div>
+                    <table class="yarn-table">
+                        <tr><td>Writing a reflection</td><td>+10 🧶</td></tr>
+                        <tr><td>Updating goal progress</td><td>+5 🧶</td></tr>
+                        <tr><td>Completing a goal</td><td>+25 🧶</td></tr>
+                        <tr><td>Hitting a 7-day streak</td><td>+15 🧶</td></tr>
+                        <tr><td>Earning a badge</td><td>+20 🧶</td></tr>
+                    </table>
+                </div>
+
+                <!-- Customise -->
+                <div class="help-section">
+                    <div class="help-section-header">
+                        <div class="help-section-icon">🐧</div>
+                        <h2 class="help-section-title">Customise</h2>
+                    </div>
+                    <div class="help-body">
+                        <p>Spend your yarns in the <span class="hl">Customise</span> page to unlock new animal avatars for your profile. Your avatar shows in the navigation bar and on your rewards screen. Rarer avatars cost more — start with the basics and work your way up.</p>
+                    </div>
+                </div>
+
+            </div><!-- end help-wrap -->
+
+            <!-- Balancing spacer to keep content centred -->
+            <div class="help-sidebar-spacer"></div>
+
+        </div><!-- end help-layout -->
     </main>
 
 </body>

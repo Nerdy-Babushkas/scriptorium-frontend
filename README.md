@@ -14,18 +14,20 @@ Scriptorium is designed as a personal digital space where users can collect and 
 
 ## Project Overview
 
-Scriptorium is a personalized digital space where users can discover and organize content such as books, music, movies, and podcasts inside a themed virtual “room”.
+Scriptorium is a personalized digital space where users can discover and organize content such as books, music, movies, and podcasts inside a 3d themed virtual “room”.
 
 Once content is saved, users can:
 
 - Save books to their personal library
 - Save music they like
 - Add movies
-- Add podcasts
+- Get AI recommendations (optional) based on their favourite media.
 - Write personal reflections about the content
-- Edit or delete reflections
+- See reflection history and edit or delete reflections
 - Set goals related to the content they are exploring
 - Track progress toward those goals
+- Unlock badges, daily streaks
+- Customize their avatar
 - Navigate through different themed rooms such as the library, music room, or theatre
 
 The goal of Scriptorium is to help users reflect on the content they consume and connect it with personal growth through notes, reflections, and goal tracking.
@@ -39,6 +41,8 @@ The frontend is built using:
 - _EJS (Embedded JavaScript templates)_
 - _Vanilla JavaScript_
 - _Tailwind CSS_
+- _Three.js_
+- _Blender_
 - _Vercel for deployment_
 
 ---
@@ -56,31 +60,43 @@ The frontend is built using:
 
 ### Room Experience
 
-- Main room dashboard
-- Theatre room
-- Library section
-- Music section
+- 3D Main room 
+- 3D Theatre room 
+- 3D Library room
+- 3D Music room
 - Goal progress view
+- Rewards view
+- Customization View
+- Account View
+- Help View
+- AI Recommendation View
 
 ### Search Functionality
 
 - Book search feature
 - Music search feature
 - Search results page
+- Advanced search feature
 - Dynamic rendering of results
 
 ### Reflections
 
 - Add reflections
-- Display stored reflectionS
+- Display reflection history
 - Update the reflections
 
 ### Goals Tracking
 
 - Create goals
+- View active and completed goals
 - View progress
 - Update goal completion
 
+### Rewards / Application Currency
+
+- Unlock Badges
+- View daily streaks
+- View ways to earn yarn for Customization
 ---
 
 ### UI / UX
@@ -90,6 +106,7 @@ The frontend is built using:
 - Reusable components
 - Tailwind styling
 - Responsive design
+- 3D rooms/spaces
 
 ---
 

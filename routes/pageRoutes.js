@@ -178,6 +178,10 @@ router.get("/help", (req, res) => {
   res.render("pages/help");
 });
 
+router.get("/feedback", (req, res) => {
+  res.render("pages/feedback");
+});
+
 router.use((req, res) => {
   res.status(404).render("pages/404");
 });

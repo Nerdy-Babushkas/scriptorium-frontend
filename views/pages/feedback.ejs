@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head_public', { title: 'Share Feedback - Scriptorium' }) %>
+</head>
+<body class="bg-scriptorium-dark min-h-screen relative overflow-x-hidden font-outfit text-white flex flex-col">
+
+    <%- include('../partials/background_blobs') %>
+    <%- include('../partials/navbar_public') %>
+
+    <main class="flex-grow relative z-10 pt-28 pb-20 px-6">
+        <div class="max-w-2xl mx-auto">
+
+            <!-- Header -->
+            <div class="text-center space-y-4 mb-12">
+                <h1 class="font-dancing text-5xl sm:text-6xl font-bold text-[#06D6A0]">
+                    Share Your Thoughts
+                </h1>
+                <p class="text-gray-300 font-roboto text-lg leading-relaxed max-w-xl mx-auto">
+                    We would love to hear what you think! Found a bug? Have a feature idea? 
+                    Something feel off? We read every single submission and your feedback 
+                    shapes the future of Scriptorium. We value it more than you know. 💚
+                </p>
+            </div>
+
+            <!-- Form Card -->
+            <div class="bg-black/30 border border-white/15 rounded-3xl p-8 shadow-2xl backdrop-blur-sm">
+
+                <div id="successMsg" class="hidden mb-6 p-4 rounded-2xl bg-[#06D6A0]/10 border border-[#06D6A0]/40 text-[#06D6A0] text-center font-semibold">
+                    🎉 Thank you! Your feedback has been sent. We appreciate you!
+                </div>
+
+                <div id="errorMsg" class="hidden mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/40 text-red-400 text-center font-semibold">
+                    Something went wrong. Please try again.
+                </div>
+
+                <div class="space-y-6">
+
+                    <!-- Name -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-300 mb-2 uppercase tracking-wider">
+                            Your Name <span class="text-gray-500 normal-case font-normal">(optional)</span>
+                        </label>
+                        <input
+                            id="fb-name"
+                            type="text"
+                            placeholder="e.g. Jane Doe"
+                            class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#06D6A0] focus:ring-1 focus:ring-[#06D6A0] transition-all"
+                        />
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-300 mb-2 uppercase tracking-wider">
+                            Your Email <span class="text-gray-500 normal-case font-normal">(optional — only if you want a reply)</span>
+                        </label>
+                        <input
+                            id="fb-email"
+                            type="email"
+                            placeholder="e.g. jane@example.com"
+                            class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#06D6A0] focus:ring-1 focus:ring-[#06D6A0] transition-all"
+                        />
+                    </div>
+
+                    <!-- Area Dropdown -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-300 mb-2 uppercase tracking-wider">
+                            Area <span class="text-red-400">*</span>
+                        </label>
+                        <div class="relative">
+                            <select
+                                id="fb-area"
+                                class="w-full appearance-none bg-black/60 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#06D6A0] focus:ring-1 focus:ring-[#06D6A0] transition-all cursor-pointer"
+                            >
+                                <option value="" disabled selected class="text-gray-500 bg-[#0f191e]">Select an area...</option>
+                                <option value="General" class="bg-[#0f191e]">General</option>
+                                <option value="Main Room (3D)" class="bg-[#0f191e]">Main Room (3D)</option>
+                                <option value="Library" class="bg-[#0f191e]">Library</option>
+                                <option value="Theatre" class="bg-[#0f191e]">Theatre</option>
+                                <option value="Music Room" class="bg-[#0f191e]">Music Room</option>
+                                <option value="Search" class="bg-[#0f191e]">Search</option>
+                                <option value="Reflections" class="bg-[#0f191e]">Reflections</option>
+                                <option value="Progress & Goals" class="bg-[#0f191e]">Progress & Goals</option>
+                                <option value="Rewards" class="bg-[#0f191e]">Rewards</option>
+                                <option value="Customise (Avatars)" class="bg-[#0f191e]">Customise (Avatars)</option>
+                                <option value="Profile & Account" class="bg-[#0f191e]">Profile & Account</option>
+                                <option value="Bug Report" class="bg-[#0f191e]">🐛 Bug Report</option>
+                                <option value="Feature Request" class="bg-[#0f191e]">✨ Feature Request</option>
+                                <option value="Other" class="bg-[#0f191e]">Other</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-300 mb-2 uppercase tracking-wider">
+                            Your Feedback <span class="text-red-400">*</span>
+                        </label>
+                        <textarea
+                            id="fb-description"
+                            rows="6"
+                            placeholder="Tell us what you think, what you'd love to see, or what's not working for you..."
+                            class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#06D6A0] focus:ring-1 focus:ring-[#06D6A0] transition-all resize-none"
+                        ></textarea>
+                        <p id="fb-error" class="hidden text-red-400 text-sm mt-1">Please fill in the required fields above.</p>
+                    </div>
+
+                    <!-- Submit -->
+                    <button
+                        id="fb-submit"
+                        onclick="submitFeedback()"
+                        class="w-full py-4 rounded-xl bg-[#06D6A0] text-[#073B4C] font-bold text-lg hover:bg-[#05c090] active:scale-95 transition-all shadow-lg shadow-[#06D6A0]/20"
+                    >
+                        Send Feedback 💌
+                    </button>
+
+                    <p class="text-center text-gray-500 text-sm">
+                        You can also reach us at
+                        <a href="mailto:babushkas.prj@gmail.com" class="text-[#06D6A0] hover:underline">babushkas.prj@gmail.com</a>
+                    </p>
+
+                </div>
+            </div>
+
+            <!-- Back link -->
+            <div class="text-center mt-8">
+                <a href="/contact" class="text-gray-400 hover:text-[#06D6A0] transition-colors text-sm">
+                    ← Back to Contact
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        async function submitFeedback() {
+            const name        = document.getElementById('fb-name').value.trim();
+            const email       = document.getElementById('fb-email').value.trim();
+            const area        = document.getElementById('fb-area').value;
+            const description = document.getElementById('fb-description').value.trim();
+            const errorEl     = document.getElementById('fb-error');
+            const successEl   = document.getElementById('successMsg');
+            const serverErrEl = document.getElementById('errorMsg');
+            const btn         = document.getElementById('fb-submit');
+
+            // Reset
+            errorEl.classList.add('hidden');
+            successEl.classList.add('hidden');
+            serverErrEl.classList.add('hidden');
+
+            // Validate
+            if (!area || !description) {
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            // Submit
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            try {
+                // const res = await fetch('http://localhost:8080/api/feedback', {
+                const res = await fetch('https://scriptorium-backend-six.vercel.app/api/feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, area, description })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    successEl.classList.remove('hidden');
+                    document.getElementById('fb-name').value = '';
+                    document.getElementById('fb-email').value = '';
+                    document.getElementById('fb-area').value = '';
+                    document.getElementById('fb-description').value = '';
+                    btn.textContent = '✓ Sent!';
+                } else {
+                    serverErrEl.textContent = data.error || 'Something went wrong. Please try again.';
+                    serverErrEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.textContent = 'Send Feedback 💌';
+                }
+            } catch (err) {
+                serverErrEl.classList.remove('hidden');
+                btn.disabled = false;
+                btn.textContent = 'Send Feedback 💌';
+            }
+        }
+    </script>
+
+</body>
+</html>

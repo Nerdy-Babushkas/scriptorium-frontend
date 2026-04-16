@@ -21,6 +21,19 @@ document.addEventListener("DOMContentLoaded", () => {
     "hidden mt-3 px-5 py-4 rounded-2xl border text-lg font-medium transition-all";
   loginForm.prepend(message);
 
+  // Show verification email notice if redirected from signup
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("registered") === "true") {
+    message.textContent =
+      "Account created! A verification email has been sent — please check your inbox before logging in.";
+    message.className =
+      "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-blue-500/10 border-blue-400 text-blue-300";
+    message.classList.remove("hidden");
+
+    // Clean the URL so the message doesn't reappear on refresh
+    window.history.replaceState({}, "", "/login");
+  }
+
   // 2. Hide errors on input
   [emailInput, passwordInput].forEach((input) => {
     input.addEventListener("input", () => {
@@ -40,6 +53,13 @@ document.addEventListener("DOMContentLoaded", () => {
     message.textContent = text;
     message.className =
       "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-green-500/10 border-green-400 text-green-300";
+    message.classList.remove("hidden");
+  }
+
+  function showInfo(text) {
+    message.textContent = text;
+    message.className =
+      "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-blue-500/10 border-blue-400 text-blue-300";
     message.classList.remove("hidden");
   }
 
@@ -108,11 +128,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
         showSuccess("Login successful! Redirecting...");
         window.location.href = "/room";
+      } else if (
+        data.message &&
+        data.message.toLowerCase().includes("verif")
+      ) {
+        // Email not verified — show friendly info, not a red error
+        showInfo(
+          "Your email isn't verified yet. We've sent a new verification link — please check your inbox.",
+        );
 
-        // Wait 4 seconds then redirect
-        // setTimeout(() => {
-        //
-        // }, 4000);
+        // Trigger resend in the background
+        fetch(
+          "https://scriptorium-backend-six.vercel.app/api/user/resend-verification",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          },
+        ).catch(() => {});
       } else {
         showError(
           data.message || "Login failed. Please check your credentials.",

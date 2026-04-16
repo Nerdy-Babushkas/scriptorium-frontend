@@ -86,7 +86,7 @@ router.get("/rewards", requireAuth, (req, res) => {
 });
 
 router.get("/customise", requireAuth, (req, res) => {
-  res.render("pages/placeholder", { pageName: "Customise" });
+  res.render("pages/customize");
 });
 
 router.get("/progress", requireAuth, (req, res) => {
@@ -111,7 +111,7 @@ router.get("/ai-recommendations", requireAuth, (req, res) => {
 
 router.get("/search", requireAuth, (req, res) => {
   const query = req.query.q; // Capture query from URL
-  const type = req.query.type || "movies"; // Capture type (default to movies)
+  const type = req.query.type || ""; // Default is empty — client resolves from localStorage
   res.render("pages/search-results", { query, type }); // Pass both to view (optional, used in Navbar)
 });
 
@@ -172,6 +172,14 @@ router.get("/reflections-history", requireAuth, (req, res) => {
 
 router.get("/reflection/:id", requireAuth, (req, res) => {
   res.render("pages/reflection-detail", { reflectionId: req.params.id });
+});
+
+router.get("/help", (req, res) => {
+  res.render("pages/help");
+});
+
+router.get("/feedback", (req, res) => {
+  res.render("pages/feedback");
 });
 
 router.use((req, res) => {

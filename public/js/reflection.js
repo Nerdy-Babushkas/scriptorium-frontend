@@ -1,4 +1,46 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // ─── YARN BURST ANIMATION ────────────────────────────────────────────────────
+  // Spawns a floating "+N 🧶" pill that rises from an element and fades out.
+  function yarnBurst(anchorEl, amount) {
+    if (!amount || amount <= 0) return;
+    const rect = anchorEl.getBoundingClientRect();
+    const pill = document.createElement("div");
+    pill.textContent = `+${amount} 🧶`;
+    pill.style.cssText = `
+      position: fixed;
+      left: ${Math.min(rect.left + rect.width / 2, window.innerWidth - 80)}px;
+      top: ${rect.top}px;
+      transform: translateX(-50%);
+      background: rgba(255,196,80,0.15);
+      border: 1px solid rgba(255,196,80,0.4);
+      color: #ffd54f;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 99999;
+      white-space: nowrap;
+      animation: yarnFloat 1.4s ease forwards;
+    `;
+    document.body.appendChild(pill);
+    pill.addEventListener("animationend", () => pill.remove());
+  }
+
+  if (!document.getElementById("_yarnBurstStyle")) {
+    const s = document.createElement("style");
+    s.id = "_yarnBurstStyle";
+    s.textContent = `
+      @keyframes yarnFloat {
+        0%   { opacity: 0; transform: translateX(-50%) translateY(0px) scale(0.8); }
+        20%  { opacity: 1; transform: translateX(-50%) translateY(-8px) scale(1); }
+        80%  { opacity: 1; transform: translateX(-50%) translateY(-36px) scale(1); }
+        100% { opacity: 0; transform: translateX(-50%) translateY(-52px) scale(0.9); }
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
   // --- ELEMENTS ---
   const itemSelect = document.getElementById("itemSelect");
   const moodBtns = document.querySelectorAll(".mood-btn");
@@ -26,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!token) window.location.href = "/login";
 
   // --- 1. INITIALIZATION ---
-  loadDropdownItems();
+  loadDropdownItems().then(() => initReflectionTip());
   loadHistory();
 
   // --- 2. DROPDOWN POPULATION ---
@@ -232,11 +274,21 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (res.ok) {
+        const data = await res.json();
         showToast(
           "Success",
           editingId ? "Reflection updated" : "Reflection saved",
           "success",
         );
+
+        // ── Yarn burst ─────────────────────────────────────────────────────
+        // _newBadges and _yarns are non-schema properties on the Mongoose doc
+        // and get stripped by JSON serialization. So we fire the burst
+        // unconditionally on a successful new save (editing doesn't earn yarns).
+        if (!editingId) {
+          yarnBurst(saveBtn, 10);
+        }
+
         resetForm();
         loadHistory();
       } else {
@@ -638,6 +690,118 @@ document.addEventListener("DOMContentLoaded", () => {
         textArea.setSelectionRange(firstBlank, firstBlank + 3);
       }
     }, 280);
+  }
+
+  // ─── PENGUIN TIP GUIDE ──────────────────────────────────────────────────────
+  const R_TIP_ID = "reflection-guide";
+  const R_TOTAL_STEPS = 3;
+  const R_BASE = "https://scriptorium-backend-six.vercel.app/api";
+
+  const rAuthHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `JWT ${token}`,
+  });
+
+  let rTipStep = 0;
+  let rTipOpen = false;
+
+  async function initReflectionTip() {
+    if (!token) return;
+    try {
+      const res = await fetch(`${R_BASE}/user/tips`, {
+        headers: rAuthHeaders(),
+      });
+      if (!res.ok) return;
+      const { seenTips, tipsDisabled } = await res.json();
+      if (tipsDisabled || seenTips.includes(R_TIP_ID)) return;
+    } catch {
+      return;
+    }
+
+    const wrap = document.getElementById("penguinTip");
+    if (!wrap) return;
+    wrap.classList.remove("hidden");
+
+    rBuildDots();
+    setTimeout(() => rOpenBubble(), 1200);
+
+    document.getElementById("penguinBtn").addEventListener("click", () => {
+      if (rTipOpen) rCloseBubble();
+      else rOpenBubble();
+    });
+
+    document.getElementById("tipBubble").addEventListener("click", (e) => {
+      if (e.target.id === "tipNext") rHandleNext();
+      if (e.target.id === "tipSkip") rHandleSkip();
+    });
+  }
+
+  function rBuildDots() {
+    document.querySelectorAll(".tip-dots").forEach((container) => {
+      container.innerHTML = "";
+      for (let i = 0; i < R_TOTAL_STEPS; i++) {
+        const d = document.createElement("div");
+        d.className = "tip-dot" + (i === 0 ? " active" : "");
+        container.appendChild(d);
+      }
+    });
+  }
+
+  function rUpdateDots() {
+    document.querySelectorAll(".tip-dot").forEach((d, i) => {
+      d.classList.toggle("active", i === rTipStep);
+    });
+  }
+
+  function rShowStep(n) {
+    document
+      .querySelectorAll(".tip-step")
+      .forEach((s) => s.classList.remove("active"));
+    document
+      .querySelector(`.tip-step[data-step="${n}"]`)
+      ?.classList.add("active");
+    rUpdateDots();
+  }
+
+  function rOpenBubble() {
+    rTipOpen = true;
+    document.getElementById("tipBubble").classList.remove("hidden");
+    document.getElementById("penguinBtn").classList.add("open");
+    rShowStep(rTipStep);
+  }
+
+  function rCloseBubble() {
+    rTipOpen = false;
+    document.getElementById("tipBubble").classList.add("hidden");
+    document.getElementById("penguinBtn").classList.remove("open");
+  }
+
+  function rHandleNext() {
+    if (rTipStep < R_TOTAL_STEPS - 1) {
+      rTipStep++;
+      rShowStep(rTipStep);
+    } else {
+      rDismiss();
+    }
+  }
+
+  function rHandleSkip() {
+    fetch(`${R_BASE}/user/tips/disable`, {
+      method: "POST",
+      headers: rAuthHeaders(),
+      body: JSON.stringify({ disabled: true }),
+    }).catch(() => {});
+    rDismiss();
+  }
+
+  function rDismiss() {
+    rCloseBubble();
+    document.getElementById("penguinTip").classList.add("hidden");
+    fetch(`${R_BASE}/user/tips/seen`, {
+      method: "POST",
+      headers: rAuthHeaders(),
+      body: JSON.stringify({ tipId: R_TIP_ID }),
+    }).catch(() => {});
   }
 
   templateBtn?.addEventListener("click", openDrawer);

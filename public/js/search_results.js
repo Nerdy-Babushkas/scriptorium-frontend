@@ -17,12 +17,34 @@ document.addEventListener("DOMContentLoaded", () => {
   const accordionIcon = document.getElementById("accordionIcon");
   const advancedBtn = document.getElementById("advancedSearchBtn");
 
+  const btnWishlist = document.getElementById("btn-wishlist");
+  const btnWishlistText = document.getElementById("btn-wishlist-text");
+  const btnFinished = document.getElementById("btn-finished");
+  const btnFinishedText = document.getElementById("btn-finished-text");
+
   const API_BASE = "https://scriptorium-backend-six.vercel.app/api";
   let currentPage = 1;
   let currentQueryParams = {};
   let currentItemData = null;
+
+  // --- FIX 1: Remember last used search type across searches ---
+  const urlType = new URLSearchParams(window.location.search).get("type");
   let currentType =
-    new URLSearchParams(window.location.search).get("type") || "movies";
+    urlType || localStorage.getItem("lastSearchType") || "movies";
+
+  // If type wasn't in the URL, inject it so the URL stays canonical
+  if (!urlType) {
+    const url = new URL(window.location);
+    url.searchParams.set("type", currentType);
+    window.history.replaceState({}, "", url);
+  }
+
+  // Always persist the resolved type so the next search remembers it
+  localStorage.setItem("lastSearchType", currentType);
+
+  // --- FIX 2: Page limits per type + hard cap of 10 pages max ---
+  const PAGE_LIMITS = { movies: 10, music: 25, books: 20 };
+  const MAX_PAGES = 10;
 
   const initialQuery = new URLSearchParams(window.location.search).get("q");
 
@@ -69,6 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (currentType === type) return;
 
     currentType = type;
+    currentPage = 1;
+    localStorage.setItem("lastSearchType", type);
     updateTabs(type);
     toggleAdvancedFields(type);
 
@@ -181,15 +205,23 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `${API_BASE}/${type === "movies" ? "movies" : type}/search?q=${encodeURIComponent(query)}`,
+        `${API_BASE}/${type === "movies" ? "movies" : type}/search?q=${encodeURIComponent(query)}&page=${currentPage}`,
         { headers: { Authorization: `jwt ${token}` } },
       );
       const data = await res.json();
       loading.classList.add("hidden");
 
       const items = data.tracks || data.movies || data.books || [];
-      if (items.length > 0) renderItems(items, type);
-      else empty.classList.remove("hidden");
+      if (items.length > 0) {
+        renderItems(items, type);
+        const limit = PAGE_LIMITS[type] || 20;
+        // Cap total so we never render more than MAX_PAGES pages
+        const cappedTotal = Math.min(
+          data.totalResults || limit,
+          MAX_PAGES * limit,
+        );
+        renderPagination(cappedTotal, limit);
+      } else empty.classList.remove("hidden");
     } catch (err) {
       console.error(err);
       loading.classList.add("hidden");
@@ -201,11 +233,14 @@ document.addEventListener("DOMContentLoaded", () => {
     empty.classList.add("hidden");
     loading.classList.remove("hidden");
 
+    const limit = PAGE_LIMITS[type] || 20;
     try {
       const token = localStorage.getItem("token");
-      const query = new URLSearchParams(params);
-      let url = `${API_BASE}/${type}/advanced/search?${query.toString()}`;
+      const queryParams = new URLSearchParams(params);
+      queryParams.set("page", currentPage);
+      if (type === "music") queryParams.set("limit", limit);
 
+      const url = `${API_BASE}/${type}/advanced/search?${queryParams.toString()}`;
       const res = await fetch(url, {
         headers: { Authorization: `jwt ${token}` },
       });
@@ -217,8 +252,15 @@ document.addEventListener("DOMContentLoaded", () => {
       else if (type === "movies") items = data.movies || [];
       else items = data.books || [];
 
-      if (items.length > 0) renderItems(items, type);
-      else empty.classList.remove("hidden");
+      if (items.length > 0) {
+        renderItems(items, type);
+        // Cap total so we never render more than MAX_PAGES pages
+        const cappedTotal = Math.min(
+          data.totalResults || limit,
+          MAX_PAGES * limit,
+        );
+        renderPagination(cappedTotal, limit);
+      } else empty.classList.remove("hidden");
     } catch (err) {
       console.error(err);
       loading.classList.add("hidden");
@@ -285,12 +327,24 @@ document.addEventListener("DOMContentLoaded", () => {
         if (type === "movies") {
           btnSpecial.dataset.shelf = "watching";
           btnSpecialText.textContent = "Currently Watching";
+          btnWishlist.dataset.shelf = "watchlist";
+          btnWishlistText.textContent = "Watchlist";
+          btnFinished.dataset.shelf = "watched";
+          btnFinishedText.textContent = "Watched";
         } else if (type === "music") {
           btnSpecial.dataset.shelf = "listening";
           btnSpecialText.textContent = "Currently Listening";
+          btnWishlist.dataset.shelf = "wishlist";
+          btnWishlistText.textContent = "Wishlist";
+          btnFinished.dataset.shelf = "finished";
+          btnFinishedText.textContent = "Finished";
         } else {
           btnSpecial.dataset.shelf = "reading";
           btnSpecialText.textContent = "Currently Reading";
+          btnWishlist.dataset.shelf = "wishlist";
+          btnWishlistText.textContent = "Wishlist";
+          btnFinished.dataset.shelf = "finished";
+          btnFinishedText.textContent = "Finished";
         }
       };
     });
@@ -332,4 +386,87 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("closeModal").onclick = () =>
     modal.classList.add("hidden");
+
+  function renderPagination(totalResults, limit = 20) {
+    const container = document.getElementById("pagination");
+    container.innerHTML = "";
+    const totalPages = Math.min(Math.ceil(totalResults / limit), MAX_PAGES);
+
+    if (totalPages <= 1) {
+      container.classList.add("hidden");
+      return;
+    }
+
+    container.classList.remove("hidden");
+
+    const btnClass = (active) =>
+      `px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+        active
+          ? "bg-[#00C49A]/20 text-[#00C49A] border-[#00C49A]"
+          : "text-white/50 border-white/10 hover:text-white hover:border-white/30"
+      }`;
+
+    // Build page window: always show first, last, current ±2
+    const pages = new Set([1, totalPages]);
+    for (
+      let i = Math.max(1, currentPage - 2);
+      i <= Math.min(totalPages, currentPage + 2);
+      i++
+    ) {
+      pages.add(i);
+    }
+    const sorted = [...pages].sort((a, b) => a - b);
+
+    // Prev button
+    const prev = document.createElement("button");
+    prev.textContent = "←";
+    prev.className = btnClass(false);
+    prev.disabled = currentPage === 1;
+    prev.onclick = () => {
+      currentPage--;
+      changePage();
+    };
+    container.appendChild(prev);
+
+    let lastPage = 0;
+    for (const p of sorted) {
+      if (lastPage && p - lastPage > 1) {
+        const ellipsis = document.createElement("span");
+        ellipsis.textContent = "…";
+        ellipsis.className = "text-white/30 px-2";
+        container.appendChild(ellipsis);
+      }
+
+      const btn = document.createElement("button");
+      btn.textContent = p;
+      btn.className = btnClass(p === currentPage);
+      btn.onclick = () => {
+        currentPage = p;
+        changePage();
+      };
+      container.appendChild(btn);
+      lastPage = p;
+    }
+
+    // Next button
+    const next = document.createElement("button");
+    next.textContent = "→";
+    next.className = btnClass(false);
+    next.disabled = currentPage === totalPages;
+    next.onclick = () => {
+      currentPage++;
+      changePage();
+    };
+    container.appendChild(next);
+  }
+
+  function changePage() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    const query = new URLSearchParams(window.location.search).get("q");
+    if (Object.keys(currentQueryParams).length > 0) {
+      executeAdvancedSearch(currentQueryParams, currentType);
+    } else if (query) {
+      executeSearch(query, currentType);
+    }
+  }
 });

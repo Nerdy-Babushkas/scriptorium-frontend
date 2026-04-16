@@ -14,47 +14,133 @@
         body { margin: 0; overflow: hidden; background: #1a0f0a; font-family: 'Outfit', sans-serif; }
         #container3d { width: 100vw; height: 100vh; display: block; }
         
-        /* Navigation Overlay - Moved lower into the page */
-        .room-nav {
+        /* ── Penguin tip ── */
+        #penguinTip {
             position: fixed;
-            top: 120px; /* Lowered from original position */
-            right: 32px;
-            z-index: 100;
+            bottom: 28px;
+            left: 28px;
+            z-index: 200;
             display: flex;
-            flex-direction: column; /* Stacked vertically for a side-panel feel */
             align-items: flex-end;
-            gap: 16px;
-            pointer-events: auto;
+            gap: 12px;
+            pointer-events: none;
+        }
+        #penguinTip.hidden { display: none; }
+
+        #penguinBtn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            pointer-events: all;
+            padding: 0;
+            transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+            flex-shrink: 0;
+            position: relative;
+        }
+        #penguinBtn:hover { transform: scale(1.12) rotate(-6deg); }
+        #penguinBtn img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* Pulse ring when bubble is closed */
+        #penguinBtn::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,218,109,0.5);
+            animation: penguinPulse 2.2s ease-in-out infinite;
+        }
+        #penguinBtn.open::after { display: none; }
+
+        @keyframes penguinPulse {
+            0%,100% { transform: scale(1); opacity: 0.6; }
+            50%      { transform: scale(1.18); opacity: 0; }
         }
 
-        .nav-pill {
-            padding: 12px 28px;
-            background: rgba(15, 25, 30, 0.85);
+        #tipBubble {
+            background: rgba(10,20,24,0.96);
             backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 99px;
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            min-width: 120px;
+            border: 1px solid rgba(255,218,109,0.25);
+            border-radius: 18px;
+            padding: 18px 20px 16px;
+            max-width: 300px;
+            width: calc(100vw - 120px);
+            pointer-events: all;
+            transform-origin: bottom left;
+            animation: bubblePop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.6);
         }
+        @keyframes bubblePop {
+            from { transform: scale(0.85) translateY(10px); opacity: 0; }
+            to   { transform: scale(1) translateY(0);       opacity: 1; }
+        }
+        #tipBubble.hidden { display: none; }
 
-        .nav-pill:hover {
-            border-color: #FFDA6D;
+        .tip-step { display: none; }
+        .tip-step.active { display: block; }
+
+        .tip-eyebrow {
+            font-size: 0.58rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
             color: #FFDA6D;
-            transform: translateX(-8px); /* Subtle slide effect */
-            background: rgba(15, 25, 30, 0.95);
+            margin-bottom: 6px;
         }
+        .tip-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #fff;
+            margin: 0 0 6px;
+            line-height: 1.25;
+        }
+        .tip-body {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.55;
+            margin: 0 0 14px;
+        }
+        .tip-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .tip-dots {
+            display: flex;
+            gap: 5px;
+        }
+        .tip-dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transition: background 0.2s;
+        }
+        .tip-dot.active { background: #FFDA6D; }
 
-        /* Adjust AI Button positioning within the stack */
-        .ai-btn-container {
-            margin-top: 8px;
-            pointer-events: auto;
+        .tip-btn-row { display: flex; gap: 8px; }
+        .tip-btn {
+            padding: 7px 16px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.18s;
         }
+        .tip-btn-next {
+            background: #FFDA6D;
+            color: #1a0f0a;
+        }
+        .tip-btn-next:hover { background: #ffe89a; }
+        .tip-btn-skip {
+            background: transparent;
+            color: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .tip-btn-skip:hover { color: rgba(255,255,255,0.6); }
     </style>
 </head>
 <body>
@@ -62,15 +148,76 @@
 
     <div id="container3d"></div>
 
-    <div class="room-nav">
-        <a href="/library" class="nav-pill">Library</a>
-        <a href="/music" class="nav-pill">Music Room</a>
-        <a href="/theatre" class="nav-pill">Theatre</a>
-        <div class="ai-btn-container">
-            <%- include('../partials/ai_button') %>
+    <%- include('../partials/room_nav', { currentPage: 'room' }) %>
+
+
+    <!-- Penguin tip guide -->
+    <div id="penguinTip" class="hidden">
+        <button id="penguinBtn" title="Open guide">
+            <img src="/assets/penguin.gif" alt="Penguin guide" />
+        </button>
+        <div id="tipBubble" class="hidden">
+
+            <!-- Step 1: What is Scriptorium -->
+            <div class="tip-step active" data-step="0">
+                <p class="tip-eyebrow">✦ Welcome to Scriptorium</p>
+                <p class="tip-title">Your personal media space 🐧</p>
+                <p class="tip-body">Scriptorium is your digital home for everything you discover — books, films and music. Not a place to watch or read, but a place to remember, reflect and grow.</p>
+                <div class="tip-footer">
+                    <div class="tip-dots"></div>
+                    <div class="tip-btn-row">
+                        <button class="tip-btn tip-btn-skip" id="tipSkip">Don't show again</button>
+                        <button class="tip-btn tip-btn-next" id="tipNext">Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Moving around -->
+            <div class="tip-step" data-step="1">
+                <p class="tip-eyebrow">✦ Navigating the room</p>
+                <p class="tip-title">Look around freely 🖱️</p>
+                <p class="tip-body">Hold the left mouse button and drag to rotate the camera around your room. Scroll to zoom in and out. Take your time — it's your space.</p>
+                <div class="tip-footer">
+                    <div class="tip-dots"></div>
+                    <div class="tip-btn-row">
+                        <button class="tip-btn tip-btn-skip" id="tipSkip">Don't show again</button>
+                        <button class="tip-btn tip-btn-next" id="tipNext">Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Clickable objects -->
+            <div class="tip-step" data-step="2">
+                <p class="tip-eyebrow">✦ Interactive objects</p>
+                <p class="tip-title">Click to explore 📚🎵🎬</p>
+                <p class="tip-body">Single-click the <strong style="color:#FFDA6D;">bookshelf</strong> to open your Library, the <strong style="color:#FFDA6D;">speakers</strong> for your Music Room, or the <strong style="color:#FFDA6D;">screen</strong> for the Theatre. Objects glow when you hover.</p>
+                <div class="tip-footer">
+                    <div class="tip-dots"></div>
+                    <div class="tip-btn-row">
+                        <button class="tip-btn tip-btn-skip" id="tipSkip">Don't show again</button>
+                        <button class="tip-btn tip-btn-next" id="tipNext">Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Navbar -->
+            <div class="tip-step" data-step="3">
+                <p class="tip-eyebrow">✦ The navigation bar</p>
+                <p class="tip-title">Everything is up top 🔍</p>
+                <p class="tip-body">Use the <strong style="color:#FFDA6D;">search bar</strong> in the navbar to find and save media to your shelves. You can also track Progress, check Rewards, and customise your avatar — all from up there.</p>
+                <div class="tip-footer">
+                    <div class="tip-dots"></div>
+                    <div class="tip-btn-row">
+                        <button class="tip-btn tip-btn-skip" id="tipSkip">Don't show again</button>
+                        <button class="tip-btn tip-btn-next" id="tipNext">Got it! 🐧</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script type="module" src="/js/main-room-3d.js"></script>
+
 </body>
 </html>

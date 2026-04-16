@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { title: 'Customise - Scriptorium' }) %>
+    <style>
+                #container3d { width: 100vw; height: 100vh; display: block; }
+        
+
+
+    /* ============================================================
+       CUSTOMISE PAGE — avatar shop
+    ============================================================ */
+
+    .bg-orb {
+        position: fixed; border-radius: 50%;
+        filter: blur(90px); pointer-events: none;
+        z-index: 0; opacity: 0.18;
+        animation: orbDrift 12s ease-in-out infinite alternate;
+    }
+    .bg-orb-1 { width:520px; height:520px; background:#1a0f4c; top:-120px; left:-100px; }
+    .bg-orb-2 { width:400px; height:400px; background:#00C49A; bottom:10%; right:-80px; animation-delay:-4s; }
+    .bg-orb-3 { width:300px; height:300px; background:#4c1a0f; bottom:30%; left:30%; animation-delay:-8s; }
+    @keyframes orbDrift {
+        from { transform: translateY(0px) scale(1); }
+        to   { transform: translateY(30px) scale(1.08); }
+    }
+
+    .page-controls {
+        display: flex; align-items: center;
+        justify-content: space-between; flex-wrap: wrap;
+        gap: 12px; margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .page-controls-left { display: flex; align-items: center; gap: 14px; }
+    .btn-back {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 8px 16px; border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.7);
+        font-size: 0.82rem; font-weight: 500; cursor: pointer;
+        transition: background 0.2s, color 0.2s, transform 0.15s;
+        text-decoration: none;
+    }
+    .btn-back:hover { background: rgba(255,255,255,0.1); color:#fff; transform: translateX(-2px); }
+    .btn-back svg { width:14px; height:14px; flex-shrink:0; }
+
+    .section-title {
+        font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+        text-transform: uppercase; color: #00C49A;
+        margin: 0 0 1rem; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::after {
+        content: ''; flex: 1; height: 1px;
+        background: linear-gradient(90deg, rgba(0,196,154,0.3), transparent);
+    }
+
+    /* ── Equipped preview ── */
+    .equipped-card {
+        background: rgba(15,25,30,0.7);
+        backdrop-filter: blur(14px);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 20px; padding: 28px;
+        margin-bottom: 2.5rem;
+        display: flex; align-items: center; gap: 28px;
+        flex-wrap: wrap;
+        position: relative; overflow: hidden;
+    }
+    .equipped-card::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(ellipse at 0% 0%, rgba(0,196,154,0.06) 0%, transparent 60%);
+        pointer-events: none;
+    }
+    .equipped-avatar-circle {
+        width: 96px; height: 96px; border-radius: 50%;
+        background: rgba(255,255,255,0.06);
+        border: 2px solid rgba(0,196,154,0.3);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 0 32px rgba(0,196,154,0.15);
+    }
+    .equipped-avatar-img {
+        width: 72px; height: 72px; object-fit: contain;
+        animation: avatarFloat 4s ease-in-out infinite;
+    }
+    @keyframes avatarFloat {
+        0%,100% { transform: translateY(0px); }
+        50%      { transform: translateY(-6px); }
+    }
+    .equipped-info { display: flex; flex-direction: column; gap: 4px; }
+    .equipped-label {
+        font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+        text-transform: uppercase; color: rgba(255,255,255,0.3);
+    }
+    .equipped-name {
+        font-size: 1.5rem; font-weight: 800; color: #fff;
+    }
+    .equipped-tier {
+        font-size: 0.72rem; color: rgba(0,196,154,0.6); font-weight: 600;
+        text-transform: capitalize;
+    }
+
+    /* Yarn balance chip in equipped card */
+    .yarn-chip {
+        margin-left: auto;
+        display: flex; align-items: center; gap: 8px;
+        background: rgba(255,196,80,0.08);
+        border: 1px solid rgba(255,196,80,0.2);
+        border-radius: 12px; padding: 12px 18px;
+        flex-shrink: 0;
+    }
+    .yarn-chip-ball { font-size: 1.5rem; line-height: 1; }
+    .yarn-chip-info { display: flex; flex-direction: column; gap: 1px; }
+    .yarn-chip-balance {
+        font-size: 1.4rem; font-weight: 800; line-height: 1;
+        background: linear-gradient(135deg, #ffd54f, #ffb300);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .yarn-chip-label {
+        font-size: 0.65rem; color: rgba(255,196,80,0.5);
+        font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    /* ── Avatar grid ── */
+    .avatar-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 14px;
+        margin-bottom: 3rem;
+    }
+
+    .avatar-card {
+        background: rgba(15,25,30,0.65);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 18px; padding: 20px 14px 16px;
+        display: flex; flex-direction: column;
+        align-items: center; gap: 10px; text-align: center;
+        position: relative; overflow: hidden;
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+    }
+    .avatar-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255,255,255,0.15);
+        box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+    }
+    .avatar-card.equipped {
+        border-color: rgba(0,196,154,0.4);
+        box-shadow: 0 0 28px rgba(0,196,154,0.1);
+    }
+    .avatar-card.equipped:hover {
+        border-color: rgba(0,196,154,0.6);
+    }
+    .avatar-card.locked {
+        opacity: 0.6;
+    }
+    .avatar-card.locked:hover {
+        border-color: rgba(255,196,80,0.25);
+    }
+
+    /* Equipped indicator dot */
+    .avatar-equipped-dot {
+        position: absolute; top: 10px; right: 10px;
+        width: 8px; height: 8px; border-radius: 50%;
+        background: #00C49A;
+        box-shadow: 0 0 8px rgba(0,196,154,0.8);
+        animation: dotPulse 2s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+        0%,100% { opacity: 1; transform: scale(1); }
+        50%      { opacity: 0.4; transform: scale(0.6); }
+    }
+
+    .avatar-img {
+        width: 72px; height: 72px; object-fit: contain;
+        transition: transform 0.2s ease;
+    }
+    .avatar-card:hover .avatar-img { transform: scale(1.08); }
+
+    .avatar-name {
+        font-size: 0.82rem; font-weight: 700; color: #fff;
+    }
+
+    .avatar-tier-pill {
+        font-size: 0.62rem; font-weight: 700;
+        padding: 2px 8px; border-radius: 999px;
+        text-transform: capitalize; letter-spacing: 0.04em;
+    }
+    .tier-default  { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
+    .tier-starter  { background: rgba(0,196,154,0.1);    color: rgba(0,196,154,0.7); }
+    .tier-mid      { background: rgba(99,102,241,0.12);  color: rgba(129,140,248,0.8); }
+    .tier-premium  { background: rgba(251,146,60,0.12);  color: rgba(251,146,60,0.8); }
+    .tier-rare     { background: rgba(239,68,68,0.12);   color: rgba(248,113,113,0.8); }
+    .tier-legendary{ background: rgba(168,85,247,0.12);  color: rgba(192,132,252,0.8); }
+
+    .avatar-action-btn {
+        width: 100%; padding: 8px 0; border-radius: 10px;
+        font-size: 0.75rem; font-weight: 700; cursor: pointer;
+        border: none; transition: all 0.18s;
+        display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .btn-equip {
+        background: rgba(0,196,154,0.12);
+        border: 1px solid rgba(0,196,154,0.3);
+        color: #00C49A;
+    }
+    .btn-equip:hover { background: rgba(0,196,154,0.2); border-color: rgba(0,196,154,0.5); }
+
+    .btn-equipped {
+        background: rgba(0,196,154,0.06);
+        border: 1px solid rgba(0,196,154,0.15);
+        color: rgba(0,196,154,0.5);
+        cursor: default;
+    }
+
+    .btn-unlock {
+        background: rgba(255,196,80,0.1);
+        border: 1px solid rgba(255,196,80,0.25);
+        color: #ffd54f;
+    }
+    .btn-unlock:hover { background: rgba(255,196,80,0.18); border-color: rgba(255,196,80,0.45); }
+    .btn-unlock:disabled {
+        opacity: 0.45; cursor: not-allowed;
+        filter: grayscale(0.5);
+    }
+
+    /* ── Confirm modal ── */
+    #confirmModal {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+        display: none; align-items: center; justify-content: center;
+        z-index: 9999; backdrop-filter: blur(8px);
+    }
+    #confirmModal.open { display: flex; }
+    .confirm-box {
+        background: #0a1418;
+        border: 1px solid rgba(255,196,80,0.25);
+        border-radius: 24px; padding: 36px 28px 28px;
+        max-width: 320px; width: 90%; text-align: center;
+        animation: confirmPop 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        position: relative; overflow: hidden;
+    }
+    .confirm-box::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(ellipse at 50% -10%, rgba(255,196,80,0.08) 0%, transparent 65%);
+        pointer-events: none;
+    }
+    @keyframes confirmPop {
+        from { transform: scale(0.8) translateY(20px); opacity: 0; }
+        to   { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .confirm-animal { font-size: 3.5rem; margin-bottom: 10px; display: block; }
+    .confirm-title { font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0 0 6px; }
+    .confirm-desc  { font-size: 0.82rem; color: rgba(255,255,255,0.45); margin: 0 0 6px; line-height: 1.5; }
+    .confirm-cost  {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(255,196,80,0.1); border: 1px solid rgba(255,196,80,0.25);
+        border-radius: 999px; padding: 5px 14px;
+        font-size: 0.88rem; font-weight: 700; color: #ffd54f;
+        margin-bottom: 22px;
+    }
+    .confirm-btns { display: flex; gap: 10px; }
+    .confirm-btn {
+        flex: 1; padding: 11px; border-radius: 12px;
+        font-size: 0.85rem; font-weight: 700; cursor: pointer;
+        transition: all 0.18s;
+    }
+    .confirm-btn-cancel {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.12);
+        color: rgba(255,255,255,0.5);
+    }
+    .confirm-btn-cancel:hover { background: rgba(255,255,255,0.06); }
+    .confirm-btn-confirm {
+        background: rgba(255,196,80,0.15);
+        border: 1px solid rgba(255,196,80,0.35);
+        color: #ffd54f;
+    }
+    .confirm-btn-confirm:hover { background: rgba(255,196,80,0.25); }
+    .confirm-btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Toast ── */
+    #toastStack {
+        position: fixed; bottom: 1.5rem; right: 1.5rem;
+        display: flex; flex-direction: column-reverse; gap: 10px;
+        z-index: 10000; pointer-events: none;
+        max-width: 300px; width: calc(100vw - 3rem);
+    }
+    .toast-item {
+        display: flex; align-items: flex-start; gap: 11px;
+        padding: 13px 15px;
+        border-radius: 14px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+        pointer-events: all; cursor: pointer;
+        color: #fff;
+        transform: translateX(110%); opacity: 0;
+        transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+    }
+    .toast-item.toast-success { background: #0a1a14; border-left: 3px solid #00C49A; }
+    .toast-item.toast-error   { background: #1a0a0a; border-left: 3px solid #ef4444; }
+    .toast-item.visible { transform: translateX(0); opacity: 1; }
+    .toast-msg { font-size: 0.82rem; font-weight: 600; }
+
+    /* ── Skeleton ── */
+    .skeleton {
+        background: linear-gradient(90deg,
+            rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%,
+            rgba(255,255,255,0.04) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite; border-radius: 18px;
+    }
+    @keyframes shimmer {
+        0%   { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    </style>
+</head>
+
+<!-- Confirm purchase modal -->
+<div id="confirmModal">
+    <div class="confirm-box">
+        <span class="confirm-animal" id="confirmAnimal"></span>
+        <p class="confirm-title" id="confirmTitle"></p>
+        <p class="confirm-desc" id="confirmDesc"></p>
+        <div class="confirm-cost">
+            <span id="confirmCost"></span>
+        </div>
+        <div class="confirm-btns">
+            <button class="confirm-btn confirm-btn-cancel" id="confirmCancel">Cancel</button>
+            <button class="confirm-btn confirm-btn-confirm" id="confirmOk">Unlock</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast stack -->
+<div id="toastStack"></div>
+
+<body style="background:radial-gradient(circle at 50% 0%, #1a0f4c 0%, #05181c 100%); background-color:#05181c;"
+      class="min-h-screen relative overflow-x-hidden font-outfit text-white">
+
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+
+    <%- include('../partials/navbar_app') %>
+
+    <main class="relative z-10 mt-6 px-4 md:px-8 max-w-[1100px] mx-auto pb-16">
+
+        <%- include('../partials/room_nav') %>
+
+        <!-- Page controls -->
+        <div class="page-controls">
+            <div class="page-controls-left">
+                <a href="/rewards" class="btn-back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5M12 5l-7 7 7 7"/>
+                    </svg>
+                    Back to Rewards
+                </a>
+                <div style="display:flex;flex-direction:column;gap:5px;">
+                    <h1 class="text-3xl font-dancing text-white" style="margin:0;">Customise</h1>
+                    <span style="font-size:0.68rem;color:rgba(255,255,255,0.35);font-weight:500;letter-spacing:0.04em;">
+                        Avatar · Shop
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Equipped preview + yarn balance -->
+        <p class="section-title">Your avatar</p>
+        <div class="equipped-card" id="equippedCard">
+            <div class="equipped-avatar-circle">
+                <img src="/assets/avatars/hatchling.png" alt="Equipped avatar" class="equipped-avatar-img" id="equippedImg" />
+            </div>
+            <div class="equipped-info">
+                <span class="equipped-label">Currently wearing</span>
+                <span class="equipped-name" id="equippedName">—</span>
+                <span class="equipped-tier" id="equippedTier"></span>
+            </div>
+            <div class="yarn-chip">
+                <span class="yarn-chip-ball">🧶</span>
+                <div class="yarn-chip-info">
+                    <span class="yarn-chip-balance" id="yarnBalance">—</span>
+                    <span class="yarn-chip-label">yarns</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Avatar grid -->
+        <p class="section-title">All avatars</p>
+        <div class="avatar-grid" id="avatarGrid">
+            <!-- Skeletons while loading -->
+            <% for(let i = 0; i < 10; i++) { %>
+            <div class="skeleton" style="height:210px;"></div>
+            <% } %>
+        </div>
+
+    </main>
+
+    <script src="/js/customize.js"></script>
+</body>
+</html>

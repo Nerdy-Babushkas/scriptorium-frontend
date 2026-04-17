@@ -245,6 +245,12 @@
 <body class="bg-[#2C1810] min-h-screen relative overflow-x-hidden overflow-y-auto font-outfit text-white">
 
     <%- include('../partials/navbar_app') %>
+
+    <%# Ambient background blobs (decorative, pointer-events none) %>
+<div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+    <div class="absolute left-[10%] top-0 w-[500px] h-[500px] bg-scriptorium-gold rounded-full opacity-20 blur-[120px]"></div>
+    <div class="absolute right-0 top-[40%] w-[600px] h-[600px] bg-scriptorium-gold-light rounded-full opacity-15 blur-[130px]"></div>
+</div>
   
     <main class="relative z-10 container mx-auto px-4 py-8 max-w-6xl">
 

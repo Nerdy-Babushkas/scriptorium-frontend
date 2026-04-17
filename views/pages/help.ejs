@@ -1,354 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <%- include('../partials/head', { title: 'Help - Scriptorium' }) %>
-    <link rel="stylesheet" href="/css/navbar.css">
-    <style>
-
-    /* ============================================================
-       HELP PAGE
-    ============================================================ */
-
-    .bg-orb {
-        position: fixed; border-radius: 50%;
-        filter: blur(90px); pointer-events: none;
-        z-index: 0; opacity: 0.15;
-        animation: orbDrift 12s ease-in-out infinite alternate;
-    }
-    .bg-orb-1 { width:500px; height:500px; background:#1a0f4c; top:-100px; left:-80px; }
-    .bg-orb-2 { width:380px; height:380px; background:#00C49A; bottom:10%; right:-60px; animation-delay:-5s; }
-    @keyframes orbDrift {
-        from { transform: translateY(0) scale(1); }
-        to   { transform: translateY(28px) scale(1.07); }
-    }
-
-    /* Layout: sidebar + main content */
-    .help-layout {
-        display: flex;
-        align-items: flex-start;
-        gap: 2rem;
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 2.5rem 1.5rem 5rem;
-    }
-
-    .help-sidebar {
-        width: 220px;
-        flex-shrink: 0;
-        position: sticky;
-        top: 2rem;
-    }
-
-    /* Balancing spacer — mirrors the sidebar width so the centre
-       column stays visually centred across the full layout */
-    .help-sidebar-spacer {
-        width: 220px;
-        flex-shrink: 0;
-    }
-
-    .help-wrap {
-        flex: 1;
-        min-width: 0;
-        max-width: 740px;
-    }
-
-    @media (max-width: 768px) {
-        .help-layout { flex-direction: column; }
-        .help-sidebar { width: 100%; position: static; }
-        .help-sidebar-spacer { display: none; }
-        .help-wrap { max-width: 100%; }
-    }
-
-    /* Page header */
-    .help-header {
-        margin-bottom: 3rem;
-        padding-bottom: 2rem;
-        border-bottom: 1px solid rgba(255,255,255,0.07);
-    }
-    .help-eyebrow {
-        font-size: 0.65rem; font-weight: 700;
-        letter-spacing: 0.14em; text-transform: uppercase;
-        color: #00C49A; margin-bottom: 10px; display: block;
-    }
-    .help-title {
-        font-size: 2.4rem; font-weight: 800;
-        color: #fff; margin: 0 0 12px; line-height: 1.15;
-        font-family: 'Dancing Script', cursive;
-    }
-    .help-subtitle {
-        font-size: 0.95rem; color: rgba(255,255,255,0.5);
-        line-height: 1.6; margin: 0;
-        max-width: 540px;
-    }
-
-    /* Section */
-    .help-section {
-        margin-bottom: 2.5rem;
-        background: rgba(15,25,30,0.65);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255,255,255,0.06);
-        border-radius: 20px;
-        padding: 28px 28px 24px;
-        position: relative; overflow: hidden;
-    }
-    .help-section::before {
-        content: '';
-        position: absolute; left: 0; top: 20px; bottom: 20px;
-        width: 3px; border-radius: 0 3px 3px 0;
-        background: linear-gradient(180deg, #00C49A, transparent);
-    }
-
-    .help-section-header {
-        display: flex; align-items: center; gap: 12px;
-        margin-bottom: 14px;
-    }
-    .help-section-icon {
-        width: 36px; height: 36px; border-radius: 10px;
-        background: rgba(0,196,154,0.1);
-        border: 1px solid rgba(0,196,154,0.2);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.1rem; flex-shrink: 0;
-    }
-    .help-section-title {
-        font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;
-    }
-
-    .help-body {
-        font-size: 0.85rem; color: rgba(255,255,255,0.6);
-        line-height: 1.7; margin: 0;
-    }
-    .help-body p { margin: 0 0 10px; }
-    .help-body p:last-child { margin-bottom: 0; }
-    .help-body strong { color: rgba(255,255,255,0.9); font-weight: 700; }
-    .help-body .hl { color: #00C49A; font-weight: 700; }
-    .help-body .hl-gold { color: #ffd54f; font-weight: 700; }
-
-    /* Clickable spots list */
-    .room-spots {
-        list-style: none; padding: 0; margin: 12px 0 0;
-        display: flex; flex-direction: column; gap: 8px;
-    }
-    .room-spot {
-        display: flex; align-items: center; gap: 10px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.07);
-        border-radius: 10px; padding: 10px 14px;
-        font-size: 0.82rem; color: rgba(255,255,255,0.7);
-    }
-    .room-spot-icon {
-        font-size: 1.1rem; flex-shrink: 0; width: 24px; text-align: center;
-    }
-    .room-spot-arrow {
-        margin-left: auto;
-        font-size: 0.7rem; color: rgba(0,196,154,0.5);
-        font-weight: 700; letter-spacing: 0.04em;
-    }
-
-    /* Yarn table */
-    .yarn-table {
-        width: 100%; border-collapse: collapse; margin-top: 12px;
-    }
-    .yarn-table td {
-        padding: 8px 0; font-size: 0.82rem;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-    .yarn-table tr:last-child td { border-bottom: none; }
-    .yarn-table td:first-child { color: rgba(255,255,255,0.7); }
-    .yarn-table td:last-child {
-        text-align: right;
-        color: #ffd54f; font-weight: 700;
-    }
-
-    /* Back link */
-    .btn-back {
-        display: inline-flex; align-items: center; gap: 7px;
-        padding: 8px 16px; border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(255,255,255,0.05);
-        color: rgba(255,255,255,0.7);
-        font-size: 0.82rem; font-weight: 500;
-        text-decoration: none; margin-bottom: 2rem;
-        transition: all 0.2s;
-    }
-    .btn-back:hover { background: rgba(255,255,255,0.1); color: #fff; transform: translateX(-2px); }
-    .btn-back svg { width: 13px; height: 13px; }
-
-    </style>
+  <%- include('../partials/head', { title: 'Help — Scriptorium' }) %>
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="/css/pages.css">
 </head>
-<body style="background:radial-gradient(circle at 50% 0%, #1a0f4c 0%, #05181c 100%); background-color:#05181c;"
-      class="min-h-screen relative overflow-x-hidden font-outfit text-white">
+<body class="page-body">
 
-    <div class="bg-orb bg-orb-1"></div>
-    <div class="bg-orb bg-orb-2"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="page-orb page-orb-1" aria-hidden="true"></div>
+  <div class="page-orb page-orb-2" aria-hidden="true"></div>
 
-    <%- include('../partials/navbar_app') %>
+  <%- include('../partials/navbar_app') %>
 
-    <main class="relative z-10 mt-6">
-        <div class="help-layout">
+  <main class="page-main page-main--wide">
+    <div class="help-layout">
 
-            <!-- Sidebar: other rooms -->
-            <aside class="help-sidebar">
-                <%- include('../partials/room_nav') %>
-            </aside>
+      <!-- Sidebar -->
+      <aside class="help-sidebar" aria-label="Help navigation">
+        <p class="help-sidebar-title">In this guide</p>
+        <nav class="help-nav">
+          <a href="#room"         class="help-nav-link"><span class="help-nav-icon">🏠</span> Your Room</a>
+          <a href="#inside-rooms" class="help-nav-link"><span class="help-nav-icon">🗂️</span> Inside Rooms</a>
+          <a href="#search"       class="help-nav-link"><span class="help-nav-icon">🔍</span> Search & Save</a>
+          <a href="#ai"           class="help-nav-link"><span class="help-nav-icon">✨</span> AI Picks</a>
+          <a href="#reflections"  class="help-nav-link"><span class="help-nav-icon">✍️</span> Reflections</a>
+          <a href="#goals"        class="help-nav-link"><span class="help-nav-icon">🎯</span> Goals</a>
+          <a href="#streaks"      class="help-nav-link"><span class="help-nav-icon">🔥</span> Streaks</a>
+          <a href="#yarns"        class="help-nav-link"><span class="help-nav-icon">🧶</span> Yarns</a>
+          <a href="#customise"    class="help-nav-link"><span class="help-nav-icon">🐧</span> Customise</a>
+        </nav>
+      </aside>
 
-            <!-- Main content -->
-            <div class="help-wrap">
+      <!-- Main content -->
+      <div class="help-content">
 
-                <a href="/room" class="btn-back">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 12H5M12 5l-7 7 7 7"/>
-                    </svg>
-                    Back to Room
-                </a>
+        <a href="/room" class="btn-back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 5l-7 7 7 7"/>
+          </svg>
+          Back to Room
+        </a>
 
-                <!-- Header -->
-                <div class="help-header">
-                    <span class="help-eyebrow">✦ Help &amp; Guide</span>
-                    <h1 class="help-title">How Scriptorium works</h1>
-                    <p class="help-subtitle">
-                        Scriptorium is your personal space for the media that matters to you — books, films, and music.
-                        Not a streaming platform. You save what you discover, reflect on what you've experienced, and track how it connects to your growth.
-                    </p>
-                </div>
+        <div class="help-page-header">
+          <div class="page-eyebrow">Help & Guide</div>
+          <h1 class="page-h1">How <span class="caveat">Scriptorium</span> works</h1>
+          <p class="page-sub">
+            Scriptorium is your personal space for the media that matters to you — books, films, and music.
+            Not a streaming platform. Save what you discover, reflect on what you've experienced,
+            and track how it connects to your growth.
+          </p>
+        </div>
 
-                <!-- Your room -->
-                <div class="help-section">
-                    <div class="help-section-header">
-                        <div class="help-section-icon">🏠</div>
-                        <h2 class="help-section-title">Your Room</h2>
-                    </div>
-                    <div class="help-body">
-                        <p>When you log in, you land in your <strong>3D room</strong>. This is your home base. Hold the left mouse button and drag to look around, and scroll to zoom in and out.</p>
-                        <p>The room has three clickable spots — hover over them to see them glow, then single-click to enter:</p>
-                    </div>
-                    <ul class="room-spots">
-                        <li class="room-spot">
-                            <span class="room-spot-icon">📚</span>
-                            The <strong>bookshelf</strong>
-                            <span class="room-spot-arrow">→ Library</span>
-                        </li>
-                        <li class="room-spot">
-                            <span class="room-spot-icon">🎵</span>
-                            The <strong>speakers</strong>
-                            <span class="room-spot-arrow">→ Music Room</span>
-                        </li>
-                        <li class="room-spot">
-                            <span class="room-spot-icon">🎬</span>
-                            The <strong>screen</strong>
-                            <span class="room-spot-arrow">→ Theatre</span>
-                        </li>
-                    </ul>
-                </div>
+        <div class="help-section" id="room">
+          <div class="help-section-header">
+            <div class="help-section-icon">🏠</div>
+            <h2 class="help-section-title">Your Room</h2>
+          </div>
+          <div class="help-body">
+            <p>When you log in, you land in your <strong>3D room</strong>. This is your home base. Hold the left mouse button and drag to look around, and scroll to zoom in and out.</p>
+            <p>The room has three clickable spots — hover over them to see them glow, then single-click to enter:</p>
+          </div>
+          <ul class="room-spots">
+            <li class="room-spot"><span class="room-spot-icon">📚</span> The <strong>bookshelf</strong><span class="room-spot-arrow">→ Library</span></li>
+            <li class="room-spot"><span class="room-spot-icon">🎵</span> The <strong>speakers</strong><span class="room-spot-arrow">→ Music Room</span></li>
+            <li class="room-spot"><span class="room-spot-icon">🎬</span> The <strong>screen</strong><span class="room-spot-arrow">→ Theatre</span></li>
+          </ul>
+        </div>
 
-                <!-- Inside each room -->
-                <div class="help-section">
-                    <div class="help-section-header">
-                        <div class="help-section-icon">🗂️</div>
-                        <h2 class="help-section-title">Inside each room</h2>
-                    </div>
-                    <div class="help-body">
-                        <p>Once you're in a room, you'll see your <strong>shelves</strong> — items you've saved, organised by status: <span class="hl">Wishlist</span>, <span class="hl">Reading / Watching / Listening</span>, <span class="hl">Finished</span> and <span class="hl">Favourites</span>.</p>
-                        <p>Click any item on a shelf to see your reflections on it. You can also move items between shelves using the <strong>Move</strong> button, or mark them as done.</p>
-                    </div>
-                </div>
+        <div class="help-section" id="inside-rooms">
+          <div class="help-section-header">
+            <div class="help-section-icon">🗂️</div>
+            <h2 class="help-section-title">Inside each room</h2>
+          </div>
+          <div class="help-body">
+            <p>Once you're in a room, you'll see your <strong>shelves</strong> — items organised by status: <span class="hl">Wishlist</span>, <span class="hl">Reading / Watching / Listening</span>, <span class="hl">Finished</span> and <span class="hl">Favourites</span>.</p>
+            <p>Click any item on a shelf to see your reflections on it. You can also move items between shelves using the <strong>Move</strong> button, or mark them as done.</p>
+          </div>
+        </div>
 
-                <!-- Search -->
-                <div class="help-section">
-                    <div class="help-section-header">
-                        <div class="help-section-icon">🔍</div>
-                        <h2 class="help-section-title">Finding and saving media</h2>
-                    </div>
-                    <div class="help-body">
-                        <p>Use the <span class="hl">search bar</span> in the top navigation to find anything — a book, a film, a track. Switch between <strong>Books</strong>, <strong>Music</strong> and <strong>Movies</strong> using the tabs on the results page.</p>
-                        <p>When you find something, click <strong>Save to shelf</strong> and pick where it goes. It will appear in the matching room straight away.</p>
-                    </div>
-                </div>
+        <div class="help-section" id="search">
+          <div class="help-section-header">
+            <div class="help-section-icon">🔍</div>
+            <h2 class="help-section-title">Finding and saving media</h2>
+          </div>
+          <div class="help-body">
+            <p>Use the <span class="hl">search bar</span> in the top navigation to find anything — a book, a film, a track. Switch between <strong>Books</strong>, <strong>Music</strong> and <strong>Movies</strong> using the tabs on the results page.</p>
+            <p>When you find something, click <strong>Save to shelf</strong> and pick where it goes. It will appear in the matching room straight away.</p>
+          </div>
+        </div>
 
-                <!-- AI Recommendations -->
-                <div class="help-section">
-                    <div class="help-section-header">
-                        <div class="help-section-icon">✨</div>
-                        <h2 class="help-section-title">AI Recommendations</h2>
-                    </div>
-                    <div class="help-body">
-                        <p>Scriptorium analyses your <span class="hl">Favourites</span> shelf across all three rooms — books, music, and films — to generate personalised recommendations just for you.</p>
-                        <p>The more you add to Favourites, the sharper the suggestions get. Head to <span class="hl">AI Recommendations</span> in the navbar to see what's been picked for you, refreshed each time based on what you love.</p>
-                        <p><strong>Tip:</strong> items you mark as Favourites carry the most weight — so if a recommendation misses the mark, check whether your favourites truly reflect your taste.</p>
-                    </div>
-                </div>
+        <div class="help-section" id="ai">
+          <div class="help-section-header">
+            <div class="help-section-icon">✨</div>
+            <h2 class="help-section-title">AI Recommendations</h2>
+          </div>
+          <div class="help-body">
+            <p>Scriptorium analyses your <span class="hl">Favourites</span> shelf across all three rooms to generate personalised recommendations just for you.</p>
+            <p>The more you add to Favourites, the sharper the suggestions get. Head to <span class="hl">AI Recommendations</span> in the navbar to see what's been picked for you.</p>
+            <p><strong>Tip:</strong> items you mark as Favourites carry the most weight — so if a recommendation misses the mark, check whether your favourites truly reflect your taste.</p>
+          </div>
+        </div>
 
-                <!-- Reflections -->
-                <div class="help-section">
-                    <div class="help-section-header">
-                        <div class="help-section-icon">✍️</div>
-                        <h2 class="help-section-title">Reflections</h2>
-                    </div>
-                    <div class="help-body">
-                        <p>A reflection is a short note you write about a piece of media. Go to <span class="hl">Reflections</span> from the navbar (the pencil icon), pick an item from your shelves using the dropdown, choose your mood, and write. Minimum 30 characters.</p>
-                        <p>Not sure where to start? Hit <strong>Templates</strong> for guided prompts — things like First Impressions, Emotional Journey, or Would I Recommend.</p>
-                        <p>The <strong>History panel</strong> on the right shows your recent reflections. Click any card to read it in full, or hit <strong>View Full History</strong> to see everything.</p>
-                    </div>
-                </div>
+        <div class="help-section" id="reflections">
+          <div class="help-section-header">
+            <div class="help-section-icon">✍️</div>
+            <h2 class="help-section-title">Reflections</h2>
+          </div>
+          <div class="help-body">
+            <p>A reflection is a short note you write about a piece of media. Go to <span class="hl">Reflections</span> from the navbar (the pencil icon), pick an item from your shelves using the dropdown, choose your mood, and write. Minimum 30 characters.</p>
+            <p>Not sure where to start? Hit <strong>Templates</strong> for guided prompts — things like First Impressions, Emotional Journey, or Would I Recommend.</p>
+            <p>The <strong>History panel</strong> on the right shows your recent reflections. Click any card to read it in full, or hit <strong>View Full History</strong> to see everything.</p>
+          </div>
+        </div>
 
-                <!-- Goals -->
-                <div class="help-section">
-                    <div class="help-section-header">
-                        <div class="help-section-icon">🎯</div>
-                        <h2 class="help-section-title">Goals &amp; Progress</h2>
-                    </div>
-                    <div class="help-body">
-                        <p>Set a goal tied to a piece of media — for example, finishing a book or watching a series. Head to the <span class="hl">Progress</span> page from the navbar.</p>
-                        <p>Drag the <strong>progress bar</strong> left or right to update how far you've gotten. When you hit 100%, the goal is marked complete and you earn a completion bonus.</p>
-                    </div>
-                </div>
+        <div class="help-section" id="goals">
+          <div class="help-section-header">
+            <div class="help-section-icon">🎯</div>
+            <h2 class="help-section-title">Goals & Progress</h2>
+          </div>
+          <div class="help-body">
+            <p>Set a goal tied to a piece of media — for example, finishing a book or watching a series. Head to the <span class="hl">Progress</span> page from the navbar.</p>
+            <p>Drag the <strong>progress bar</strong> left or right to update how far you've gotten. When you hit 100%, the goal is marked complete and you earn a completion bonus.</p>
+          </div>
+        </div>
 
-                <!-- Streaks -->
-                <div class="help-section">
-                    <div class="help-section-header">
-                        <div class="help-section-icon">🔥</div>
-                        <h2 class="help-section-title">Daily streaks</h2>
-                    </div>
-                    <div class="help-body">
-                        <p>Write a reflection <strong>or</strong> update a goal once a day to keep your streak alive. The longer your streak, the more badges you unlock. Check your streak on the <span class="hl">Rewards</span> page.</p>
-                    </div>
-                </div>
+        <div class="help-section" id="streaks">
+          <div class="help-section-header">
+            <div class="help-section-icon">🔥</div>
+            <h2 class="help-section-title">Daily streaks</h2>
+          </div>
+          <div class="help-body">
+            <p>Write a reflection <strong>or</strong> update a goal once a day to keep your streak alive. The longer your streak, the more badges you unlock. Check your streak on the <span class="hl">Rewards</span> page.</p>
+          </div>
+        </div>
 
-                <!-- Yarns -->
-                <div class="help-section">
-                    <div class="help-section-header">
-                        <div class="help-section-icon">🧶</div>
-                        <h2 class="help-section-title">Yarns &amp; Rewards</h2>
-                    </div>
-                    <div class="help-body">
-                        <p>Every action earns you <span class="hl-gold">yarns</span> — the in-app currency. Check your balance and badge collection on the <span class="hl">Rewards</span> page.</p>
-                    </div>
-                    <table class="yarn-table">
-                        <tr><td>Writing a reflection</td><td>+10 🧶</td></tr>
-                        <tr><td>Updating goal progress</td><td>+5 🧶</td></tr>
-                        <tr><td>Completing a goal</td><td>+25 🧶</td></tr>
-                        <tr><td>Hitting a 7-day streak</td><td>+15 🧶</td></tr>
-                        <tr><td>Earning a badge</td><td>+20 🧶</td></tr>
-                    </table>
-                </div>
+        <div class="help-section" id="yarns">
+          <div class="help-section-header">
+            <div class="help-section-icon">🧶</div>
+            <h2 class="help-section-title">Yarns & Rewards</h2>
+          </div>
+          <div class="help-body">
+            <p>Every action earns you <span class="hl-gold">yarns</span> — the in-app currency. Check your balance and badge collection on the <span class="hl">Rewards</span> page.</p>
+          </div>
+          <table class="yarn-table">
+            <tr><td>Writing a reflection</td><td>+10 🧶</td></tr>
+            <tr><td>Updating goal progress</td><td>+5 🧶</td></tr>
+            <tr><td>Completing a goal</td><td>+25 🧶</td></tr>
+            <tr><td>Hitting a 7-day streak</td><td>+15 🧶</td></tr>
+            <tr><td>Earning a badge</td><td>+20 🧶</td></tr>
+          </table>
+        </div>
 
-                <!-- Customise -->
-                <div class="help-section">
-                    <div class="help-section-header">
-                        <div class="help-section-icon">🐧</div>
-                        <h2 class="help-section-title">Customise</h2>
-                    </div>
-                    <div class="help-body">
-                        <p>Spend your yarns in the <span class="hl">Customise</span> page to unlock new animal avatars for your profile. Your avatar shows in the navigation bar and on your rewards screen. Rarer avatars cost more — start with the basics and work your way up.</p>
-                    </div>
-                </div>
+        <div class="help-section" id="customise">
+          <div class="help-section-header">
+            <div class="help-section-icon">🐧</div>
+            <h2 class="help-section-title">Customise</h2>
+          </div>
+          <div class="help-body">
+            <p>Spend your yarns in the <span class="hl">Customise</span> page to unlock new animal avatars for your profile. Your avatar shows in the navigation bar and on your rewards screen. Rarer avatars cost more — start with the basics and work your way up.</p>
+          </div>
+        </div>
 
-            </div><!-- end help-wrap -->
+      </div><!-- end help-content -->
+    </div><!-- end help-layout -->
+  </main>
 
-            <!-- Balancing spacer to keep content centred -->
-            <div class="help-sidebar-spacer"></div>
-
-        </div><!-- end help-layout -->
-    </main>
+  <script>
+    // Highlight active sidebar link on scroll
+    const sections = document.querySelectorAll('.help-section[id]');
+    const navLinks = document.querySelectorAll('.help-nav-link');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(l => l.classList.remove('active'));
+          const active = document.querySelector(`.help-nav-link[href="#${entry.target.id}"]`);
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    sections.forEach(s => observer.observe(s));
+  </script>
 
 </body>
 </html>

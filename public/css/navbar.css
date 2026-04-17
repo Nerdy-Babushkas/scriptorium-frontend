@@ -16,9 +16,9 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(15,15,15,0.75),
-    rgba(15,15,15,0.45),
-    rgba(15,15,15,0.15)
+    rgba(15, 15, 15, 0.75),
+    rgba(15, 15, 15, 0.45),
+    rgba(15, 15, 15, 0.15)
   );
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -52,18 +52,11 @@
   text-decoration: none;
 }
 
-
-.nav-logo:hover{
-opacity: 1;
+.nav-logo:hover {
+  opacity: 1;
   transform: scale(1.05) rotate(-3deg);
-  filter:
-    brightness(0) invert(1)
-    sepia(1)
-    saturate(5)
-    hue-rotate(10deg)
-    brightness(1.5)
-    drop-shadow(0 0 6px rgba(212,175,55,0.8));
-
+  filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(10deg)
+    brightness(1.5) drop-shadow(0 0 6px rgba(212, 175, 55, 0.8));
 }
 
 .nav-squiggle {
@@ -75,14 +68,14 @@ opacity: 1;
 
 .nav-squiggle path {
   fill: none;
-  stroke: rgba(255,255,255,0.6);
+  stroke: rgba(255, 255, 255, 0.6);
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .nav-help img {
-    color: rgba(255,255,255,0.75);
+  color: rgba(255, 255, 255, 0.75);
   width: 18px;
   opacity: 0.5;
 }
@@ -90,13 +83,8 @@ opacity: 1;
 .nav-help:hover img {
   width: 20px;
   transition: all 0.2s ease;
-  filter:  
-  brightness(0) invert(1)
-    sepia(1)
-    saturate(5)
-    hue-rotate(10deg)
-    brightness(1.5)
-    drop-shadow(0 0 6px rgba(212,175,55,0.8));
+  filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(10deg)
+    brightness(1.5) drop-shadow(0 0 6px rgba(212, 175, 55, 0.8));
 }
 
 /* ─────────────────────────────
@@ -123,7 +111,7 @@ opacity: 1;
 }
 
 .nav-links a {
-  color: rgba(255,255,255,0.75);
+  color: rgba(255, 255, 255, 0.75);
   text-decoration: none;
   transition: 0.2s;
 }
@@ -145,13 +133,8 @@ opacity: 1;
 .nav-pencil:hover img {
   opacity: 1;
   transform: scale(1.15) rotate(-10deg);
-  filter:
-    brightness(0) invert(1)
-    sepia(1)
-    saturate(5)
-    hue-rotate(10deg)
-    brightness(1.5)
-    drop-shadow(0 0 6px rgba(212,175,55,0.8));
+  filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(10deg)
+    brightness(1.5) drop-shadow(0 0 6px rgba(212, 175, 55, 0.8));
 }
 
 /* ─────────────────────────────
@@ -162,10 +145,10 @@ opacity: 1;
   height: 38px;
   border-radius: 50%;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
   background: transparent;
-  padding: 0;
+  padding: 4px;
 }
 
 .profile-btn img {
@@ -179,7 +162,6 @@ opacity: 1;
   transition: all 0.1s ease-in-out;
 }
 
-
 /* MENU PANEL */
 .profile-menu {
   position: absolute;
@@ -187,21 +169,21 @@ opacity: 1;
   right: 0;
   width: 220px;
 
-  background: rgba(25,25,25,0.75);
+  background: rgba(25, 25, 25, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 
   /* hidden state */
   opacity: 0;
   transform: translateY(-8px) scale(0.96);
   pointer-events: none;
 
-  transition: all 0.18s cubic-bezier(0.16,1,0.3,1);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ACTIVE */
@@ -230,13 +212,13 @@ opacity: 1;
 /* HOVER */
 .profile-menu a:hover,
 .profile-menu button:hover {
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* DIVIDER */
 .profile-menu .divider {
   height: 1px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   margin: 4px 0;
 }
 
@@ -245,7 +227,7 @@ opacity: 1;
 }
 
 .profile-menu.active ~ .profile-btn {
-  box-shadow: 0 0 10px rgba(255,255,255,0.2);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 /* ─────────────────────────────
    BURGER
@@ -279,7 +261,7 @@ opacity: 1;
 .mobile-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   opacity: 0;
   transition: 0.3s;
 }

@@ -1,60 +1,49 @@
-<nav class="fixed top-0 left-0 w-full z-50 py-3 px-4 sm:px-8 lg:px-16 transition-all"
-     style="background: radial-gradient(circle at 29% 30%, #0f7ca0 8%, #073c4d 35%);">
+<%#
+  navbar_public.ejs
+  Public-facing navbar — used on: landing, login, signup, and any other public page.
+  CSS classes match landing.css exactly.
+  Fonts + CSS variables are expected to be loaded by the page that includes this partial.
+  For login/signup pages: make sure auth.css (or global.css) defines the same CSS vars.
+%>
 
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-        
-        <a href="/" class="font-dancing text-2xl md:text-3xl text-white font-bold tracking-wider hover:opacity-80 transition-opacity">
-            Scriptorium
-        </a>
-        
-        <div class="hidden md:flex space-x-8 lg:space-x-12">
-            <a href="/about" class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">About</a>
-            <a href="/about#features" class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">Features</a>
-            <a href="/contact" class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">Contact</a>
-            <% if (user) { %>
-                <form action="/logout" method="POST" class="inline">
-                    <button type="submit"
-                    class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">
-                        Logout
-                    </button>
-                </form>
-            <% } else { %>
-                <a href="/login"
-                class="font-outfit text-white text-base font-medium hover:text-scriptorium-green transition-colors">
-                Login
-                </a>
-            <% } %>
+<div class="grain" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"></div>
 
-        </div>
+<header class="nav" id="nav" role="banner">
 
-        <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-        </button>
-    </div>
+  <a href="/" class="nav-logo" aria-label="Scriptorium home">
+    <span class="logo-text">Scriptorium</span>
+    <svg class="logo-squiggle" viewBox="0 0 120 8" fill="none" aria-hidden="true">
+      <path d="M2 5 Q20 1 38 5 Q56 9 74 5 Q92 1 110 5 Q116 6.5 118 5"
+        stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    </svg>
+  </a>
 
-    <div id="mobile-menu" class="hidden md:hidden bg-scriptorium-dark absolute top-full left-0 w-full border-t border-white/10 p-4 space-y-4 shadow-xl">
-        <a href="/about" class="block text-white font-outfit text-lg">About</a>
-        <a href="/about#features" class="block text-white font-outfit text-lg">Features</a>
-        <a href="/contact" class="block text-white font-outfit text-lg">Contact</a>
-        <% if (user) { %>
-            <form action="/logout" method="POST">
-                <button type="submit" class="block text-white font-outfit text-lg">
-                    Logout
-                </button>
-            </form>
-        <% } else { %>
-            <a href="/login" class="block text-white font-outfit text-lg">
-                Login
-            </a>
-        <% } %>
+  <nav class="nav-links" aria-label="Main navigation">
+    <a href="/#about"    class="nav-link">About</a>
+    <a href="/#rooms"   class="nav-link">Rooms</a>
+    <a href="/#ai"      class="nav-link">AI</a>
+  </nav>
 
-    </div>
-</nav>
+  <div class="nav-actions">
+    <a href="/login"  class="nav-login">Log in</a>
+    <a href="/signup" class="nav-cta">
+      Get started
+      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+    <button class="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </div>
 
-<script>
-    const btn = document.getElementById('mobile-menu-btn');
-    const menu = document.getElementById('mobile-menu');
-    btn.addEventListener('click', () => menu.classList.toggle('hidden'));
-</script>
+  <div class="nav-drawer" aria-hidden="true">
+    <a href="/#about">About</a>
+    <a href="/#rooms">Rooms</a>
+    <a href="/#ai">AI picks</a>
+    <a href="/login">Log in</a>
+    <a href="/signup" class="drawer-cta">Get started →</a>
+  </div>
+
+</header>

@@ -27,22 +27,17 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentQueryParams = {};
   let currentItemData = null;
 
-  // --- FIX 1: Remember last used search type across searches ---
+  // --- Remember last used search type across searches ---
   const urlType = new URLSearchParams(window.location.search).get("type");
-  let currentType =
-    urlType || localStorage.getItem("lastSearchType") || "movies";
+  let currentType = urlType || localStorage.getItem("lastSearchType") || "movies";
 
-  // If type wasn't in the URL, inject it so the URL stays canonical
   if (!urlType) {
     const url = new URL(window.location);
     url.searchParams.set("type", currentType);
     window.history.replaceState({}, "", url);
   }
-
-  // Always persist the resolved type so the next search remembers it
   localStorage.setItem("lastSearchType", currentType);
 
-  // --- FIX 2: Page limits per type + hard cap of 10 pages max ---
   const PAGE_LIMITS = { movies: 10, music: 25, books: 20 };
   const MAX_PAGES = 10;
 
@@ -51,27 +46,23 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Advanced Toggle ---
   advancedToggle.onclick = () => {
     const isHidden = advancedForm.classList.toggle("hidden");
-    accordionIcon.style.transform = isHidden
-      ? "rotate(0deg)"
-      : "rotate(180deg)";
+    accordionIcon.style.transform = isHidden ? "rotate(0deg)" : "rotate(180deg)";
   };
 
   // --- Toggle advanced fields by type ---
   function toggleAdvancedFields(type) {
     const movieFields = ["actor", "genre", "movieType", "movieYear"];
     const musicFields = ["artist", "release", "musicYear"];
-    const bookFields = ["author", "category", "publisher"];
+    const bookFields  = ["author", "category", "publisher"];
 
     movieFields.forEach((name) => {
       const el = advancedForm.querySelector(`[name="${name}"]`);
       if (el) el.classList.toggle("hidden", type !== "movies");
     });
-
     musicFields.forEach((name) => {
       const el = advancedForm.querySelector(`[name="${name}"]`);
       if (el) el.classList.toggle("hidden", type !== "music");
     });
-
     bookFields.forEach((name) => {
       const el = advancedForm.querySelector(`[name="${name}"]`);
       if (el) el.classList.toggle("hidden", type !== "books");
@@ -104,46 +95,27 @@ document.addEventListener("DOMContentLoaded", () => {
     if (query) executeSearch(query, type);
   }
 
-  tabBooks.onclick = (e) => {
-    e.preventDefault();
-    switchTab("books");
-  };
-  tabMusic.onclick = (e) => {
-    e.preventDefault();
-    switchTab("music");
-  };
-  tabMovies.onclick = (e) => {
-    e.preventDefault();
-    switchTab("movies");
-  };
+  tabBooks.onclick  = (e) => { e.preventDefault(); switchTab("books"); };
+  tabMusic.onclick  = (e) => { e.preventDefault(); switchTab("music"); };
+  tabMovies.onclick = (e) => { e.preventDefault(); switchTab("movies"); };
 
   // --- Advanced Search ---
   advancedBtn.onclick = () => {
     const form = advancedForm;
-    const title = form.querySelector('input[name="title"]').value;
-    const actor = form.querySelector('input[name="actor"]')?.value || "";
-    const genre = form.querySelector('input[name="genre"]')?.value || "";
-    const movieType =
-      form.querySelector('select[name="movieType"]')?.value || "";
-    const movieYear =
-      form.querySelector('input[name="movieYear"]')?.value || "";
-    const artist = form.querySelector('input[name="artist"]')?.value || "";
-    const release = form.querySelector('input[name="release"]')?.value || "";
-    const musicYear =
-      form.querySelector('input[name="musicYear"]')?.value || "";
-    const author = form.querySelector('input[name="author"]')?.value || "";
-    const category = form.querySelector('input[name="category"]')?.value || "";
-    const publisher =
-      form.querySelector('input[name="publisher"]')?.value || "";
+    const title     = form.querySelector('input[name="title"]').value;
+    const actor     = form.querySelector('input[name="actor"]')?.value     || "";
+    const genre     = form.querySelector('input[name="genre"]')?.value     || "";
+    const movieType = form.querySelector('select[name="movieType"]')?.value || "";
+    const movieYear = form.querySelector('input[name="movieYear"]')?.value  || "";
+    const artist    = form.querySelector('input[name="artist"]')?.value    || "";
+    const release   = form.querySelector('input[name="release"]')?.value   || "";
+    const musicYear = form.querySelector('input[name="musicYear"]')?.value  || "";
+    const author    = form.querySelector('input[name="author"]')?.value    || "";
+    const category  = form.querySelector('input[name="category"]')?.value  || "";
+    const publisher = form.querySelector('input[name="publisher"]')?.value  || "";
 
     if (currentType === "movies") {
-      currentQueryParams = {
-        title,
-        actor,
-        genre,
-        type: movieType,
-        year: movieYear,
-      };
+      currentQueryParams = { title, actor, genre, type: movieType, year: movieYear };
     } else if (currentType === "music") {
       currentQueryParams = { title, artist, release, year: musicYear };
     } else if (currentType === "books") {
@@ -151,15 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     currentPage = 1;
-    display.textContent =
-      title ||
-      actor ||
-      genre ||
-      artist ||
-      author ||
-      category ||
-      publisher ||
-      "...";
+    display.textContent = title || actor || genre || artist || author || category || publisher || "...";
     executeAdvancedSearch(currentQueryParams, currentType);
   };
 
@@ -178,60 +142,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Update tabs UI ---
   function updateTabs(type) {
-    const active =
-      "bg-[#00C49A]/20 text-[#00C49A] border-[#00C49A] shadow-[0_0_10px_rgba(0,196,154,0.2)]";
-    const inactive = "text-white/50 hover:text-white border-transparent";
-    const tabs = { books: tabBooks, music: tabMusic, movies: tabMovies };
-    Object.keys(tabs).forEach((key) => {
-      if (tabs[key])
-        tabs[key].className =
-          `px-6 py-1.5 rounded-full border font-medium text-sm transition-all ${key === type ? active : inactive}`;
+    [
+      { el: tabBooks,  key: "books"  },
+      { el: tabMusic,  key: "music"  },
+      { el: tabMovies, key: "movies" },
+    ].forEach(({ el, key }) => {
+      if (!el) return;
+      el.classList.toggle("active", key === type);
     });
   }
 
   // --- Search logic ---
   async function executeSearch(query, type) {
     grid.innerHTML = "";
-    empty.classList.add("hidden");
-    loading.classList.remove("hidden");
+    empty.classList.remove("visible");
+    loading.classList.add("visible");
 
     type = type.toLowerCase();
 
     if (type === "books" && /^\d+$/.test(query)) {
-      query = `"${query}"`;
-      query = `intitle:${query}`;
+      query = `intitle:"${query}"`;
     }
 
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
         `${API_BASE}/${type === "movies" ? "movies" : type}/search?q=${encodeURIComponent(query)}&page=${currentPage}`,
-        { headers: { Authorization: `jwt ${token}` } },
+        { headers: { Authorization: `jwt ${token}` } }
       );
       const data = await res.json();
-      loading.classList.add("hidden");
+      loading.classList.remove("visible");
 
       const items = data.tracks || data.movies || data.books || [];
       if (items.length > 0) {
         renderItems(items, type);
         const limit = PAGE_LIMITS[type] || 20;
-        // Cap total so we never render more than MAX_PAGES pages
-        const cappedTotal = Math.min(
-          data.totalResults || limit,
-          MAX_PAGES * limit,
-        );
+        const cappedTotal = Math.min(data.totalResults || limit, MAX_PAGES * limit);
         renderPagination(cappedTotal, limit);
-      } else empty.classList.remove("hidden");
+      } else {
+        empty.classList.add("visible");
+      }
     } catch (err) {
       console.error(err);
-      loading.classList.add("hidden");
+      loading.classList.remove("visible");
     }
   }
 
   async function executeAdvancedSearch(params, type) {
     grid.innerHTML = "";
-    empty.classList.add("hidden");
-    loading.classList.remove("hidden");
+    empty.classList.remove("visible");
+    loading.classList.add("visible");
 
     const limit = PAGE_LIMITS[type] || 20;
     try {
@@ -241,29 +201,25 @@ document.addEventListener("DOMContentLoaded", () => {
       if (type === "music") queryParams.set("limit", limit);
 
       const url = `${API_BASE}/${type}/advanced/search?${queryParams.toString()}`;
-      const res = await fetch(url, {
-        headers: { Authorization: `jwt ${token}` },
-      });
+      const res = await fetch(url, { headers: { Authorization: `jwt ${token}` } });
       const data = await res.json();
-      loading.classList.add("hidden");
+      loading.classList.remove("visible");
 
       let items = [];
-      if (type === "music") items = data.tracks || [];
+      if (type === "music")       items = data.tracks || [];
       else if (type === "movies") items = data.movies || [];
-      else items = data.books || [];
+      else                        items = data.books  || [];
 
       if (items.length > 0) {
         renderItems(items, type);
-        // Cap total so we never render more than MAX_PAGES pages
-        const cappedTotal = Math.min(
-          data.totalResults || limit,
-          MAX_PAGES * limit,
-        );
+        const cappedTotal = Math.min(data.totalResults || limit, MAX_PAGES * limit);
         renderPagination(cappedTotal, limit);
-      } else empty.classList.remove("hidden");
+      } else {
+        empty.classList.add("visible");
+      }
     } catch (err) {
       console.error(err);
-      loading.classList.add("hidden");
+      loading.classList.remove("visible");
     }
   }
 
@@ -271,80 +227,88 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderItems(items, type) {
     grid.innerHTML = "";
     items.forEach((item) => {
-      let title, subtitle, year, image;
+      let title, subtitle, year, imgHtml, typeLabel;
 
       if (type === "music") {
-        title = item.title;
-        subtitle = item.artist?.name || "Unknown Artist";
-        year = item.release?.date?.substring(0, 4) || "N/A";
-        image = item.coverUrl
-          ? `<img src="${item.coverUrl}" class="h-48 w-48 rounded-full shadow-2xl animate-spin-slow">`
-          : `<div class="h-48 w-48 rounded-full bg-[#1a1a1a] flex items-center justify-center shadow-2xl"><span class="text-2xl">🎵</span></div>`;
+        title     = item.title;
+        subtitle  = item.artist?.name || "Unknown Artist";
+        year      = item.release?.date?.substring(0, 4) || "N/A";
+        typeLabel = "Music";
+        imgHtml   = item.coverUrl
+          ? `<img src="${item.coverUrl}" alt="${title}">`
+          : `<span class="sr-card-img-placeholder">🎵</span>`;
+        imgHtml = `<div class="sr-card-img sr-card-img--vinyl">${imgHtml}</div>`;
       } else if (type === "movies") {
-        title = item.title || item.Title;
-        subtitle = (item.type || item.Type || "Movie").toUpperCase();
-        year = item.year || item.Year || "N/A";
-        const poster =
-          (item.poster || item.Poster) !== "N/A"
-            ? item.poster || item.Poster
-            : "https://via.placeholder.com/300x450?text=No+Poster";
-        image = `<img src="${poster}" class="h-48 w-auto shadow-2xl rounded-md transition-transform group-hover:scale-105">`;
+        title     = item.title || item.Title;
+        subtitle  = (item.type || item.Type || "Movie").toUpperCase();
+        year      = item.year || item.Year || "N/A";
+        typeLabel = "Movie";
+        const poster = (item.poster || item.Poster) !== "N/A"
+          ? (item.poster || item.Poster)
+          : null;
+        imgHtml = `<div class="sr-card-img">${
+          poster
+            ? `<img src="${poster}" alt="${title}">`
+            : `<span class="sr-card-img-placeholder">🎬</span>`
+        }</div>`;
       } else {
-        title = item.title;
-        subtitle = item.authors ? item.authors[0] : "Unknown Author";
-        year = item.publishedDate ? item.publishedDate.substring(0, 4) : "N/A";
-        const thumb =
-          item.imageLinks?.thumbnail ||
-          "https://via.placeholder.com/150x220?text=No+Cover";
-        image = `<img src="${thumb}" class="h-48 w-auto shadow-2xl rounded-md transition-transform group-hover:scale-105">`;
+        title     = item.title;
+        subtitle  = item.authors ? item.authors[0] : "Unknown Author";
+        year      = item.publishedDate ? item.publishedDate.substring(0, 4) : "N/A";
+        typeLabel = "Book";
+        const thumb = item.imageLinks?.thumbnail || null;
+        imgHtml = `<div class="sr-card-img">${
+          thumb
+            ? `<img src="${thumb}" alt="${title}">`
+            : `<span class="sr-card-img-placeholder">📚</span>`
+        }</div>`;
       }
 
       const card = document.createElement("div");
-      card.className =
-        "group bg-[#0f191e] border border-white/10 rounded-2xl overflow-hidden hover:border-[#00C49A] transition-all flex flex-col hover:shadow-lg animate-fade-in-down";
+      card.className = "sr-card";
       card.innerHTML = `
-        <div class="relative p-6 flex justify-center bg-black/20 overflow-hidden">${image}</div>
-        <div class="p-5 flex-grow flex flex-col">
-          <h3 class="text-white font-bold truncate">${title}</h3>
-          <p class="text-[#00C49A] text-sm">${subtitle}</p>
-          <p class="text-white/40 text-xs mb-4">${year}</p>
-          <div class="mt-auto">
-            <button class="add-trigger-btn w-full py-3 bg-[#1a2c33] text-white border border-white/10 rounded-xl font-bold hover:bg-[#00C49A] hover:text-[#05181c]"
-                    data-item="${encodeURIComponent(JSON.stringify(item))}" data-title="${title}">
-              + Add to Library
-            </button>
-          </div>
+        ${imgHtml}
+        <div class="sr-card-body">
+          <span class="sr-card-type">${typeLabel}</span>
+          <h3 class="sr-card-title">${title}</h3>
+          <p class="sr-card-sub">${subtitle}</p>
+          <p class="sr-card-year">${year}</p>
+          <button class="add-trigger-btn sr-add-btn"
+                  data-item="${encodeURIComponent(JSON.stringify(item))}"
+                  data-title="${title}">
+            + Add to Library
+          </button>
         </div>`;
       grid.appendChild(card);
     });
 
     document.querySelectorAll(".add-trigger-btn").forEach((btn) => {
       btn.onclick = (e) => {
-        currentItemData = JSON.parse(decodeURIComponent(e.target.dataset.item));
-        modalTitle.textContent = e.target.dataset.title;
-        modal.classList.remove("hidden");
+        currentItemData = JSON.parse(decodeURIComponent(e.currentTarget.dataset.item));
+        modalTitle.textContent = e.currentTarget.dataset.title;
+        modal.classList.add("visible");
 
         if (type === "movies") {
-          btnSpecial.dataset.shelf = "watching";
-          btnSpecialText.textContent = "Currently Watching";
-          btnWishlist.dataset.shelf = "watchlist";
-          btnWishlistText.textContent = "Watchlist";
-          btnFinished.dataset.shelf = "watched";
-          btnFinishedText.textContent = "Watched";
+          btnSpecial.dataset.shelf     = "watching";
+          btnSpecialText.textContent   = "Currently Watching";
+          btnWishlist.dataset.shelf    = "watchlist";
+          btnWishlistText.textContent  = "Watchlist";
+          btnFinished.dataset.shelf    = "watched";
+          btnFinishedText.textContent  = "Watched";
         } else if (type === "music") {
-          btnSpecial.dataset.shelf = "listening";
-          btnSpecialText.textContent = "Currently Listening";
-          btnWishlist.dataset.shelf = "wishlist";
-          btnWishlistText.textContent = "Wishlist";
-          btnFinished.dataset.shelf = "finished";
-          btnFinishedText.textContent = "Finished";
+          btnSpecial.dataset.shelf     = "listening";
+          btnSpecialText.textContent   = "Currently Listening";
+          btnWishlist.dataset.shelf    = "wishlist";
+          btnWishlistText.textContent  = "Wishlist";
+          btnFinished.dataset.shelf    = "finished";
+          btnFinishedText.textContent  = "Finished";
         } else {
-          btnSpecial.dataset.shelf = "reading";
-          btnSpecialText.textContent = "Currently Reading";
-          btnWishlist.dataset.shelf = "wishlist";
-          btnWishlistText.textContent = "Wishlist";
-          btnFinished.dataset.shelf = "finished";
-          btnFinishedText.textContent = "Finished";
+          btnSpecial.dataset.shelf     = "reading";
+          btnSpecialText.textContent   = "Currently Reading";
+          btnWishlist.dataset.shelf    = "wishlist";
+          btnWishlistText.textContent  = "Wishlist";
+          btnFinished.dataset.shelf    = "finished";
+          btnFinishedText.textContent  = "Finished";
         }
       };
     });
@@ -354,18 +318,16 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".shelf-btn").forEach((btn) => {
     btn.onclick = async (e) => {
       const shelf = e.currentTarget.dataset.shelf;
-      modal.classList.add("hidden");
+      modal.classList.remove("visible");
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(`${API_BASE}/${currentType}/shelf/add`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `jwt ${token}`,
-          },
+          headers: { "Content-Type": "application/json", Authorization: `jwt ${token}` },
           body: JSON.stringify({ ...currentItemData, shelf }),
         });
-        if (res.ok) showToast("Success", `Saved to ${shelf}!`, "success");
+        if (res.ok) showToast("Saved!", `Added to ${shelf}`, "success");
+        else        showToast("Error",  "Failed to save",    "error");
       } catch (err) {
         showToast("Error", "Failed to save", "error");
       }
@@ -375,89 +337,57 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Toast ---
   function showToast(title, msg, type) {
     const t = document.getElementById("toast");
-    document.getElementById("toastTitle").textContent = title;
+    document.getElementById("toastTitle").textContent   = title;
     document.getElementById("toastMessage").textContent = msg;
-    t.className = `fixed bottom-8 right-8 flex items-center gap-4 px-6 py-4 bg-[#0f191e] border-l-4 ${
-      type === "success" ? "border-[#00C49A]" : "border-red-500"
-    } rounded-xl shadow-2xl text-white transform transition-all duration-500 z-[100]`;
-    t.classList.remove("translate-y-40");
-    setTimeout(() => t.classList.add("translate-y-40"), 3500);
+    t.style.borderLeftColor = type === "success" ? "var(--teal)" : "var(--rose)";
+    t.style.transform = "translateY(0)";
+    setTimeout(() => { t.style.transform = "translateY(160px)"; }, 3500);
   }
 
-  document.getElementById("closeModal").onclick = () =>
-    modal.classList.add("hidden");
+  document.getElementById("closeModal").onclick = () => modal.classList.remove("visible");
 
+  // --- Pagination ---
   function renderPagination(totalResults, limit = 20) {
     const container = document.getElementById("pagination");
     container.innerHTML = "";
     const totalPages = Math.min(Math.ceil(totalResults / limit), MAX_PAGES);
 
     if (totalPages <= 1) {
-      container.classList.add("hidden");
+      container.classList.remove("visible");
       return;
     }
+    container.classList.add("visible");
 
-    container.classList.remove("hidden");
+    const makeBtn = (label, page, isActive, isDisabled) => {
+      const btn = document.createElement("button");
+      btn.textContent = label;
+      btn.className   = `sr-page-btn${isActive ? " active" : ""}`;
+      btn.disabled    = isDisabled;
+      if (!isDisabled) btn.onclick = () => { currentPage = page; changePage(); };
+      return btn;
+    };
 
-    const btnClass = (active) =>
-      `px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-        active
-          ? "bg-[#00C49A]/20 text-[#00C49A] border-[#00C49A]"
-          : "text-white/50 border-white/10 hover:text-white hover:border-white/30"
-      }`;
+    container.appendChild(makeBtn("←", currentPage - 1, false, currentPage === 1));
 
-    // Build page window: always show first, last, current ±2
     const pages = new Set([1, totalPages]);
-    for (
-      let i = Math.max(1, currentPage - 2);
-      i <= Math.min(totalPages, currentPage + 2);
-      i++
-    ) {
+    for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
       pages.add(i);
     }
     const sorted = [...pages].sort((a, b) => a - b);
-
-    // Prev button
-    const prev = document.createElement("button");
-    prev.textContent = "←";
-    prev.className = btnClass(false);
-    prev.disabled = currentPage === 1;
-    prev.onclick = () => {
-      currentPage--;
-      changePage();
-    };
-    container.appendChild(prev);
 
     let lastPage = 0;
     for (const p of sorted) {
       if (lastPage && p - lastPage > 1) {
         const ellipsis = document.createElement("span");
         ellipsis.textContent = "…";
-        ellipsis.className = "text-white/30 px-2";
+        ellipsis.className   = "sr-page-ellipsis";
         container.appendChild(ellipsis);
       }
-
-      const btn = document.createElement("button");
-      btn.textContent = p;
-      btn.className = btnClass(p === currentPage);
-      btn.onclick = () => {
-        currentPage = p;
-        changePage();
-      };
-      container.appendChild(btn);
+      container.appendChild(makeBtn(p, p, p === currentPage, false));
       lastPage = p;
     }
 
-    // Next button
-    const next = document.createElement("button");
-    next.textContent = "→";
-    next.className = btnClass(false);
-    next.disabled = currentPage === totalPages;
-    next.onclick = () => {
-      currentPage++;
-      changePage();
-    };
-    container.appendChild(next);
+    container.appendChild(makeBtn("→", currentPage + 1, false, currentPage === totalPages));
   }
 
   function changePage() {

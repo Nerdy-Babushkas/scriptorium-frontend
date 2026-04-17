@@ -83,7 +83,7 @@ button { cursor: pointer; background: none; border: none; font: inherit; }
   0%,100%{transform:translate(0,0)}12%{transform:translate(-2%,-2%)}25%{transform:translate(2%,-1%)}37%{transform:translate(-1%,2%)}50%{transform:translate(1%,-2%)}62%{transform:translate(-2%,1%)}75%{transform:translate(2%,2%)}87%{transform:translate(-1%,-1%)}
 }
 
-/* ── 4. CURSOR ───────────────────────────────────────────────── */
+/* ── 4. CURSOR ─────────────────────────────────────────────────
 @media (hover: hover) and (pointer: fine) {
   body.lp-body { cursor: none; }
   .cursor {
@@ -102,7 +102,7 @@ button { cursor: pointer; background: none; border: none; font: inherit; }
     background: var(--teal);
     opacity: 0.25;
   }
-}
+} */
 
 /* ── 5. NAVBAR ───────────────────────────────────────────────── */
 .nav {

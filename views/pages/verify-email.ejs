@@ -1,251 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify Email - Scriptorium</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              dancing: ['"Dancing Script"', "cursive"],
-              outfit: ['"Outfit"', "sans-serif"],
-            },
-          },
-        },
-      };
-    </script>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <%- include('../partials/head_public', { title: 'Verify Email — Scriptorium' }) %>
+  <link rel="stylesheet" href="/css/auth.css">
+  <style>
+    /* ── VERIFY PAGE SPECIFICS ───────────────────────────────── */
+    .verify-wrap {
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      z-index: 10;
+    }
 
-        body {
-            font-family: 'Outfit', sans-serif;
-            background: radial-gradient(circle at 50% 0%, #1a0f4c 0%, #05181c 100%);
-            background-color: #05181c;
-            min-height: 100vh;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; color: #fff;
-        }
+    .verify-card {
+      background: #fff;
+      border: 1.5px solid var(--cream-3);
+      border-radius: 28px;
+      padding: 3rem 2.5rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: var(--sh-hover);
+      position: relative;
+      overflow: hidden;
+    }
 
-        /* Orbs */
-        .bg-orb {
-            position: fixed; border-radius: 50%;
-            filter: blur(90px); pointer-events: none;
-            z-index: 0; opacity: 0.18;
-            animation: orbDrift 12s ease-in-out infinite alternate;
-        }
-        .bg-orb-1 { width:460px; height:460px; background:#1a0f4c; top:-100px; left:-80px; }
-        .bg-orb-2 { width:360px; height:360px; background:#00C49A; bottom:10%; right:-60px; animation-delay:-4s; }
-        .bg-orb-3 { width:260px; height:260px; background:#4c1a0f; bottom:30%; left:25%; animation-delay:-8s; }
-        @keyframes orbDrift {
-            from { transform: translateY(0px) scale(1); }
-            to   { transform: translateY(30px) scale(1.08); }
-        }
+    /* Rainbow top stripe */
+    .verify-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--teal), var(--amber), var(--lavender), var(--rose));
+    }
 
-        /* Card */
-        .verify-card {
-            position: relative; z-index: 1;
-            background: rgba(15,25,30,0.75);
-            backdrop-filter: blur(18px);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 28px;
-            padding: 48px 36px 40px;
-            max-width: 420px; width: 90%;
-            text-align: center;
-            box-shadow: 0 24px 80px rgba(0,0,0,0.45);
-            overflow: hidden;
-        }
-        .verify-card::before {
-            content: ''; position: absolute; inset: 0;
-            background: radial-gradient(ellipse at 50% -20%, rgba(0,196,154,0.07) 0%, transparent 65%);
-            pointer-events: none;
-        }
+    /* Icon circle */
+    .verify-icon {
+      width: 80px; height: 80px; border-radius: 50%;
+      margin: 0 auto 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      transition: all 0.4s ease;
+    }
+    .verify-icon--loading {
+      background: var(--teal-p);
+      border: 1.5px solid var(--teal-l);
+    }
+    .verify-icon--success {
+      background: var(--teal-p);
+      border: 1.5px solid var(--teal-l);
+    }
+    .verify-icon--error {
+      background: var(--rose-p);
+      border: 1.5px solid rgba(192,88,104,0.3);
+    }
 
-        /* Icon circle */
-        .icon-circle {
-            width: 80px; height: 80px; border-radius: 50%;
-            margin: 0 auto 24px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2.2rem;
-            transition: all 0.4s ease;
-        }
-        .icon-circle.loading {
-            background: rgba(0,196,154,0.08);
-            border: 2px solid rgba(0,196,154,0.2);
-            box-shadow: 0 0 32px rgba(0,196,154,0.1);
-        }
-        .icon-circle.success {
-            background: rgba(0,196,154,0.12);
-            border: 2px solid rgba(0,196,154,0.35);
-            box-shadow: 0 0 40px rgba(0,196,154,0.2);
-        }
-        .icon-circle.error {
-            background: rgba(239,68,68,0.08);
-            border: 2px solid rgba(239,68,68,0.2);
-            box-shadow: 0 0 32px rgba(239,68,68,0.1);
-        }
+    /* Spinner */
+    .verify-spinner {
+      width: 32px; height: 32px;
+      border: 2.5px solid var(--teal-l);
+      border-top-color: var(--teal);
+      border-radius: 50%;
+      animation: vspin 0.8s linear infinite;
+    }
+    @keyframes vspin { to { transform: rotate(360deg); } }
 
-        /* Spinner */
-        .spinner {
-            width: 36px; height: 36px;
-            border: 3px solid rgba(0,196,154,0.2);
-            border-top-color: #00C49A;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+    .verify-title {
+      font-family: var(--font-clash);
+      font-size: 1.6rem; font-weight: 700;
+      letter-spacing: -0.02em; color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
 
-        .verify-title {
-            font-family: 'Dancing Script', cursive;
-            font-size: 2rem; font-weight: 700;
-            margin-bottom: 8px;
-            color: #fff;
-        }
-        .verify-subtitle {
-            font-size: 0.88rem; font-weight: 400;
-            color: rgba(255,255,255,0.4);
-            line-height: 1.6;
-            margin-bottom: 28px;
-        }
+    .verify-subtitle {
+      font-size: 0.86rem; color: var(--ink-4);
+      line-height: 1.6; margin-bottom: 1.5rem;
+    }
 
-        /* Status message */
-        .status-msg {
-            font-size: 0.92rem; font-weight: 600;
-            line-height: 1.5;
-            margin-bottom: 24px;
-            min-height: 24px;
-        }
-        .status-msg.success { color: #00C49A; }
-        .status-msg.error { color: #f87171; }
-        .status-msg.loading { color: rgba(255,255,255,0.5); }
+    .verify-status {
+      font-size: 0.88rem; font-weight: 600;
+      line-height: 1.55; margin-bottom: 1.75rem;
+      min-height: 1.4rem;
+    }
+    .verify-status--loading { color: var(--ink-4); }
+    .verify-status--success { color: var(--teal); }
+    .verify-status--error   { color: var(--rose); }
 
-        /* CTA button */
-        .btn-login {
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            padding: 12px 32px; border-radius: 14px;
-            font-size: 0.88rem; font-weight: 700;
-            cursor: pointer; text-decoration: none;
-            background: rgba(0,196,154,0.12);
-            border: 1px solid rgba(0,196,154,0.3);
-            color: #00C49A;
-            transition: all 0.2s;
-        }
-        .btn-login:hover {
-            background: rgba(0,196,154,0.22);
-            border-color: rgba(0,196,154,0.5);
-            transform: translateY(-2px);
-        }
-        .btn-login svg { width: 16px; height: 16px; }
+    /* CTA button */
+    .verify-btn {
+      display: inline-flex; align-items: center;
+      justify-content: center; gap: 0.5rem;
+      padding: 0.8rem 2rem; border-radius: 100px;
+      background: var(--ink); color: var(--cream);
+      font-family: var(--font-clash);
+      font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.25s var(--spring), box-shadow 0.25s;
+    }
+    .verify-btn:hover {
+      background: var(--teal);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(61,140,128,0.28);
+    }
+    .verify-btn svg { width: 15px; height: 15px; }
 
-        .btn-home {
-            display: inline-block;
-            margin-top: 12px;
-            font-size: 0.78rem; font-weight: 500;
-            color: rgba(255,255,255,0.3);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-        .btn-home:hover { color: rgba(255,255,255,0.6); }
-
-        .hidden { display: none !important; }
-    </style>
+    .verify-home {
+      display: block; margin-top: 0.85rem;
+      font-size: 0.78rem; color: var(--ink-4);
+      transition: color 0.2s;
+    }
+    .verify-home:hover { color: var(--ink); }
+  </style>
 </head>
-<body>
-    <div class="bg-orb bg-orb-1"></div>
-    <div class="bg-orb bg-orb-2"></div>
-    <div class="bg-orb bg-orb-3"></div>
 
+<body class="auth-body">
+
+  <div class="grain" aria-hidden="true"></div>
+  <div class="page-orb page-orb-1" aria-hidden="true"
+    style="position:fixed;border-radius:50%;filter:blur(88px);pointer-events:none;z-index:0;
+           width:500px;height:500px;background:radial-gradient(circle,rgba(61,140,128,0.10),transparent 68%);
+           top:-10%;left:-15%;"></div>
+  <div class="page-orb page-orb-2" aria-hidden="true"
+    style="position:fixed;border-radius:50%;filter:blur(88px);pointer-events:none;z-index:0;
+           width:400px;height:400px;background:radial-gradient(circle,rgba(191,122,48,0.07),transparent 65%);
+           bottom:5%;right:-8%;"></div>
+
+  <div class="verify-wrap">
     <div class="verify-card">
-        <div class="icon-circle loading" id="iconCircle">
-            <div class="spinner" id="spinner"></div>
-        </div>
 
-        <h1 class="verify-title" id="title">Verifying your email</h1>
-        <p class="verify-subtitle" id="subtitle">Hang tight — we're confirming your account…</p>
+      <div class="verify-icon verify-icon--loading" id="verifyIcon">
+        <div class="verify-spinner" id="verifySpinner"></div>
+      </div>
 
-        <p class="status-msg loading" id="statusMsg">Checking verification link…</p>
+      <h1 class="verify-title" id="verifyTitle">Verifying your email</h1>
+      <p class="verify-subtitle" id="verifySubtitle">Hang tight — we're confirming your account…</p>
+      <p class="verify-status verify-status--loading" id="verifyStatus">Checking verification link…</p>
 
-        <div id="actions" class="hidden">
-            <a href="/login" class="btn-login" id="loginBtn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                    <polyline points="10 17 15 12 10 7"/>
-                    <line x1="15" y1="12" x2="3" y2="12"/>
-                </svg>
-                Continue to Login
-            </a>
-            <br/>
-            <a href="/" class="btn-home">← Back to home</a>
-        </div>
+      <div id="verifyActions" style="display:none;">
+        <a href="/login" class="verify-btn" id="verifyBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          Continue to Login
+        </a>
+        <a href="/" class="verify-home">← Back to home</a>
+      </div>
+
     </div>
+  </div>
 
-    <script>
-        const BACKEND_URL = "https://scriptorium-backend-six.vercel.app";
-        const params = new URLSearchParams(window.location.search);
-        const token = params.get("token");
+  <script>
+    const BACKEND_URL = 'https://scriptorium-backend-six.vercel.app';
+    const params = new URLSearchParams(window.location.search);
+    const token  = params.get('token');
 
-        const iconCircle = document.getElementById("iconCircle");
-        const spinner = document.getElementById("spinner");
-        const title = document.getElementById("title");
-        const subtitle = document.getElementById("subtitle");
-        const statusMsg = document.getElementById("statusMsg");
-        const actions = document.getElementById("actions");
+    const icon     = document.getElementById('verifyIcon');
+    const spinner  = document.getElementById('verifySpinner');
+    const title    = document.getElementById('verifyTitle');
+    const subtitle = document.getElementById('verifySubtitle');
+    const status   = document.getElementById('verifyStatus');
+    const actions  = document.getElementById('verifyActions');
+    const btn      = document.getElementById('verifyBtn');
 
-        function showSuccess(msg) {
-            spinner.classList.add("hidden");
-            iconCircle.className = "icon-circle success";
-            iconCircle.textContent = "✓";
-            iconCircle.style.fontSize = "2.2rem";
+    function showSuccess(msg) {
+      spinner.style.display = 'none';
+      icon.className = 'verify-icon verify-icon--success';
+      icon.innerHTML = '✓';
 
-            title.textContent = "You're all set!";
-            subtitle.textContent = "Your email has been verified successfully.";
+      title.textContent    = 'You\'re all set!';
+      subtitle.textContent = 'Your email has been verified successfully.';
 
-            statusMsg.textContent = msg || "Email verified — you can now log in.";
-            statusMsg.className = "status-msg success";
+      status.textContent = msg || 'Email verified — you can now log in.';
+      status.className   = 'verify-status verify-status--success';
 
-            actions.classList.remove("hidden");
-        }
+      actions.style.display = 'block';
+    }
 
-        function showError(msg) {
-            spinner.classList.add("hidden");
-            iconCircle.className = "icon-circle error";
-            iconCircle.textContent = "✕";
-            iconCircle.style.fontSize = "2.2rem";
+    function showError(msg) {
+      spinner.style.display = 'none';
+      icon.className = 'verify-icon verify-icon--error';
+      icon.innerHTML = '✕';
 
-            title.textContent = "Verification failed";
-            subtitle.textContent = "We couldn't verify your email with this link.";
+      title.textContent    = 'Verification failed';
+      subtitle.textContent = 'We couldn\'t verify your email with this link.';
 
-            statusMsg.textContent = msg || "The link may be expired or invalid.";
-            statusMsg.className = "status-msg error";
+      status.textContent = msg || 'The link may be expired or invalid.';
+      status.className   = 'verify-status verify-status--error';
 
-            actions.classList.remove("hidden");
-            document.getElementById("loginBtn").textContent = "Go to Login";
-        }
+      actions.style.display = 'block';
+      btn.textContent = 'Go to Login';
+    }
 
-        if (!token) {
-            showError("Invalid verification link — no token was provided.");
-        } else {
-            fetch(`${BACKEND_URL}/api/user/verify?token=${token}`)
-                .then((res) => res.json().then((data) => ({ status: res.status, data })))
-                .then(({ status, data }) => {
-                    if (status === 200) {
-                        showSuccess(data.message);
-                    } else {
-                        showError(data.message || "Verification failed.");
-                    }
-                })
-                .catch(() => {
-                    showError("Something went wrong. Please try again later.");
-                });
-        }
-    </script>
+    if (!token) {
+      showError('Invalid verification link — no token was provided.');
+    } else {
+      fetch(`${BACKEND_URL}/api/user/verify?token=${token}`)
+        .then(res => res.json().then(data => ({ status: res.status, data })))
+        .then(({ status: s, data }) => {
+          if (s === 200) showSuccess(data.message);
+          else showError(data.message || 'Verification failed.');
+        })
+        .catch(() => showError('Something went wrong. Please try again later.'));
+    }
+  </script>
+
 </body>
 </html>

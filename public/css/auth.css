@@ -73,17 +73,17 @@ input { font: inherit; }
   87%{transform:translate(-1%,-1%)}
 }
 
-/* ── 4. CURSOR ───────────────────────────────────────────────── */
-/*
+/* ── 4. CURSOR ─────────────────────────────────────────────────
+
   FIX: Cursor element at top:0 left:0. JS moves it via translate3d(x,y,0).
   pointer-events:none ensures it never blocks input or the design panel.
   We do NOT set transform here — JS owns it entirely.
   cursor:none on the body hides the OS cursor everywhere, including panels.
-*/
+
 @media (hover: hover) and (pointer: fine) {
   body.auth-body { cursor: none; }
 
-  /* Also hide cursor on anything that would normally show a special cursor */
+   Also hide cursor on anything that would normally show a special cursor 
   body.auth-body * { cursor: none !important; }
 
   .cursor {
@@ -96,7 +96,7 @@ input { font: inherit; }
     background: var(--ink);
     pointer-events: none;
     z-index: 99999;
-    /* transform is set exclusively by JS via translate3d */
+     transform is set exclusively by JS via translate3d 
     transition:
       width  0.28s var(--spring),
       height 0.28s var(--spring),
@@ -118,7 +118,7 @@ input { font: inherit; }
     height: 8px;
     opacity: 0.9;
   }
-}
+} */
 
 /* ── 5. BACK BUTTON ──────────────────────────────────────────── */
 .auth-back {

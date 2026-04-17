@@ -1,113 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <%- include('../partials/head', { title: 'Search Results - Scriptorium' }) %>
-    <style>
-        .bg-scriptorium-dark { background-color: #0f3d3e; background: radial-gradient(circle at 50% 0%, #0f4c75 0%, #05181c 100%); }
-        .glass-card { background-color: rgba(20, 30, 35, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-in-down { animation: fadeInDown 0.3s ease-out forwards; }
-        body{
-            padding-top: 50px;
-        }
-    </style>
-    <link rel="stylesheet" href="/css/navbar.css">
+  <%- include('../partials/head', { title: 'Search Results — Scriptorium' }) %>
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="/css/search-results.css">
 </head>
-<body class="bg-scriptorium-dark min-h-screen relative overflow-x-hidden font-outfit text-white">
-    <%- include('../partials/navbar_app', { query, type }) %>
-    <main class="relative z-10 pt-8 pb-20 px-6">
-        <div class="container mx-auto max-w-7xl">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-white/10 pb-6">
-                <div class="space-y-4">
-                    <h1 class="text-4xl font-bold text-white">Results for "<span id="queryDisplay" class="text-[#00C49A]">...</span>"</h1>
-                    <div class="flex bg-black/30 rounded-full p-1 w-max border border-white/10">
-                        <a href="#" id="tab-books" class="px-6 py-1.5 rounded-full border border-transparent text-sm transition-all">Books</a>
-                        <a href="#" id="tab-music" class="px-6 py-1.5 rounded-full border border-transparent text-sm transition-all">Music</a>
-                        <a href="#" id="tab-movies" class="px-6 py-1.5 rounded-full border border-transparent text-sm transition-all">Movies</a>
-                    </div>
-                </div>
+<body class="sr-body">
 
-                <div class="flex flex-col items-end gap-4">
-                    <div class="flex gap-3 text-sm font-medium text-white/60">
-                        <a href="/library" class="hover:text-[#00C49A] transition-colors">Library</a>
-                        <span>|</span>
-                        <a href="/music" class="hover:text-[#00C49A] transition-colors">Music Room</a>
-                        <span>|</span>
-                        <a href="/theatre" class="hover:text-[#00C49A] transition-colors">Theatre</a>
-                    </div>
-                </div>
-            </div>
+  <div class="grain" aria-hidden="true"></div>
 
-            <div class="mb-6" id="advancedSearchContainer">
-                <button id="advancedSearchToggle" class="flex justify-between items-center w-full px-4 py-2 rounded-md bg-[#0f191e] border border-white/10 text-white font-medium">
-                    <span>Advanced Search</span>
-                    <span id="accordionIcon" class="transition-transform transform">▼</span>
-                </button>
+  <%- include('../partials/navbar_app', { query, type }) %>
 
-                <div id="advancedSearch" class="hidden mt-4 flex flex-wrap gap-3 items-end">
-                    <!-- Title is universal -->
-                    <input type="text" name="title" placeholder="Title" 
-                        class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
+  <main class="sr-main">
 
-                    <!-- Movie-specific fields -->
-                    <input type="text" name="actor" placeholder="Actor" 
-                        class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
-                    <input type="text" name="genre" placeholder="Genre" 
-                        class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
-                    <input type="number" name="movieYear" min="1900" placeholder="Year" 
-                        class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
-                    <select name="movieType" class="px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-40">
-                        <option value="">Any Type</option>
-                        <option value="movie">Movie</option>
-                        <option value="series">Series</option>
-                        <option value="episode">Episode</option>
-                    </select>
-
-                    <!-- Music-specific fields (hidden by default) -->
-                    <input type="text" name="artist" placeholder="Artist" class="music-field hidden px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
-                    <input type="text" name="release" placeholder="Release" class="music-field hidden px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
-                    <input type="number" name="musicYear" min="1900" placeholder="Year" class="music-field hidden px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
-
-                    <!-- Book-specific fields (hidden by default) -->
-                    <input type="text" name="author" placeholder="Author" class="book-field hidden px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
-                <input type="text" name="category" placeholder="Category" class="book-field hidden px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
-                <input type="text" name="publisher" placeholder="Publisher" class="book-field hidden px-5 py-2.5 rounded-md bg-[#0f191e] border border-white/10 text-white w-60">
-
-                    <button id="advancedSearchBtn" 
-                            class="px-6 py-2.5 rounded-full bg-[#00C49A] text-[#05181c] font-bold">Search</button>
-                </div>
-            </div>
-            <div id="loadingState" class="hidden flex flex-col items-center justify-center py-24">
-                <div class="w-16 h-16 border-4 border-[#00C49A]/30 border-t-[#00C49A] rounded-full animate-spin mb-4"></div>
-                <p class="text-[#00C49A] animate-pulse">Searching the archives...</p>
-            </div>
-            <div id="resultsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8 pb-20"></div>
-            <div id="pagination" class="hidden flex justify-center items-center flex-wrap gap-2 mt-8 pb-12"></div>
-            <div id="emptyState" class="hidden text-center py-32 opacity-60">
-                <p class="text-xl text-white/60">No items found matching your criteria.</p>
-            </div>
+    <!-- Header -->
+    <div class="sr-header">
+      <div>
+        <h1 class="sr-title">
+          Results for "<span id="queryDisplay" class="sr-title-query">...</span>"
+        </h1>
+        <div class="sr-tabs" style="margin-top:1rem;">
+          <a href="#" id="tab-books"  class="sr-tab">📚 Books</a>
+          <a href="#" id="tab-music"  class="sr-tab">🎵 Music</a>
+          <a href="#" id="tab-movies" class="sr-tab">🎬 Movies</a>
         </div>
-    </main>
+      </div>
 
-    <div id="shelfModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-        <div class="w-full max-w-md bg-[#0f191e] border border-[#00C49A]/30 rounded-3xl p-8 shadow-2xl relative">
-            <div class="text-center mb-8">
-                <h3 class="font-dancing text-4xl text-white mb-2">Add to Library</h3>
-                <p class="text-white/50 text-sm">Select a shelf for <span id="modalBookTitle" class="text-[#00C49A] font-bold">this item</span></p>
-            </div>
-            <div class="space-y-3">
-                <button id="btn-favourites"class="shelf-btn w-full p-4 rounded-xl bg-white/5 hover:bg-[#00C49A]/10 flex items-center gap-4 group" data-shelf="favorites">⭐ <span class="font-bold text-white group-hover:text-[#00C49A]">Favorites</span></button>
-                <button id="btn-wishlist" class="shelf-btn w-full p-4 rounded-xl bg-white/5 hover:bg-[#00C49A]/10 flex items-center gap-4 group" data-shelf="wishlist">🔖 <span id="btn-wishlist-text" class="font-bold text-white group-hover:text-[#00C49A]">Watchlist</span></button>
-                <button id="btn-reading" class="shelf-btn w-full p-4 rounded-xl bg-white/5 hover:bg-[#00C49A]/10 flex items-center gap-4 group" data-shelf="watching">🎬 <span id="btn-reading-text" class="font-bold text-white group-hover:text-[#00C49A]">Currently Watching</span></button>
-                <button id="btn-finished" class="shelf-btn w-full p-4 rounded-xl bg-white/5 hover:bg-[#00C49A]/10 flex items-center gap-4 group" data-shelf="watched">✅ <span id="btn-finished-text" class="font-bold text-white group-hover:text-[#00C49A]">Finished</span></button>
-            </div>
-            <button id="closeModal" class="mt-8 w-full py-3 rounded-full bg-red-600 text-white font-bold uppercase">Cancel</button>
-        </div>
+      <div class="sr-room-links">
+        <a href="/library" class="sr-room-link">Library</a>
+        <span class="sr-room-sep">·</span>
+        <a href="/music"   class="sr-room-link">Music Room</a>
+        <span class="sr-room-sep">·</span>
+        <a href="/theatre" class="sr-room-link">Theatre</a>
+      </div>
     </div>
 
-    <div id="toast" class="fixed bottom-8 right-8 flex items-center gap-4 px-6 py-4 rounded-xl shadow-2xl transform translate-y-40 transition-transform duration-500 z-[100] border-l-4">
-        <div><h4 id="toastTitle" class="font-bold"></h4><p id="toastMessage" class="text-sm"></p></div>
+    <!-- Advanced Search -->
+    <div class="sr-advanced-wrap" id="advancedSearchContainer">
+      <button id="advancedSearchToggle" class="sr-advanced-toggle">
+        <span>Advanced Search</span>
+        <span id="accordionIcon" class="sr-accordion-icon">▼</span>
+      </button>
+
+      <div id="advancedSearch" class="sr-advanced-fields hidden">
+        <!-- Universal -->
+        <input type="text"    name="title"     placeholder="Title"     class="sr-field-input">
+
+        <!-- Movie fields -->
+        <input type="text"    name="actor"     placeholder="Actor"     class="sr-field-input">
+        <input type="text"    name="genre"     placeholder="Genre"     class="sr-field-input">
+        <input type="number"  name="movieYear" placeholder="Year" min="1900" class="sr-field-input">
+        <select name="movieType" class="sr-field-select">
+          <option value="">Any Type</option>
+          <option value="movie">Movie</option>
+          <option value="series">Series</option>
+          <option value="episode">Episode</option>
+        </select>
+
+        <!-- Music fields (hidden by default) -->
+        <input type="text"   name="artist"    placeholder="Artist"  class="music-field sr-field-input hidden">
+        <input type="text"   name="release"   placeholder="Release" class="music-field sr-field-input hidden">
+        <input type="number" name="musicYear" placeholder="Year" min="1900" class="music-field sr-field-input hidden">
+
+        <!-- Book fields (hidden by default) -->
+        <input type="text" name="author"    placeholder="Author"    class="book-field sr-field-input hidden">
+        <input type="text" name="category"  placeholder="Category"  class="book-field sr-field-input hidden">
+        <input type="text" name="publisher" placeholder="Publisher" class="book-field sr-field-input hidden">
+
+        <button id="advancedSearchBtn" class="sr-advanced-btn">Search</button>
+      </div>
     </div>
-    <script src="/js/search_results.js"></script>
+
+    <!-- Loading -->
+    <div id="loadingState">
+      <div class="sr-spinner"></div>
+      <p class="sr-loading-text">Searching the archives…</p>
+    </div>
+
+    <!-- Results grid — JS populates this -->
+    <div id="resultsGrid"></div>
+
+    <!-- Pagination — JS populates this -->
+    <div id="pagination"></div>
+
+    <!-- Empty state -->
+    <div id="emptyState">
+      <div class="sr-empty-emoji">📭</div>
+      <p class="sr-empty-title">Nothing found</p>
+      <p class="sr-empty-sub">No items matched your search. Try different keywords.</p>
+    </div>
+
+  </main>
+
+  <!-- Shelf Modal -->
+  <div id="shelfModal">
+    <div class="sr-modal-box">
+      <span class="sr-modal-eyebrow">Save to shelf</span>
+      <span id="modalBookTitle">this item</span>
+
+      <div class="sr-shelf-options">
+        <button id="btn-favourites" class="shelf-btn" data-shelf="favorites">
+          <span class="shelf-btn-icon">⭐</span> Favourites
+        </button>
+        <button id="btn-wishlist" class="shelf-btn" data-shelf="wishlist">
+          <span class="shelf-btn-icon">🔖</span>
+          <span id="btn-wishlist-text">Watchlist</span>
+        </button>
+        <button id="btn-reading" class="shelf-btn" data-shelf="watching">
+          <span class="shelf-btn-icon">🎬</span>
+          <span id="btn-reading-text">Currently Watching</span>
+        </button>
+        <button id="btn-finished" class="shelf-btn" data-shelf="watched">
+          <span class="shelf-btn-icon">✅</span>
+          <span id="btn-finished-text">Finished</span>
+        </button>
+      </div>
+
+      <div class="sr-modal-divider"></div>
+      <button id="closeModal">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast">
+    <div>
+      <h4 id="toastTitle"></h4>
+      <p id="toastMessage"></p>
+    </div>
+  </div>
+
+  <script src="/js/search_results.js"></script>
 </body>
 </html>

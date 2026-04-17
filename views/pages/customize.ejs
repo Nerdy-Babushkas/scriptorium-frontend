@@ -315,8 +315,11 @@
         0%   { background-position: 200% 0; }
         100% { background-position: -200% 0; }
     }
-
+    body{
+        padding-top: 50px;
+    }
     </style>
+    <link rel="stylesheet" href="/css/navbar.css">
 </head>
 
 <!-- Confirm purchase modal -->
@@ -340,6 +343,7 @@
 
 <body style="background:radial-gradient(circle at 50% 0%, #1a0f4c 0%, #05181c 100%); background-color:#05181c;"
       class="min-h-screen relative overflow-x-hidden font-outfit text-white">
+    <%- include('../partials/navbar_app') %>
 
     <div class="bg-orb bg-orb-1"></div>
     <div class="bg-orb bg-orb-2"></div>
@@ -352,11 +356,11 @@
         <!-- Page controls -->
         <div class="page-controls">
             <div class="page-controls-left">
-                <a href="/rewards" class="btn-back">
+                <a href="/room" class="btn-back">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 12H5M12 5l-7 7 7 7"/>
                     </svg>
-                    Back to Rewards
+                    Back to Room
                 </a>
                 <div style="display:flex;flex-direction:column;gap:5px;">
                     <h1 class="text-3xl font-dancing text-white" style="margin:0;">Customise</h1>

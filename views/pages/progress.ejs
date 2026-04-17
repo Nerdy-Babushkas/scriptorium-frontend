@@ -399,7 +399,11 @@
         .stats-card { gap: 16px; padding: 18px; }
         .stat-divider { display: none; }
     }
+    body{
+        padding-top: 50px;
+    }
     </style>
+    <link rel="stylesheet" href="/css/navbar.css">
 </head>
 
 <!-- Goal create/edit modal -->
@@ -468,7 +472,8 @@
 
 <body style="background:radial-gradient(circle at 50% 0%, #1a0f4c 0%, #05181c 100%); background-color:#05181c;"
       class="min-h-screen relative overflow-x-hidden font-outfit text-white">
-
+    
+    <%- include('../partials/navbar_app') %>
     <div class="bg-orb bg-orb-1"></div>
     <div class="bg-orb bg-orb-2"></div>
     <div class="bg-orb bg-orb-3"></div>

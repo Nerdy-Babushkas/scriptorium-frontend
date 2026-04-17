@@ -1,4 +1,13 @@
 /* ─────────────────────────────
+   FONT TOKENS (mirrors landing.css — safe fallbacks if vars not in scope)
+───────────────────────────── */
+:root {
+  --font-clash: "Clash Display", "Helvetica Neue", Arial, sans-serif;
+  --font-caveat: "Caveat", "Comic Sans MS", cursive;
+  --font-body: "DM Sans", system-ui, sans-serif;
+}
+
+/* ─────────────────────────────
    ROOT
 ───────────────────────────── */
 .nav-app {
@@ -48,7 +57,8 @@
 .nav-logo {
   color: white;
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: var(--font-caveat);
   text-decoration: none;
 }
 
@@ -113,6 +123,10 @@
 .nav-links a {
   color: rgba(255, 255, 255, 0.75);
   text-decoration: none;
+  font-family: var(--font-clash);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   transition: 0.2s;
 }
 
@@ -205,8 +219,10 @@
   background: none;
   border: none;
 
-  font-size: 14px;
-  letter-spacing: 0.2px;
+  font-family: var(--font-clash);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
 }
 
 /* HOVER */
@@ -276,6 +292,7 @@
   width: 280px;
   height: 100%;
   background: #111;
+  font-family: var(--font-body);
   transform: translateX(100%);
   transition: 0.3s;
 }

@@ -1,33 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <%- include('../partials/head_public', { title: pageName + ' - Scriptorium' }) %>
+  <%- include('../partials/head_public', { title: pageName + ' — Scriptorium' }) %>
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="/css/pages.css">
 </head>
-<body class="bg-scriptorium-dark min-h-screen relative overflow-x-hidden font-outfit text-white flex flex-col">
+<body class="page-body">
 
-    <%- include('../partials/background_blobs') %>
-    <%- include('../partials/navbar_app') %>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="page-orb page-orb-1" aria-hidden="true"></div>
+  <div class="page-orb page-orb-2" aria-hidden="true"></div>
 
-    <main class="flex-grow flex items-center justify-center relative z-10 pt-20 pb-12 px-6">
-        <div class="container mx-auto max-w-6xl">
-            <div class="grid lg:grid-cols-2 gap-8 items-center">
-                <div class="order-2 lg:order-1 text-center lg:text-left space-y-6">
-                    <h1 class="font-dancing text-6xl sm:text-7xl font-bold text-[#06D6A0] leading-none capitalize">
-                        <%= pageName %>
-                    </h1>
-                    <h2 class="font-outfit text-3xl sm:text-4xl font-bold">Construction in progress...</h2>
-                    <p class="font-roboto text-xl text-gray-300 max-w-md mx-auto lg:mx-0">
-                        Our digital architects are hard at work building this space.
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-                        <a href="/room" class="px-8 py-3 rounded-[50px] bg-[#06D6A0] hover:bg-[#00b885] text-white font-outfit text-lg font-bold uppercase tracking-widest transition-all shadow-lg transform hover:scale-105 text-center">Back to Room</a>
-                    </div>
-                </div>
-                <div class="order-1 lg:order-2 flex justify-center">
-                    <%- include('../partials/floating_prop', { img: '/assets/rocket.png', alt: 'Rocket Launching' }) %>
-                </div>
-            </div>
+  <%- include('../partials/navbar_app') %>
+
+  <main class="page-main page-main--wide">
+    <div class="placeholder-wrap">
+
+      <!-- Left: text -->
+      <div>
+        <div class="placeholder-badge">
+          <span class="placeholder-badge-dot"></span>
+          Under Construction
         </div>
-    </main>
+        <div class="page-eyebrow">Coming soon</div>
+        <h1 class="page-h1"><%= pageName %></h1>
+        <p class="page-sub" style="margin-bottom: 2rem;">
+          Our digital architects are hard at work building this space.
+          Check back soon — it's going to be worth the wait.
+        </p>
+        <a href="/room" class="btn-back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 5l-7 7 7 7"/>
+          </svg>
+          Back to Room
+        </a>
+      </div>
+
+      <!-- Right: illustration -->
+      <div class="placeholder-img">
+        <img src="/assets/rocket.png" alt="Rocket launching" />
+      </div>
+
+    </div>
+  </main>
+
 </body>
 </html>

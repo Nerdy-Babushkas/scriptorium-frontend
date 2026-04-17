@@ -1,58 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <%- include('../partials/head_public', { title: 'Page Not Found - Scriptorium' }) %>
+  <%- include('../partials/head_public', { title: 'Page Not Found — Scriptorium' }) %>
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="/css/pages.css">
 </head>
-<body class="bg-scriptorium-dark min-h-screen relative overflow-x-hidden font-outfit text-white flex flex-col">
+<body class="page-body">
 
-    <%- include('../partials/background_blobs') %>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="page-orb page-orb-1" aria-hidden="true"></div>
+  <div class="page-orb page-orb-2" aria-hidden="true"></div>
 
-    <% if (typeof user !== 'undefined' && user) { %>
-        <%- include('../partials/navbar_app') %>
-    <% } else { %>
-        <%- include('../partials/navbar_public') %>
-    <% } %>
+  <% if (typeof user !== 'undefined' && user) { %>
+    <%- include('../partials/navbar_app') %>
+  <% } else { %>
+    <%- include('../partials/navbar_public') %>
+  <% } %>
 
-    <main class="flex-grow flex items-center justify-center relative z-10 pt-20 pb-12 px-6">
-        <div class="container mx-auto max-w-6xl"> 
-            
-            <div class="grid lg:grid-cols-2 gap-8 items-center">
-                
-                <div class="order-2 lg:order-1 text-center lg:text-left space-y-6">
-                    <h1 class="font-dancing text-6xl sm:text-8xl font-bold text-[#06D6A0] leading-none">
-                        404
-                    </h1>
+  <main class="page-main page-main--wide">
+    <div class="not-found">
 
-                    <h2 class="font-outfit text-3xl sm:text-4xl font-bold">
-                        This chapter hasn't been written yet.
-                    </h2>
-                    
-                    <p class="font-roboto text-xl text-gray-300 max-w-md mx-auto lg:mx-0">
-                        Oops! The page you are looking for seems to have gotten lost in the archives of the Scriptorium.
-                    </p>
-
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-                        <% if (typeof user !== 'undefined' && user) { %>
-                            <a href="/room" 
-                               class="px-8 py-3 rounded-[50px] bg-[#06D6A0] hover:bg-[#00b885] text-white font-outfit text-lg font-bold uppercase tracking-widest transition-all shadow-lg transform hover:scale-105 text-center">
-                                Back to Room
-                            </a>
-                        <% } else { %>
-                            <a href="/" 
-                               class="px-8 py-3 rounded-[50px] bg-[#06D6A0] hover:bg-[#00b885] text-white font-outfit text-lg font-bold uppercase tracking-widest transition-all shadow-lg transform hover:scale-105 text-center">
-                                Go Home
-                            </a>
-                        <% } %>
-                    </div>
-                </div>
-
-                <div class="order-1 lg:order-2 flex justify-center">
-                    <%- include('../partials/floating_prop', { img: '/assets/astro4.png', alt: 'Rocket Launching' }) %>
-                </div>
-
-            </div>
+      <!-- Left: text -->
+      <div>
+        <div class="page-eyebrow">Lost in the archives</div>
+        <div class="not-found-number">
+          4<span class="zero">0</span>4
         </div>
-    </main>
+        <h1 class="not-found-tagline">This chapter hasn't been written yet.</h1>
+        <p class="not-found-body">
+          The page you're looking for seems to have gotten lost somewhere deep
+          in the Scriptorium archives. It might have moved, or perhaps it never existed.
+        </p>
+        <% if (typeof user !== 'undefined' && user) { %>
+          <a href="/room" class="btn-back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            Back to Room
+          </a>
+        <% } else { %>
+          <a href="/" class="btn-back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            Go Home
+          </a>
+        <% } %>
+      </div>
+
+      <!-- Right: illustration -->
+      <div class="not-found-img">
+        <img src="/assets/astro4.png" alt="Floating astronaut" />
+      </div>
+
+    </div>
+  </main>
 
 </body>
 </html>

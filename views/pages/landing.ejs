@@ -29,43 +29,7 @@
   <%# ══════════════════════════════════════════════
       NAVBAR
   ══════════════════════════════════════════════ %>
-  <header class="nav" id="nav" role="banner">
-    <a href="/" class="nav-logo" aria-label="Scriptorium home">
-      <span class="logo-text">Scriptorium</span>
-      <svg class="logo-squiggle" viewBox="0 0 120 8" fill="none" aria-hidden="true">
-        <path d="M2 5 Q20 1 38 5 Q56 9 74 5 Q92 1 110 5 Q116 6.5 118 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-      </svg>
-    </a>
-
-    <nav class="nav-links" aria-label="Main navigation">
-      <a href="#about" class="nav-link">About</a>
-      <a href="/room" class="nav-link">Rooms</a>
-      <a href="/contact"   class="nav-link">Contact</a>
-      <a href="#ai"    class="nav-link">AI</a>
-    </nav>
-
-    <div class="nav-actions">
-      <a href="/login"  class="nav-login">Log in</a>
-      <a href="/signup" class="nav-cta">
-        Get started
-        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-          <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-      <button class="nav-burger" aria-label="Toggle menu" aria-expanded="false">
-        <span></span><span></span>
-      </button>
-    </div>
-
-    <div class="nav-drawer" aria-hidden="true">
-      <a href="#about">About</a>
-      <a href="#rooms">Rooms</a>
-      <a href="/contact">Contact</a>
-      <a href="#ai">AI picks</a>
-      <a href="/login">Log in</a>
-      <a href="/signup" class="drawer-cta">Get started →</a>
-    </div>
-  </header>
+  <%- include('../partials/navbar_public') %>
 
   <main>
 

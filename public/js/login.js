@@ -24,11 +24,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Show verification email notice if redirected from signup
   const params = new URLSearchParams(window.location.search);
   if (params.get("registered") === "true") {
-    message.textContent =
-      "Account created! A verification email has been sent — please check your inbox before logging in.";
-    message.className =
-      "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-blue-500/10 border-blue-400 text-blue-300";
-    message.classList.remove("hidden");
+    showInfo(
+      "Account created! A verification email has been sent — please check your inbox before logging in.",
+    );
 
     // Clean the URL so the message doesn't reappear on refresh
     window.history.replaceState({}, "", "/login");
@@ -38,12 +36,14 @@ document.addEventListener("DOMContentLoaded", () => {
   [emailInput, passwordInput].forEach((input) => {
     input.addEventListener("input", () => {
       message.classList.add("hidden");
+      message.style.cssText = "";
     });
   });
 
   // 3. Helper Functions
   function showError(text) {
     message.textContent = text;
+    message.style.cssText = "";
     message.className =
       "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-red-500/10 border-red-400 text-red-300";
     message.classList.remove("hidden");
@@ -51,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showSuccess(text) {
     message.textContent = text;
+    message.style.cssText = "";
     message.className =
       "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-green-500/10 border-green-400 text-green-300";
     message.classList.remove("hidden");
@@ -61,6 +62,10 @@ document.addEventListener("DOMContentLoaded", () => {
     message.className =
       "mt-3 px-5 py-4 rounded-2xl border text-lg font-medium bg-blue-500/10 border-blue-400 text-blue-300";
     message.classList.remove("hidden");
+    message.style.background = "rgba(59,130,246,0.1)";
+    message.style.borderColor = "#60a5fa";
+    message.style.color = "#93c5fd";
+    message.style.setProperty("display", "block", "important");
   }
 
   // 4. Main Submit Logic
@@ -69,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Reset messages
     message.classList.add("hidden");
+    message.style.cssText = "";
 
     const email = emailInput.value.trim().toLowerCase();
     const password = passwordInput.value;
@@ -128,10 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         showSuccess("Login successful! Redirecting...");
         window.location.href = "/room";
-      } else if (
-        data.message &&
-        data.message.toLowerCase().includes("verif")
-      ) {
+      } else if (data.message && data.message.toLowerCase().includes("verif")) {
         // Email not verified — show friendly info, not a red error
         showInfo(
           "Your email isn't verified yet. We've sent a new verification link — please check your inbox.",

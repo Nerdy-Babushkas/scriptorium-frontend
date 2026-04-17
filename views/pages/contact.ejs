@@ -1,188 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <%- include('../partials/head_public', { title: 'Contact Babushka - Scriptorium' }) %>
+  <%- include('../partials/head_public', { title: 'Contact — Scriptorium' }) %>
+  <link rel="stylesheet" href="/css/landing.css">
+  <link rel="stylesheet" href="/css/pages.css">
 </head>
-<body class="bg-scriptorium-dark min-h-screen relative overflow-x-hidden font-outfit text-white flex flex-col">
+<body class="page-body">
 
-    <%- include('../partials/background_blobs') %>
-    <%- include('../partials/navbar_public') %>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="page-orb page-orb-1" aria-hidden="true"></div>
+  <div class="page-orb page-orb-2" aria-hidden="true"></div>
 
-    <main class="flex-grow flex items-center justify-center relative z-10 pt-20 pb-12 px-6">
-        <div class="container mx-auto max-w-6xl">
-            
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                
-                <div class="order-2 lg:order-1 space-y-8">
-                    <div class="text-center lg:text-left space-y-4">
-                        <h1 class="font-dancing text-5xl sm:text-7xl font-bold text-[#06D6A0] leading-none">
-                            Contact Babushka
-                        </h1>
-                        <p class="font-roboto text-xl text-gray-300 max-w-md mx-auto lg:mx-0">
-                            We are building something special in our digital nesting doll. Connect with us directly or check our code!
-                        </p>
-                    </div>
+  <%- include('../partials/navbar_public') %>
 
-                    <div class="flex flex-col gap-4 max-w-md mx-auto lg:mx-0">
-                        
-                        <a href="mailto:babushkas.prj@gmail.com" 
-                           class="flex items-center gap-6 p-4 rounded-[20px] bg-white/5 border border-[#118AB2]/30 hover:bg-[#118AB2]/20 hover:border-[#118AB2] transition-all group shadow-lg">
-                            <div class="w-14 h-14 rounded-full bg-[#118AB2]/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <svg class="w-7 h-7 text-[#06D6A0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                </svg>
-                            </div>
-                            <div class="text-left">
-                                <p class="text-xs text-[#118AB2] font-bold uppercase tracking-wider mb-1">Email Us</p>
-                                <p class="font-outfit text-lg sm:text-xl font-semibold break-all">babushkas.prj@gmail.com</p>
-                            </div>
-                        </a>
+  <main class="page-main page-main--wide">
 
-                        <a href="https://github.com/Nerdy-Babushkas" target="_blank"
-                           class="flex items-center gap-6 p-4 rounded-[20px] bg-white/5 border border-[#118AB2]/30 hover:bg-[#118AB2]/20 hover:border-[#118AB2] transition-all group shadow-lg">
-                            <div class="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/>
-                                </svg>
-                            </div>
-                            <div class="text-left">
-                                <p class="text-xs text-[#118AB2] font-bold uppercase tracking-wider mb-1">Check Code</p>
-                                <p class="font-outfit text-lg sm:text-xl font-semibold">Nerdy-Babushkas</p>
-                            </div>
-                        </a>
+    <!-- Hero -->
+    <div class="contact-hero">
+      <div>
+        <div class="page-eyebrow">Get in touch</div>
+        <h1 class="page-h1">Contact <span class="caveat">Babushka</span></h1>
+        <p class="page-sub">
+          We're building something special in our digital nesting doll.
+          Connect with us directly or check out our code.
+        </p>
 
-                    </div>
-                </div>
-
-                <div class="order-1 lg:order-2 flex justify-center">
-                    <%- include('../partials/floating_prop', { img: '/assets/doll.png', alt: 'Cute 3D Matryoshka Doll' }) %>
-                </div>
-
+        <div class="contact-links">
+          <a href="mailto:babushkas.prj@gmail.com" class="contact-link">
+            <div class="contact-link-icon contact-link-icon--teal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
             </div>
+            <div>
+              <span class="contact-link-label">Email us</span>
+              <span class="contact-link-value">babushkas.prj@gmail.com</span>
+            </div>
+          </a>
+
+          <a href="https://github.com/Nerdy-Babushkas" target="_blank" rel="noopener" class="contact-link">
+            <div class="contact-link-icon contact-link-icon--ink">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div>
+              <span class="contact-link-label">Check the code</span>
+              <span class="contact-link-value">Nerdy-Babushkas</span>
+            </div>
+          </a>
+
+          <a href="/feedback" class="contact-link">
+            <div class="contact-link-icon contact-link-icon--lavender">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+              </svg>
+            </div>
+            <div>
+              <span class="contact-link-label">Share feedback</span>
+              <span class="contact-link-value">Got thoughts? Tell us</span>
+            </div>
+          </a>
         </div>
-        
-    </main>
-    <!-- ===== OUR BABUSHKAS SECTION ===== -->
-    <section class="mt-32 relative z-10 px-6">
-        <div class="max-w-6xl mx-auto space-y-28">
+      </div>
 
-            <div class="text-center space-y-4">
-                <h2 class="font-dancing text-5xl sm:text-6xl font-bold text-[#06D6A0]">
-                    Meet the Babushkas
-                </h2>
-                <p class="text-gray-300 font-roboto text-lg max-w-2xl mx-auto">
-                    Five minds. Five animals. One digital nesting doll.
-                </p>
-            </div>
+      <div class="contact-doll-img">
+        <img src="/assets/doll.png" alt="Matryoshka doll" />
+      </div>
+    </div>
 
-            <!-- Pranjal -->
-            <div class="grid md:grid-cols-2 gap-16 items-center">
-                <div class="flex justify-center">
-                    <img src="/assets/bunny-babushka.png"
-                        alt="Bunny Babushka - Pranjal Surjan"
-                        class="w-100 md:w-100 drop-shadow-2xl hover:scale-105 transition-transform duration-500">
-                </div>
-                <div class="space-y-6 text-center md:text-left">
-                    <h3 class="text-4xl font-bold text-[#06D6A0]">
-                        Pranjal Surjan
-                    </h3>
-                    <p class="text-[#118AB2] font-semibold text-lg">
-                        Team Captain · Frontend Lead
-                    </p>
-                    <p class="text-gray-300 leading-relaxed text-lg">
-                        She is doing tOOOOO much. Pranjal leads the team with a blend of vision and hands-on coding,
-                        shaping this amazing frontend experience while steering the project towards success.
-                    </p>
-                </div>
-            </div>
+    <!-- Team section -->
+    <div class="team-section">
 
-            <!-- Dylan -->
-            <div class="grid md:grid-cols-2 gap-16 items-center">
-                <div class="order-2 md:order-1 space-y-6 text-center md:text-left">
-                    <h3 class="text-4xl font-bold text-[#06D6A0]">
-                        Dylan Musiiwa
-                    </h3>
-                    <p class="text-[#118AB2] font-semibold text-lg">
-                        Gamification & Engagement Lead
-                    </p>
-                    <p class="text-gray-300 leading-relaxed text-lg">
-                        Playful and strategic. Dylan infuses gamification elements that captivate users, 
-                        creating an engaging and rewarding experience within our digital nesting doll.
-                    </p>
-                </div>
-                <div class="order-1 md:order-2 flex justify-center">
-                    <img src="/assets/panther-babushka.png"
-                        alt="Panther Babushka - Dylan Musiiwa"
-                        class="w-100 md:w-100 drop-shadow-2xl hover:scale-105 transition-transform duration-500">
-                </div>
-            </div>
+      <div style="margin-bottom: 4rem;">
+        <div class="page-eyebrow">The team</div>
+        <h2 class="team-section-title">Meet the <span style="font-family: var(--font-caveat); color: var(--teal);">Babushkas</span></h2>
+        <p class="team-section-sub">Five minds. Five animals. One digital nesting doll.</p>
+      </div>
 
-            <!-- Maksym -->
-            <div class="grid md:grid-cols-2 gap-16 items-center">
-                <div class="flex justify-center">
-                    <img src="/assets/penguin-babushka.png"
-                        alt="Penguin Babushka - Maksym Syromolot"
-                        class="w-100 md:w-100 drop-shadow-2xl hover:scale-105 transition-transform duration-500">
-                </div>
-                <div class="space-y-6 text-center md:text-left">
-                    <h3 class="text-4xl font-bold text-[#06D6A0]">
-                        Maksym Syromolot
-                    </h3>
-                    <p class="text-[#118AB2] font-semibold text-lg">
-                        Backend Engineer
-                    </p>
-                    <p class="text-gray-300 leading-relaxed text-lg">
-                        Maksym is our backend wizard, building robust and scalable systems that power our digital nesting doll.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Nelson -->
-            <div class="grid md:grid-cols-2 gap-16 items-center">
-                <div class="order-2 md:order-1 space-y-6 text-center md:text-left">
-                    <h3 class="text-4xl font-bold text-[#06D6A0]">
-                        Nelson Antonini
-                    </h3>
-                    <p class="text-[#118AB2] font-semibold text-lg">
-                        Backend Lead
-                    </p>
-                    <p class="text-gray-300 leading-relaxed text-lg">
-                        He is our team father ('papi' in Brazilian). 
-                        Nelson provides stability and guidance, ensuring our backend is robust and scalable 
-                        while mentoring the team with his experience and wisdom.
-                    </p>
-                </div>
-                <div class="order-1 md:order-2 flex justify-center">
-                    <img src="/assets/capybara-babushka.png"
-                        alt="Capybara Babushka - Nelson Antonini"
-                        class="w-100 md:w-100 drop-shadow-2xl hover:scale-105 transition-transform duration-500">
-                </div>
-            </div>
-
-            <!-- Harjasdeep -->
-            <div class="grid md:grid-cols-2 gap-16 items-center">
-                <div class="flex justify-center">
-                    <img src="/assets/sea-lion-babushka.png"
-                        alt="Sea Lion Babushka - Harjasdeep Singh"
-                        class="w-100 md:w-100 drop-shadow-2xl hover:scale-105 transition-transform duration-500">
-                </div>
-                <div class="space-y-6 text-center md:text-left">
-                    <h3 class="text-4xl font-bold text-[#06D6A0]">
-                        Harjasdeep Singh
-                    </h3>
-                    <p class="text-[#118AB2] font-semibold text-lg">
-                        Feature Engineer and Tester
-                    </p>
-                    <p class="text-gray-300 leading-relaxed text-lg">
-                        Harjasdeep is our feature maestro, crafting and testing new functionalities to ensure a 
-                        seamless user experience within our digital reflecting space.
-                    </p>
-                </div>
-            </div>
-
+      <div class="team-member">
+        <div class="team-member-img">
+          <img src="/assets/bunny-babushka.png" alt="Bunny Babushka — Pranjal Surjan" />
         </div>
-    </section>
+        <div class="team-member-info">
+          <h3 class="team-member-name">Pranjal Surjan</h3>
+          <p class="team-member-role">Team Captain · Frontend Lead</p>
+          <p class="team-member-bio">She is doing tOOOOO much. Pranjal leads the team with a blend of vision and hands-on coding, shaping this amazing frontend experience while steering the project towards success.</p>
+        </div>
+      </div>
 
+      <div class="team-member team-member--reverse">
+        <div class="team-member-img">
+          <img src="/assets/panther-babushka.png" alt="Panther Babushka — Dylan Musiiwa" />
+        </div>
+        <div class="team-member-info">
+          <h3 class="team-member-name">Dylan Musiiwa</h3>
+          <p class="team-member-role">Gamification & Engagement Lead</p>
+          <p class="team-member-bio">Playful and strategic. Dylan infuses gamification elements that captivate users, creating an engaging and rewarding experience within our digital nesting doll.</p>
+        </div>
+      </div>
+
+      <div class="team-member">
+        <div class="team-member-img">
+          <img src="/assets/penguin-babushka.png" alt="Penguin Babushka — Maksym Syromolot" />
+        </div>
+        <div class="team-member-info">
+          <h3 class="team-member-name">Maksym Syromolot</h3>
+          <p class="team-member-role">Backend Engineer</p>
+          <p class="team-member-bio">Maksym is our backend wizard, building robust and scalable systems that power our digital nesting doll.</p>
+        </div>
+      </div>
+
+      <div class="team-member team-member--reverse">
+        <div class="team-member-img">
+          <img src="/assets/capybara-babushka.png" alt="Capybara Babushka — Nelson Antonini" />
+        </div>
+        <div class="team-member-info">
+          <h3 class="team-member-name">Nelson Antonini</h3>
+          <p class="team-member-role">Backend Lead</p>
+          <p class="team-member-bio">He is our team father ('papi' in Brazilian). Nelson provides stability and guidance, ensuring our backend is robust and scalable while mentoring the team with his experience and wisdom.</p>
+        </div>
+      </div>
+
+      <div class="team-member">
+        <div class="team-member-img">
+          <img src="/assets/sea-lion-babushka.png" alt="Sea Lion Babushka — Harjasdeep Singh" />
+        </div>
+        <div class="team-member-info">
+          <h3 class="team-member-name">Harjasdeep Singh</h3>
+          <p class="team-member-role">Feature Engineer & Tester</p>
+          <p class="team-member-bio">Harjasdeep is our feature maestro, crafting and testing new functionalities to ensure a seamless user experience within our digital reflecting space.</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
 
 </body>
 </html>

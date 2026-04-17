@@ -1,19 +1,25 @@
-            document.addEventListener('DOMContentLoaded', () => {
-                const profileBtn = document.getElementById('profile-menu-btn');
-                const dropdown = document.getElementById('profile-dropdown');
+console.log("NAVBAR JS LOADED");
 
-                if (profileBtn && dropdown) {
-                    // Toggle menu on click
-                    profileBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        dropdown.classList.toggle('hidden');
-                    });
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('profile-btn');
+  const menu = document.getElementById('profile-menu');
 
-                    // Close menu when clicking anywhere else
-                    document.addEventListener('click', (e) => {
-                        if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
-                            dropdown.classList.add('hidden');
-                        }
-                    });
-                }
-            });
+  if (!btn || !menu) return;
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menu.classList.toggle('active');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!menu.contains(e.target) && !btn.contains(e.target)) {
+      menu.classList.remove('active');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      menu.classList.remove('active');
+    }
+  });
+});

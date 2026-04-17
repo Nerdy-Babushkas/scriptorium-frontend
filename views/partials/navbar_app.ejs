@@ -43,7 +43,7 @@
       <!-- PROFILE -->
     <div class="nav-profile">
   <button id="profile-btn" class="profile-btn">
-    <img src="/assets/avatars/hatchling.png" />
+    <img src="/assets/avatars/hatchling.png" id="navbar-avatar-img" />
   </button>
 
   <div id="profile-menu" class="profile-menu">
@@ -95,3 +95,48 @@
 
   </div>
 </div>
+
+<script>
+  (function () {
+    // ── Avatar sync ──────────────────────────────────────────────
+    const token = localStorage.getItem("token");
+    if (token) {
+      const img = document.getElementById("navbar-avatar-img");
+      const cached = localStorage.getItem("equippedAvatar");
+      if (cached && img) img.src = "/assets/avatars/" + cached + ".png";
+
+      fetch("https://scriptorium-backend-six.vercel.app/api/avatars", {
+        headers: { Authorization: "JWT " + token }
+      })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (!data?.equipped) return;
+          localStorage.setItem("equippedAvatar", data.equipped);
+          if (img) img.src = "/assets/avatars/" + data.equipped + ".png";
+        })
+        .catch(() => {});
+    }
+
+    // ── Hamburger / mobile menu ──────────────────────────────────
+    const btn      = document.getElementById("hamburger-btn");
+    const closeBtn = document.getElementById("mobile-close");
+    const menu     = document.getElementById("mobile-menu");
+    const backdrop = document.getElementById("mobile-backdrop");
+    const panel    = document.getElementById("mobile-panel");
+
+    function openMenu() {
+      menu.classList.add("is-open");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeMenu() {
+      menu.classList.remove("is-open");
+      document.body.style.overflow = "";
+    }
+
+    btn?.addEventListener("click", openMenu);
+    closeBtn?.addEventListener("click", closeMenu);
+    backdrop?.addEventListener("click", closeMenu);
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenu(); });
+  })();
+</script>

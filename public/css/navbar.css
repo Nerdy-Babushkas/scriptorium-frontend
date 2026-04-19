@@ -245,28 +245,51 @@
 .profile-menu.active ~ .profile-btn {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
+
 /* ─────────────────────────────
    BURGER
 ───────────────────────────── */
 .nav-burger {
   display: none;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
 }
 
 .nav-burger span {
-  width: 20px;
+  width: 22px;
   height: 2px;
   background: white;
+  border-radius: 2px;
+  display: block;
+  transition:
+    transform 0.25s ease,
+    opacity 0.2s ease;
+  transform-origin: center;
+}
+
+/* Burger → ✕ animation when .open is added */
+.nav-burger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.nav-burger.open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.nav-burger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 /* ─────────────────────────────
-   MOBILE MENU
+   MOBILE MENU OVERLAY
 ───────────────────────────── */
 .mobile-menu {
   position: fixed;
   inset: 0;
+  z-index: 100;
   pointer-events: none;
 }
 
@@ -279,26 +302,109 @@
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
   opacity: 0;
-  transition: 0.3s;
+  transition: opacity 0.3s ease;
 }
 
 .mobile-menu.open .mobile-backdrop {
   opacity: 1;
 }
 
+/* ─────────────────────────────
+   MOBILE PANEL
+───────────────────────────── */
 .mobile-panel {
   position: absolute;
   right: 0;
+  top: 0;
   width: 280px;
   height: 100%;
   background: #111;
-  font-family: var(--font-body);
+  display: flex;
+  flex-direction: column;
   transform: translateX(100%);
-  transition: 0.3s;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
 }
 
 .mobile-menu.open .mobile-panel {
   transform: translateX(0);
+}
+
+/* ─────────────────────────────
+   MOBILE PANEL INTERNALS
+───────────────────────────── */
+.mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 14px;
+  color: white;
+  font-family: var(--font-clash);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+#mobile-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition:
+    color 0.2s,
+    background 0.2s;
+  line-height: 1;
+}
+
+#mobile-close:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mobile-links {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex: 1;
+}
+
+.mobile-bottom {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  flex-shrink: 0;
+}
+
+.mobile-links a,
+.mobile-bottom a,
+.mobile-bottom button {
+  display: block;
+  padding: 14px 22px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.mobile-links a:hover,
+.mobile-bottom a:hover,
+.mobile-bottom button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
 }
 
 /* ─────────────────────────────

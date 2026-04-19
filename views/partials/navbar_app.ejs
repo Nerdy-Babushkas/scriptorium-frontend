@@ -41,22 +41,22 @@
       </div>
 
       <!-- PROFILE -->
-    <div class="nav-profile">
-  <button id="profile-btn" class="profile-btn">
-    <img src="/assets/avatars/hatchling.png" id="navbar-avatar-img" />
-  </button>
+      <div class="nav-profile">
+        <button id="profile-btn" class="profile-btn">
+          <img src="/assets/avatars/hatchling.png" id="navbar-avatar-img" />
+        </button>
 
-  <div id="profile-menu" class="profile-menu">
-    <a href="/account">My Account</a>
-    <div class="divider"></div>
-    <form action="/logout" method="POST">
-      <button type="submit">Logout</button>
-    </form>
-  </div>
-</div>
+        <div id="profile-menu" class="profile-menu">
+          <a href="/account">My Account</a>
+          <div class="divider"></div>
+          <form action="/logout" method="POST">
+            <button type="submit">Logout</button>
+          </form>
+        </div>
+      </div>
 
       <!-- BURGER -->
-      <button id="hamburger-btn" class="nav-burger">
+      <button id="hamburger-btn" class="nav-burger" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
 
@@ -74,7 +74,7 @@
 
     <div class="mobile-header">
       <span>Menu</span>
-      <button id="mobile-close">✕</button>
+      <button id="mobile-close" aria-label="Close menu">✕</button>
     </div>
 
     <div class="mobile-links">
@@ -122,15 +122,16 @@
     const closeBtn = document.getElementById("mobile-close");
     const menu     = document.getElementById("mobile-menu");
     const backdrop = document.getElementById("mobile-backdrop");
-    const panel    = document.getElementById("mobile-panel");
 
     function openMenu() {
-      menu.classList.add("is-open");
+      menu.classList.add("open");        // FIX: was "is-open"
+      btn.classList.add("open");         // animates burger → ✕
       document.body.style.overflow = "hidden";
     }
 
     function closeMenu() {
-      menu.classList.remove("is-open");
+      menu.classList.remove("open");     // FIX: was "is-open"
+      btn.classList.remove("open");
       document.body.style.overflow = "";
     }
 
